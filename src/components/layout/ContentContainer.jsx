@@ -1,0 +1,116 @@
+import * as React from "react";
+import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
+import {
+  Box,
+  Typography,
+  Avatar,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
+
+// ICONS
+import SchoolIcon from "@mui/icons-material/School";
+import TopicIcon from "@mui/icons-material/Topic";
+import PersonIcon from "@mui/icons-material/Person";
+import QuizIcon from "@mui/icons-material/Quiz";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import SettingsIcon from "@mui/icons-material/Settings";
+import PaymentIcon from "@mui/icons-material/Payment";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import StarIcon from "@mui/icons-material/Star";
+import { useLocation } from "react-router-dom";
+import useCommon from "../../hooks/useCommon";
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+
+
+export default function ContentContainer({ children }) {
+  const { containerTitle, containerTitleDescription } = useCommon();
+
+  const title = containerTitle.toLowerCase();
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const location = useLocation();
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [location.pathname]);
+  // -----------------------------------------------
+  // 🔥 AUTO-DETECT HEADER ICON
+  // -----------------------------------------------
+  const getHeaderIcon = () => {
+    if (title.includes("dashboard")) return <DashboardIcon fontSize="large" />;
+    if (title.includes("course")) return <SchoolIcon fontSize="large" />;
+    if (title.includes("user management")) return <ManageAccountsIcon fontSize="large" />;
+    return <StarIcon fontSize="large" />; // ⭐ fallback icon
+  };
+
+  return (
+    <React.Fragment>
+      <Box>
+        <Box height={isMobile ? 20 : 30} />
+        {/* HEADER/HERO SECTION */}
+        <Box
+          sx={{
+            background: "linear-gradient(135deg, #1976d2 0%, #ffffff 100%)",
+            color: "white",
+            px: isMobile ? 2 : 4,
+            py: isMobile ? 3 : 4,
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            mt: "50px",
+            width: "100%",
+            borderRadius: "0 0 12px 12px",
+          }}
+        >
+          {/* Icon */}
+          <Avatar
+            sx={{
+              bgcolor: "rgba(255,255,255,0.25)",
+              width: isMobile ? 46 : 56,
+              height: isMobile ? 46 : 56,
+            }}
+          >
+            {getHeaderIcon()}
+          </Avatar>
+
+          {/* Title text */}
+          <Box>
+            <Typography
+              variant={isMobile ? "h6" : "h4"}
+              sx={{ fontWeight: 700, letterSpacing: 0.3 }}
+            >
+              {containerTitle}
+            </Typography>
+
+            <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5 }}>
+              {containerTitleDescription}
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* PAGE CONTENT */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            mb: 3,
+            mt: 3,
+            pt: 3,
+            pb: 3,
+            background: "linear-gradient(135deg, #f8fbff 0%, #f8fbff 100%)",
+            borderRadius: "12px",
+          }}
+        >
+          {children}
+        </Box>
+      </Box>
+    </React.Fragment>
+  );
+}
+
+ContentContainer.propTypes = {
+  children: PropTypes.node,
+};

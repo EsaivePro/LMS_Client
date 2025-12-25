@@ -1,0 +1,22 @@
+{
+  "courses": [
+    {
+      "id": 1,
+      "title": "Intro to Robotics",
+      "desc": "Basics of robotics."
+    },
+    {
+      "id": 2,
+      "title": "ROS Basics",
+      "desc": "Intro to ROS."
+    }
+  ],
+  "exams": [
+    {
+      "id": 1,
+      "title": "Midterm Assessment",
+      "duration": 90,
+      "marks": 100
+    }
+  ]
+}

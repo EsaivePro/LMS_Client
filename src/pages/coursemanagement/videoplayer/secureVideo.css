@@ -1,0 +1,106 @@
+/* ================================
+   GLOBAL RESET FOR VIDEO SECURITY
+================================ */
+
+/* Disable text selection */
+* {
+    /* -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none; */
+}
+
+/* Disable dragging */
+video,
+img {
+    -webkit-user-drag: none;
+    -moz-user-drag: none;
+    user-drag: none;
+}
+
+/* Prevent double-tap zoom on mobile */
+video {
+    touch-action: manipulation;
+}
+
+/* ================================
+   VIDEO PLAYER STYLING
+================================ */
+
+video {
+    outline: none;
+    background: #000;
+    border-radius: 0;
+    opacity: 1;
+    transition: opacity 0.25s ease-in-out, filter 0.25s ease-in-out;
+}
+
+/* Blur effect when paused */
+.sv-blur {
+    filter: blur(3px) brightness(0.7);
+}
+
+/* Hide picture-in-picture button */
+video::-webkit-media-controls-picture-in-picture-button {
+    display: none;
+}
+
+/* Prevent download button (Chrome) */
+video::-internal-media-controls-download-button {
+    display: none !important;
+}
+
+/* Hide remote playback button */
+video::-webkit-media-controls-enclosure {
+    overflow: hidden;
+}
+
+/* ================================
+   WATERMARK EFFECTS
+================================ */
+
+/* Anti-screenshot: subtle text glow */
+.sv-watermark {
+    text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.9);
+    opacity: 0.35;
+    font-weight: 700;
+}
+
+/* Moving watermark animation smoothness */
+.sv-watermark-move {
+    transition: top 0.25s linear, left 0.25s linear;
+}
+
+/* ================================
+   MINI-PLAYER MODE
+================================ */
+
+.sv-mini video {
+    object-fit: cover;
+}
+
+/* Mini-player fade-in */
+.sv-mini {
+    animation: svFadeIn 0.25s ease;
+}
+
+@keyframes svFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Pause blur effect */
+.sv-blur {
+    filter: blur(3px) brightness(0.7);
+}
+
+/* Watermark smooth movement */
+.sv-watermark-move {
+    transition: top 1.2s ease, left 1.2s ease;
+}

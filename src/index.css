@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --primary: #1f5fbf;
+    --primary-light: #e6f0ff;
+    --secondary: #3B82F6;
+    --bgLight: linear-gradient(180deg, var(--primary-light) 0%, #ffffff 100%);
+    --accent: #60A5FA;
+    --bg: #f7fbff;
+    --surface: rgb(255, 255, 255);
+    --text: #123a6b;
+    --lightgrey: #f4f4f4ff;
+
+    --primaryColor: #0586f5;
+    --secondaryColor: #004568;
+    --thridColor: #005985;
+    --fourthColor: #006395;
+}
+
+.primaryColor {
+    color: var(--primaryColor);
+}
+
+.secondaryColor {
+    color: var(--secondaryColor);
+}
+
+.thridColor {
+    color: var(--thridColor);
+}
+
+.fourthColor {
+    color: var(--fourthColor);
+}
+
+s html,
+body,
+#root {
+    /* height:100%; */
+    min-height: 100%;
+
+}
+
+body {
+    /* background:var(--bgLight); */
+    font-family: Inter, Arial, sans-serif
+}
+
+.app-root {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-content {
+    flex: 1
+}
+
+.ql-editor {
+    box-sizing: border-box;
+    line-height: 1.42;
+    height: 300px;
+    outline: none;
+    overflow-y: auto;
+    padding: 12px 15px;
+    tab-size: 4;
+    -moz-tab-size: 4;
+    text-align: left;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
