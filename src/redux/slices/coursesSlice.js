@@ -144,6 +144,8 @@ const courseSlice = createSlice({
               state.courseDetails[idx] = { ...state.courseDetails[idx], ...created, topics };
             }
           }
+          state.allCourses.sort((a, b) => Number(b.id) - Number(a.id));
+          state.courseDetails.sort((a, b) => Number(b.id) - Number(a.id));
         }
       })
 

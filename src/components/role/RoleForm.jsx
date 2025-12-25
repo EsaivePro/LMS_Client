@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import { Box, TextField, Button, Typography, Stack, Card, CardContent, FormControl, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
-import { useAdmin } from "../../../hooks/useAdmin";
+import { useAdmin } from "../../hooks/useAdmin";
 
 const Section = ({ title, children }) => (
     <Card variant="outlined" sx={{ width: "100%" }}>

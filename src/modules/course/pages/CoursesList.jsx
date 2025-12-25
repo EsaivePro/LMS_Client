@@ -21,16 +21,18 @@ import { setContainerTitle } from "../../../redux/slices/uiSlice";
 import GlobalAlert from "../../../components/common/alert/GlobalAlert";
 import { useNavigate } from "react-router-dom";
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import useCourseCategory from "../../../hooks/useCourseCategory";
 
 export default function CoursesList() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { allCourses } = useCourseCategory();
   useEffect(() => {
     dispatch(setContainerTitle("Course"));
-    dispatch(fetchCourses());
+    if (allCourses.length === 0)
+      dispatch(fetchCourses());
   }, [dispatch]);
 
-  const { allCourses } = useSelector((state) => state.courses);
   const [open, setOpen] = useState(false);
   const [alert, setAlert] = useState({ open: false, type: "", message: "" });
   const [openUpdate, setOpenUpdate] = React.useState(false);
@@ -267,6 +269,7 @@ export default function CoursesList() {
         rows={filteredCourses}
         columns={columns}
         noRowsContent={defaultNoRows}
+        serverSide={false}
       />
     </Box>
   );

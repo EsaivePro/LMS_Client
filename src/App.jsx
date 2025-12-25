@@ -15,9 +15,9 @@ import CoursesList from "./modules/course/pages/CoursesList";
 import CourseView from "./modules/course/pages/CourseView";
 import CourseEdit from "./modules/course/pages/CourseEdit";
 import useCommon from "./hooks/useCommon";
-import UserManagement from "./pages/usermanagement/UserManagement";
+import UserManagement from "./modules/user/pages/UserManagement";
 import AdminDashboard from "./modules/dashboard/pages/AdminDashBoard";
-import UserPreference from "./modules/user/pages/UserPreference";
+import UserProfile from "./modules/user/pages/UserProfile";
 
 export default function App() {
   const { setPermissionsAPI } = useAdmin();
@@ -123,10 +123,10 @@ export default function App() {
 
         <Route element={<ProtectedRoute />}>
           <Route
-            path="user/preference/:id"
+            path="user/profile/:id"
             element={
-              <AppLayout title="User Preference" titleDescription="Manage platform users efficiently by creating, updating, assigning roles, and controlling access permissions across the system.">
-                <UserPreference />
+              <AppLayout title="User Profile" titleDescription="Manage platform users efficiently by creating, updating, assigning roles, and controlling access permissions across the system.">
+                <UserProfile />
               </AppLayout>
             }
           />

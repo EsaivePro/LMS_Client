@@ -14,8 +14,8 @@ import {
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 
-import UserList from "./user/UsersList";
-import RolesList from "../permissions/roles/RolesList";
+import UserList from "./UsersList";
+import RolesList from "../../role/pages/RolesList";
 
 /* ===================================================== */
 

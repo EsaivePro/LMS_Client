@@ -132,7 +132,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                                 onFocus={() => setSearchFocused(true)}
                                 onBlur={handleSearchBlur}
                                 sx={{
-                                    width: searchFocused ? "260px" : "150px",
+                                    width: searchFocused ? "300px" : "260px",
                                     transition: "width 0.25s ease",
                                     background: "#fff",
                                     borderRadius: "8px",
@@ -177,11 +177,11 @@ function Header({ toggleSidebar, profile, logout, open }) {
                         </Box>
 
                         {/* NOTIFICATION ICON */}
-                        <IconButton onClick={(e) => setAnchorNotif(e.currentTarget)}>
+                        {/* <IconButton onClick={(e) => setAnchorNotif(e.currentTarget)}>
                             <Badge badgeContent={notifications.length || 0} color="error">
                                 <NotificationsIcon />
                             </Badge>
-                        </IconButton>
+                        </IconButton> */}
 
                         {/* NOTIFICATION DROPDOWN */}
                         <Menu

@@ -14,10 +14,6 @@ import {
     Card,
     CardContent,
     Stack,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
 } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useForm, Controller, useWatch } from "react-hook-form";
@@ -25,12 +21,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import zxcvbn from "zxcvbn";
 import AdditionalDetails from "./AdditionalDetails";
-import SlideDialog from "../../../components/common/dialog/SlideDialog";
-import ShowPopup from "../../../components/common/dialog/ShowPopup";
-import useUser from "../../../hooks/useUser";
-import useCommon from "../../../hooks/useCommon";
-import { errorValidation } from "../../../utils/resolver.utils";
-import useRole from "../../../hooks/useRole";
+import ShowPopup from "../../components/common/dialog/ShowPopup";
+import useUser from "../../hooks/useUser";
+import useCommon from "../../hooks/useCommon";
+import { errorValidation } from "../../utils/resolver.utils";
+import useRole from "../../hooks/useRole";
 
 /* -------------------- Validation Schema -------------------- */
 const schema = (mode, resetPassword) =>
@@ -89,7 +84,7 @@ const Section = ({ title, children }) => (
 );
 
 /* -------------------- Component -------------------- */
-export default function UserForm({ mode = "create", user, onSuccess, onCancel }) {
+export default function UserForm({ mode = "create", user, onSuccess, onCancel, profileMode = false }) {
     const [details, setDetails] = useState(user?.details || "");
     const [loading, setLoading] = useState(false);
     const [confirmCancel, setConfirmCancel] = useState(false);
@@ -194,10 +189,10 @@ export default function UserForm({ mode = "create", user, onSuccess, onCancel })
     };
 
     return (
-        <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-            <Typography variant="h6" fontWeight={500} m={3}>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ width: "100%" }}>
+            {!profileMode && <Typography variant="h6" fontWeight={500} m={3}>
                 {mode === "create" ? "Create User" : "Edit User"}
-            </Typography>
+            </Typography>}
             <Stack spacing={3}>
                 {/* Account */}
                 <Section title="Account Information">
@@ -267,7 +262,7 @@ export default function UserForm({ mode = "create", user, onSuccess, onCancel })
                 )}
 
                 {/* Role & Status */}
-                <Section title="Role & Status">
+                {!profileMode && <Section title="Role & Status">
                     <Controller name="role_id" control={control} render={({ field }) => (
                         <TextField {...field} select label="Role *" size="small" fullWidth>
                             {(roles || []).map((r) => (
@@ -292,10 +287,11 @@ export default function UserForm({ mode = "create", user, onSuccess, onCancel })
                         <FormControlLabel control={<Switch {...field} checked={field.value} />} label="Email Verified" />
                     )} />
                 </Section>
+                }
 
-                <Section title="Additional Details">
+                {!profileMode && <Section title="Additional Details">
                     <AdditionalDetails onChange={setDetails} />
-                </Section>
+                </Section>}
             </Stack>
 
             {/* Sticky Footer */}
@@ -307,7 +303,7 @@ export default function UserForm({ mode = "create", user, onSuccess, onCancel })
                 )}
                 <Box sx={{ p: 1, display: "flex", gap: 2 }}>
                     <Button fullWidth variant="contained" type="submit" disabled={!isValid || !isDirty || loading}>
-                        {mode === "create" ? "Add User" : "Update User"}
+                        {!profileMode ? (mode === "create" ? "Add User" : "Update User") : "Save Changes"}
                     </Button>
                     <Button fullWidth variant="outlined" onClick={handleCancel}>
                         Cancel

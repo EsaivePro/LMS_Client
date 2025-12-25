@@ -113,7 +113,7 @@ export default function SideBarWithHeader({ children }) {
         navigate("/login");
     };
     const handleProfile = () => {
-        navigate("/user/preference/1");
+        navigate("/user/profile/1");
     }
     // Auto expand the group of active child
     React.useEffect(() => {
@@ -352,7 +352,7 @@ export default function SideBarWithHeader({ children }) {
                     {/* LOGOUT */}
                     <List>
                         <Link
-                            to="/user/preference/1"
+                            to="/user/profile/1"
                             style={{ textDecoration: "none", color: "inherit" }}
                             onClick={() => setOpen(false)}
                         >

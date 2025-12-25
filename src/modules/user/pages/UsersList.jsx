@@ -11,13 +11,11 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import DeleteIcon from "@mui/icons-material/Delete";
 
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 import DataTable from "../../../components/common/table/DataTable";
-import UserDrawer from "./UserDrawer";
+import UserDrawer from "../../../components/user/UserDrawer";
 import useCommon from "../../../hooks/useCommon";
 import useUser from "../../../hooks/useUser";
 import useRole from "../../../hooks/useRole";

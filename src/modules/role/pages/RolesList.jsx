@@ -8,7 +8,7 @@ import { fetchAllPermissions } from "../../../redux/slices/adminSlice";
 
 import useRole from "../../../hooks/useRole";
 import DataTable from "../../../components/common/table/DataTable";
-import RoleDrawer from "./RoleDrawer";
+import RoleDrawer from "../../../components/role/RoleDrawer";
 import { fetchRolePermissionsById } from "../../../redux/slices/roleSlice";
 import { errorValidation } from "../../../utils/resolver.utils";
 import { useAdmin } from "../../../hooks/useAdmin";
