@@ -5,19 +5,19 @@ import { ProtectedRoute, RequireRole } from "./components/protectedRoute/Protect
 import AppLayout from "./components/layout/AppLayout";
 import AuthLayout from "./components/layout/AuthLayout";
 
-import Dashboard from "./pages/dashboard/Dashboard";
 import LoginPage from "./pages/authmanagement/login/LoginPage";
 import UnauthorizedPage from "./pages/authmanagement/unauthorized/UnauthorizedPage";
 
 import { useAdmin } from "./hooks/useAdmin";
 import { useAuth } from "./hooks/useAuth";
 import { httpClient } from "./apiClient/httpClient";
-import CoursesList from "./pages/coursemanagement/courses/coursesList/CoursesList";
-import CourseView from "./pages/coursemanagement/courses/courseView/CourseView";
-import CourseEdit from "./pages/coursemanagement/courses/courseEdit/CourseEdit";
+import CoursesList from "./modules/course/pages/CoursesList";
+import CourseView from "./modules/course/pages/CourseView";
+import CourseEdit from "./modules/course/pages/CourseEdit";
 import useCommon from "./hooks/useCommon";
 import UserManagement from "./pages/usermanagement/UserManagement";
-import UserProfile from "./pages/usermanagement/user/UserProfile";
+import AdminDashboard from "./modules/dashboard/pages/AdminDashBoard";
+import UserPreference from "./modules/user/pages/UserPreference";
 
 export default function App() {
   const { setPermissionsAPI } = useAdmin();
@@ -27,7 +27,6 @@ export default function App() {
   const hasFetched = useRef(false);
 
   useEffect(() => {
-    showLoader("Validating Permission");
     if (!isAuthenticated) {
       setIsRouteReady(true); // login page must be visible
       return;
@@ -35,7 +34,7 @@ export default function App() {
     // Only call API once
     if (isAuthenticated && !hasFetched.current) {
       hasFetched.current = true;
-
+      showLoader("Validating Permission");
       httpClient.fetchPermissionByUserId(1).then((response) => {
         if (response?.data?.statusCode === 200 && response?.data?.error === false) {
           const res = response.data.response;
@@ -68,7 +67,7 @@ export default function App() {
             element={
               <AppLayout title="Dashboard" titleDescription="Get a centralized overview of system activities, user engagement, and key metrics to monitor and manage the platform effectively.">
                 <RequireRole module="Dashboard">
-                  <Dashboard />
+                  <AdminDashboard />
                 </RequireRole>
               </AppLayout>
             }
@@ -124,10 +123,10 @@ export default function App() {
 
         <Route element={<ProtectedRoute />}>
           <Route
-            path="/user/profile/:id"
+            path="user/preference/:id"
             element={
-              <AppLayout title="User Profile" titleDescription="Manage platform users efficiently by creating, updating, assigning roles, and controlling access permissions across the system.">
-                <UserProfile />
+              <AppLayout title="User Preference" titleDescription="Manage platform users efficiently by creating, updating, assigning roles, and controlling access permissions across the system.">
+                <UserPreference />
               </AppLayout>
             }
           />

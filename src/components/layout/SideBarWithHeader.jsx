@@ -113,7 +113,7 @@ export default function SideBarWithHeader({ children }) {
         navigate("/login");
     };
     const handleProfile = () => {
-
+        navigate("/user/preference/1");
     }
     // Auto expand the group of active child
     React.useEffect(() => {
@@ -351,14 +351,40 @@ export default function SideBarWithHeader({ children }) {
 
                     {/* LOGOUT */}
                     <List>
-                        <ListItem disablePadding>
-                            <ListItemButton onClick={handleProfile}>
-                                <ListItemIcon sx={{ color: "white" }}>
-                                    < Person2Icon />
-                                </ListItemIcon>
-                                <ListItemText primary="Profiler" />
-                            </ListItemButton>
-                        </ListItem>
+                        <Link
+                            to="/user/preference/1"
+                            style={{ textDecoration: "none", color: "inherit" }}
+                            onClick={() => setOpen(false)}
+                        >
+                            <ListItem disablePadding>
+                                <ListItemButton
+                                    sx={{
+                                        backgroundColor: false
+                                            ? "rgba(255,255,255,0.9)"
+                                            : "transparent",
+                                        color: false ? "#000" : "#fff",
+                                        borderLeft: false
+                                            ? "4px solid #fff"
+                                            : "4px solid transparent",
+                                        "&:hover": {
+                                            backgroundColor: false
+                                                ? "rgba(255,255,255,0.9)"
+                                                : "rgba(255,255,255,0.12)",
+                                        },
+                                    }}
+                                >
+                                    <ListItemIcon
+                                        sx={{
+                                            color: false ? "#000" : "#fff",
+                                            minWidth: 40,
+                                        }}
+                                    >
+                                        < Person2Icon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="User Preference" />
+                                </ListItemButton>
+                            </ListItem>
+                        </Link>
                         <ListItem disablePadding>
                             <ListItemButton onClick={handleLogout}>
                                 <ListItemIcon sx={{ color: "white" }}>

@@ -1,4 +1,5 @@
 import Dashboard from "../pages/dashboard/Dashboard";
+import { AdminDashboard, StudentDashboard } from "../modules/dashboard";
 import LoginPage from "../pages/authmanagement/login/LoginPage";
 import UnauthorizedPage from "../pages/authmanagement/unauthorized/UnauthorizedPage";
 
@@ -23,5 +24,20 @@ export const routesConfig = [
         layout: "app",
         module: "dashboard",
         roleRequired: true
+    }
+    ,
+    {
+        path: "/admin-dashboard",
+        element: <AdminDashboard />,
+        layout: "app",
+        module: "dashboard",
+        roleRequired: true,
+    },
+    {
+        path: "/student-dashboard",
+        element: <StudentDashboard />,
+        layout: "app",
+        module: "dashboard",
+        roleRequired: true,
     }
 ];

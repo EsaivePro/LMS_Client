@@ -12,11 +12,11 @@ import topics from "../slices/topicsSlice";
 import lessons from "../slices/lessonsSlice";
 import users from "../slices/userSlice";
 import role from "../slices/roleSlice";
+import dashboard from "../slices/dashboardSlice";
 
 import { setAxiosStore } from "../../apiClient/apiStoreProvider";
 
-const rootReducer = combineReducers({ ui, auth, courses, permission, common, admin, topics, lessons, users, role });
-
+const rootReducer = combineReducers({ ui, dashboard, auth, courses, permission, common, admin, topics, lessons, users, role, dashboard });
 const persistConfig = {
   key: "root",
   storage,
