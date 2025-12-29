@@ -127,9 +127,10 @@ const CurriculumView = ({
                         {/* ---------- LESSON LIST ---------- */}
                         <AccordionDetails sx={{ p: 0 }}>
                             {topic.lessons.map((lesson, i) => {
-                                const lp = localProgress[lesson.id] || {};
                                 const isSelected = selectedLesson?.id === lesson.id;
                                 const duration = secondsToTime(lesson.duration || 0);
+                                const percent = lesson.progress_percent ?? lesson.progressPercent ?? 0;
+                                const isCompleted = lesson.is_completed ?? lesson.isCompleted ?? false;
 
                                 return (
                                     <React.Fragment key={lesson.id}>
@@ -206,15 +207,18 @@ const CurriculumView = ({
                                                 </Box>
                                             </Stack>
 
-                                            {/* RIGHT: COMPLETION ICON */}
-                                            {lp.completed && (
-                                                <CheckCircleIcon
-                                                    sx={{
-                                                        fontSize: 22,
-                                                        color: "var(--primaryColor)",
-                                                    }}
-                                                />
-                                            )}
+                                            {/* RIGHT: COMPLETION / PERCENT */}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <Typography sx={{ fontSize: 13, color: '#666' }}>{percent}%</Typography>
+                                                {isCompleted && (
+                                                    <CheckCircleIcon
+                                                        sx={{
+                                                            fontSize: 22,
+                                                            color: "var(--primaryColor)",
+                                                        }}
+                                                    />
+                                                )}
+                                            </Box>
                                         </Box>
 
                                         {/* Divider Between Lessons */}

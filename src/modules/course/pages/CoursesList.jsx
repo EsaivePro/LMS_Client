@@ -17,7 +17,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
-import { setContainerTitle } from "../../../redux/slices/uiSlice";
 import GlobalAlert from "../../../components/common/alert/GlobalAlert";
 import { useNavigate } from "react-router-dom";
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
@@ -28,10 +27,18 @@ export default function CoursesList() {
   const navigate = useNavigate();
   const { allCourses } = useCourseCategory();
   useEffect(() => {
-    dispatch(setContainerTitle("Course"));
-    if (allCourses.length === 0)
-      dispatch(fetchCourses());
-  }, [dispatch]);
+    const loadCourses = async () => {
+      if (allCourses.length === 0) {
+        try {
+          await dispatch(fetchCourses()).unwrap();
+        } catch (err) {
+          // optional: handle load error
+        }
+      }
+    };
+
+    loadCourses();
+  }, [allCourses]);
 
   const [open, setOpen] = useState(false);
   const [alert, setAlert] = useState({ open: false, type: "", message: "" });

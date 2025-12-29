@@ -69,7 +69,7 @@ const commonSlice = createSlice({
     builder.addMatcher(
       (action) => action.type.endsWith('/pending'),
       (state) => {
-        state.loadingOverlay = true;
+        // state.loadingOverlay = false;
       }
     );
     builder.addMatcher(

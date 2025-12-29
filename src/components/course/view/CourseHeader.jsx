@@ -24,7 +24,8 @@ const CourseHeader = ({
     total,
     showMenuButton = false,
     onMenuClick = () => { },
-    drawerWidth
+    drawerWidth,
+    courseProgress
 }) => {
 
     const isMobile = useMediaQuery("(max-width: 900px)");
@@ -91,7 +92,7 @@ const CourseHeader = ({
                         <Box sx={{ position: "relative", display: "inline-flex" }}>
                             <CircularProgress
                                 variant="determinate"
-                                value={percent}
+                                value={courseProgress?.progress_percent || 0}
                                 size={42}
                                 thickness={3}
                                 sx={{ color: "var(--primaryColor)" }}
@@ -116,7 +117,7 @@ const CourseHeader = ({
                                 Your progress
                             </Typography>
                             <Typography sx={{ fontSize: 12, color: "#d1d1d1" }}>
-                                {completed} of {total} complete
+                                {courseProgress?.completed_lessons || 0} of {courseProgress?.total_lessons || 0} complete
                             </Typography>
                         </Box>
                     </Stack>

@@ -16,6 +16,8 @@ const drawerWidth = 360;
 
 export default function CourseLayoutDrawer({
     selectedLesson,
+    courseProgress,
+    selectedLessonProgress,
     signedUrl,
     loadingSignedUrl,
     user,
@@ -45,8 +47,7 @@ export default function CourseLayoutDrawer({
     const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
     const drawerContent = (
-        <Box sx={{ height: "100%", overflowY: "auto" }}>
-            <Toolbar /> {/* Space under header */}
+        <Box sx={{ height: "100%", overflowY: "auto", mt: 8 }}>
             <CurriculumView {...curriculumProps} />
         </Box>
     );
@@ -68,6 +69,7 @@ export default function CourseLayoutDrawer({
                 showMenuButton={isMobile}
                 onMenuClick={handleDrawerToggle}
                 drawerWidth={drawerWidth}
+                courseProgress={courseProgress}
             />
 
             <Box sx={{ display: "flex", width: "100%" }}>

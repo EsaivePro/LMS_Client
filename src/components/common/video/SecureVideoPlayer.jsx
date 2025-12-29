@@ -22,6 +22,7 @@ import "./secureVideo.css";
 
 export default function SecureVideoPlayer({
     signedUrl,
+    selectedLesson,
     user,
     onNext,
     onPrevious,
@@ -35,7 +36,7 @@ export default function SecureVideoPlayer({
     const overlayTimer = useRef(null);
 
     // MAIN STATES
-    const [paused, setPaused] = useState(false);
+    const [paused, setPaused] = useState(true);
     const [showOverlay, setShowOverlay] = useState(true);
     const [toastMessage, setToastMessage] = useState("");
     const [toastOpen, setToastOpen] = useState(false);
@@ -78,12 +79,35 @@ export default function SecureVideoPlayer({
             document.removeEventListener("fullscreenchange", handler);
     }, []);
 
+    // Ref to indicate that a navigation action (next/previous) requested autoplay
+    const playAfterNavigationRef = useRef(false);
+    const initialPositionRef = useRef(true);
+
     // VIDEO INITIALIZATION
     useEffect(() => {
         const v = videoRef.current;
         if (!v) return;
 
-        v.onloadedmetadata = () => setDuration(v.duration);
+        v.onloadedmetadata = () => {
+            setDuration(v.duration);
+            if (initialPositionRef.current) {
+                initialPositionRef.current = false;
+                // determine initial position from server-provided lesson data
+                try {
+                    const pos = Number(selectedLesson?.watched_seconds ?? selectedLesson?.watchedSeconds ?? 0) || 0;
+                    if (pos > 0 && pos < v.duration) {
+                        v.currentTime = Math.min(pos, v.duration - 0.1);
+                        setProgress(v.currentTime);
+                    }
+                } catch (e) { }
+            }
+
+            if (playAfterNavigationRef.current) {
+                v.play().then(() => setPaused(false)).catch(() => { /* autoplay blocked */ });
+                playAfterNavigationRef.current = false;
+            }
+        };
+
         v.ontimeupdate = () => setProgress(v.currentTime);
 
         v.onpause = () => setPaused(true);
@@ -92,7 +116,7 @@ export default function SecureVideoPlayer({
         v.onended = () => {
             if (nextDisabled) onNext?.();
         };
-    }, [onNext, nextDisabled]);
+    }, [onNext, nextDisabled, signedUrl, selectedLesson]);
 
     // RANDOM WATERMARK POSITION
     const [wmPos, setWmPos] = useState({ x: 50, y: 50 });
@@ -260,11 +284,17 @@ export default function SecureVideoPlayer({
                     break;
 
                 case "arrowleft":
-                    if (previousDisabled) onPrevious?.();
+                    if (previousDisabled) {
+                        playAfterNavigationRef.current = true;
+                        onPrevious?.();
+                    }
                     break;
 
                 case "arrowright":
-                    if (nextDisabled) onNext?.();
+                    if (nextDisabled) {
+                        playAfterNavigationRef.current = true;
+                        onNext?.();
+                    }
                     break;
 
                 case "f":
@@ -322,7 +352,6 @@ export default function SecureVideoPlayer({
             <video
                 ref={videoRef}
                 src={signedUrl}
-                autoPlay
                 playsInline
                 disablePictureInPicture
                 controls={false}
@@ -355,7 +384,10 @@ export default function SecureVideoPlayer({
                     <Tooltip title="Previous">
                         <IconButton
                             disabled={!previousDisabled}
-                            onClick={onPrevious}
+                            onClick={() => {
+                                playAfterNavigationRef.current = true;
+                                onPrevious?.();
+                            }}
                             sx={{
                                 pointerEvents: "auto",
                                 opacity: previousDisabled ? 1 : 0.3,
@@ -384,7 +416,10 @@ export default function SecureVideoPlayer({
                     <Tooltip title="Next">
                         <IconButton
                             disabled={!nextDisabled}
-                            onClick={onNext}
+                            onClick={() => {
+                                playAfterNavigationRef.current = true;
+                                onNext?.();
+                            }}
                             sx={{
                                 pointerEvents: "auto",
                                 opacity: nextDisabled ? 1 : 0.3,

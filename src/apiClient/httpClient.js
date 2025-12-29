@@ -23,10 +23,13 @@ export const httpClient = {
 
     // Course APIs
     fetchAllCourses: async () => axiosInstance.get(API_ENDPOINTS.GET_ALL_COURSES),
-    fetchCourseDeatils: async (courseid) => axiosInstance.get(API_ENDPOINTS.GET_COURSE_DETAILS + "/" + courseid),
+    fetchCourseDeatils: async (data) => axiosInstance.post(API_ENDPOINTS.GET_COURSE_DETAILS, data),
     createCourse: async (data) => axiosInstance.post(API_ENDPOINTS.CREATE_COURSE, data),
     updateCourse: async (id, data) => axiosInstance.put(API_ENDPOINTS.UPDATE_COURSE + "/" + id, data),
     deleteCourse: async (id) => axiosInstance.delete(API_ENDPOINTS.DELETE_COURSE + "/" + id),
+
+    updateLessonProgress: async (data) => axiosInstance.patch(API_ENDPOINTS.UPDATE_LESSON_PROGRESS, data),
+    updateCourseProgress: async (data) => axiosInstance.patch(API_ENDPOINTS.UPDATE_COURSE_PROGRESS, data),
 
     // Topic APIs
     createTopic: async (data) => axiosInstance.post(API_ENDPOINTS.CREATE_TOPIC, data),

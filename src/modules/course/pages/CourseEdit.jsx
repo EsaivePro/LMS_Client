@@ -123,11 +123,15 @@ const CourseEdit = () => {
             setCurriculum(found?.topics || []);
         } else if (!hasFetched.current) {
             hasFetched.current = true;
-            dispatch(fetchCourseDeatils(courseId)).then((res) => {
-                if (!errorValidation(res)) {
-                    // Data will be loaded into Redux
+            (async () => {
+                try {
+                    await dispatch(
+                        fetchCourseDeatils({ course_id: courseId, user_id: user ? user.id : null })
+                    ).unwrap();
+                } catch (e) {
+                    // optional: handle error (silent for now)
                 }
-            });
+            })();
         }
     }, [id, courseDetails, getCourseById, dispatch]);
 

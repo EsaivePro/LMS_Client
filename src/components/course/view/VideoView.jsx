@@ -46,6 +46,7 @@ const VideoView = ({
                         ) : (
                             <SecureVideoPlayer
                                 signedUrl={signedUrl || selectedLesson.video_url}
+                                selectedLesson={selectedLesson}
                                 user={user}
                                 onPrevious={goToPrev}
                                 onNext={goToNext}

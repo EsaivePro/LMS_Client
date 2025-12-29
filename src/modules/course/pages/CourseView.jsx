@@ -17,6 +17,8 @@ import {
     Button,
     Typography,
     useMediaQuery,
+    Dialog,
+    DialogContent,
 } from "@mui/material";
 
 import { useParams } from "react-router-dom";
@@ -27,6 +29,7 @@ import useCourseCategory from "../../../hooks/useCourseCategory";
 
 // === IMPORT NEW COMPONENTS ===
 import CourseLayoutDrawer from "../../../components/course/CourseLayoutDrawer";
+import { errorValidation } from "../../../utils/resolver.utils";
 
 // constants
 const LOCAL_PROGRESS_KEY = "lms_progress_v1";
@@ -34,9 +37,7 @@ const LOCAL_ANALYTICS_KEY = "lms_analytics_v1";
 const LOCAL_UI_KEY = "lms_ui_v1";
 const HEADER_HEIGHT = 112;
 
-const completed = 300;
-const total = 773;
-const percent = Math.round((completed / total) * 100);
+const percent = Math.round((400 / 99) * 100);
 
 const CourseView = () => {
     const isMobile = useMediaQuery("(max-width:900px)");
@@ -44,17 +45,22 @@ const CourseView = () => {
     const dispatch = useDispatch();
     const { id } = useParams();
     const { user } = useAuth();
-    const { getCourseById, courseDetails } = useCourseCategory();
+    const { getCourseById, courseDetails, updateLessonProgress } = useCourseCategory();
 
     // Refs
     const hasFetched = useRef(false);
+    const lessonStartedRef = useRef(false);
     const playerCardRef = useRef(null);
     const curriculumRef = useRef(null);
     const miniPlayerTimerRef = useRef(null);
 
     // States
     const [curriculum, setCurriculum] = useState([]);
+    const [courseProgress, setCourseProgress] = useState([]);
+    const [completed, setCompleted] = useState(0);
+    const [total, setTotal] = useState(0);
     const [selectedLesson, setSelectedLesson] = useState(null);
+    const [selectedLessonProgress, setSelectedLessonProgress] = useState({ progress_percent: 0, is_completed: false });
     const [signedUrl, setSignedUrl] = useState(null);
     const [topicName, setTopicName] = useState("");
 
@@ -156,22 +162,62 @@ const CourseView = () => {
             });
 
             const topics = found.topics || [];
+            setCourseProgress(found.courseProgress || {});
+            setIsFav(found.courseProgress?.is_favorite || false);
             setCurriculum(topics);
+            setCompleted((topics || []).reduce((acc, topic) => {
+                const lessons = topic?.lessons || [];
+                return acc + lessons.filter((l) => l.is_completed).length;
+            }, 0));
+            setTotal((topics || []).reduce((acc, topic) => {
+                const lessons = topic?.lessons || [];
+                return acc + lessons.length;
+            }, 0));
 
             if (!selectedLesson && topics.length > 0) {
-                const firstTopic = topics[0];
-                const firstLesson = firstTopic?.lessons?.[0];
+                // Find first lesson that is not completed (is_completed === false)
+                let chosenTopic = null;
+                let chosenLesson = null;
 
-                if (firstTopic && firstLesson) {
-                    setTopicName(firstTopic.title || "");
-                    setSelectedLesson(firstLesson);
-                    setSignedUrl(firstLesson.video_url || null);
-                    setExpandedPanels(new Set([firstTopic.id]));
+                for (let t = 0; t < topics.length; t++) {
+                    const topic = topics[t];
+                    const lessons = topic?.lessons || [];
+                    for (let l = 0; l < lessons.length; l++) {
+                        const lesson = lessons[l];
+                        if (lesson && lesson.is_completed === false) {
+                            chosenTopic = topic;
+                            chosenLesson = lesson;
+                            break;
+                        }
+                    }
+                    if (chosenLesson) break;
+                }
+
+                // Fallback to the very first lesson if no uncompleted lesson found
+                if (!chosenLesson) {
+                    const firstTopic = topics[0];
+                    chosenTopic = firstTopic;
+                    chosenLesson = firstTopic?.lessons?.[0] || null;
+                }
+
+                if (chosenTopic && chosenLesson) {
+                    setTopicName(chosenTopic.title || "");
+                    setSelectedLesson(chosenLesson);
+                    setSignedUrl(chosenLesson.video_url || null);
+                    setExpandedPanels(new Set([chosenTopic.id]));
                 }
             }
         } else if (!hasFetched.current) {
             hasFetched.current = true;
-            dispatch(fetchCourseDeatils(courseId));
+            (async () => {
+                try {
+                    await dispatch(
+                        fetchCourseDeatils({ course_id: courseId, user_id: user ? user.id : null })
+                    ).unwrap();
+                } catch (e) {
+                    // optional: handle error (silent for now)
+                }
+            })();
         }
     }, [id, courseDetails, dispatch, getCourseById]);
 
@@ -373,16 +419,86 @@ const CourseView = () => {
         if (!video) return;
 
         let lastSave = 0;
+        lessonStartedRef.current = true;
+
+        const pos = locateLesson(selectedLesson.id);
+        const topicId = pos ? (curriculum[pos.topicIndex]?.id || 0) : 0;
 
         const onTime = () => {
             if (!selectedLesson) return;
 
             const current = Math.floor(video.currentTime || 0);
             const duration = Math.floor(video.duration || 0);
-
-            if (current - lastSave >= 5) {
+            const comDuration = Math.floor(duration * 0.95);
+            lastSave = current <= 5 ? 0 : lastSave;
+            if (lessonStartedRef?.current === true && user && user?.id && courseDetail?.id && current > (selectedLesson?.watched_seconds || 0) && selectedLesson?.is_completed === false) {
+                lessonStartedRef.current = false;
+                (async () => {
+                    try {
+                        await updateLessonProgress({
+                            user_id: user.id,
+                            course_id: courseDetail.id,
+                            topic_id: topicId,
+                            lesson_id: selectedLesson.id,
+                            watched_seconds: current,
+                            total_seconds: duration,
+                            total_topics: curriculum.length,
+                            total_lessons: total,
+                            completed_lessons: completed,
+                        });
+                    } catch (e) { /* ignore errors for now */ }
+                })();
+            }
+            else if ((current - lastSave > 60) && current > selectedLesson?.watched_seconds && selectedLesson?.is_completed === false) {
                 lastSave = current;
+                try {
+                    if (user && user.id && courseDetail?.id) {
+                        (async () => {
+                            try {
+                                await updateLessonProgress({
+                                    user_id: user.id,
+                                    course_id: courseDetail.id,
+                                    topic_id: topicId,
+                                    lesson_id: selectedLesson.id,
+                                    watched_seconds: current,
+                                    total_seconds: duration,
+                                    total_topics: curriculum.length,
+                                    total_lessons: total,
+                                    completed_lessons: completed,
+                                });
+                            } catch (e) { /* ignore errors for now */ }
+                        })();
+                    }
+                } catch (e) { }
+            }
 
+            // Update local progress
+            persistAnalytics((prev) => ({
+                ...prev,
+                totalWatchSec: prev.totalWatchSec + 5,
+            }));
+            if (duration > 0 && current / duration >= 0.9) {
+                persistProgress((prev) => {
+                    const updated = { ...prev };
+                    const p = updated[selectedLesson.id] || {
+                        watchedSeconds: 0,
+                        completed: false,
+                        lastPosition: 0,
+                    };
+                    if (!p.completed) {
+                        p.completed = true;
+                        p.watchedSeconds = duration;
+                        p.lastPosition = duration;
+
+                        persistAnalytics((a) => ({
+                            ...a,
+                            lessonsCompleted: a.lessonsCompleted + 1,
+                        }));
+                    }
+                    updated[selectedLesson.id] = p;
+                    return updated;
+                });
+            } else {
                 persistProgress((prev) => {
                     const updated = { ...prev };
                     const p = updated[selectedLesson.id] || {
@@ -396,42 +512,32 @@ const CourseView = () => {
                     updated[selectedLesson.id] = p;
                     return updated;
                 });
-
-                persistAnalytics((prev) => ({
-                    ...prev,
-                    totalWatchSec: prev.totalWatchSec + 5,
-                }));
-            }
-
-            if (duration > 0 && current / duration >= 0.9) {
-                persistProgress((prev) => {
-                    const updated = { ...prev };
-                    const p = updated[selectedLesson.id] || {
-                        watchedSeconds: 0,
-                        completed: false,
-                        lastPosition: 0,
-                    };
-
-                    if (!p.completed) {
-                        p.completed = true;
-                        p.watchedSeconds = duration;
-                        p.lastPosition = duration;
-
-                        persistAnalytics((a) => ({
-                            ...a,
-                            lessonsCompleted: a.lessonsCompleted + 1,
-                        }));
-                    }
-
-                    updated[selectedLesson.id] = p;
-                    return updated;
-                });
             }
         };
 
         const onEnded = () => {
             setAutoplayOverlay({ show: true, seconds: 5 });
             setAutoplayCountdown(5);
+            if (!selectedLesson) return;
+            if (selectedLesson?.is_completed === false) {
+                const current = Math.floor(video.currentTime || 0);
+                const duration = Math.floor(video.duration || 0);
+                (async () => {
+                    try {
+                        await updateLessonProgress({
+                            user_id: user.id,
+                            course_id: courseDetail.id,
+                            topic_id: topicId,
+                            lesson_id: selectedLesson.id,
+                            watched_seconds: current,
+                            total_seconds: duration,
+                            total_topics: curriculum.length,
+                            total_lessons: total,
+                            completed_lessons: completed,
+                        });
+                    } catch (e) { /* ignore errors for now */ }
+                })();
+            }
         };
 
         video.addEventListener("timeupdate", onTime);
@@ -508,6 +614,7 @@ const CourseView = () => {
 
             <CourseLayoutDrawer
                 selectedLesson={selectedLesson}
+                courseProgress={courseProgress}
                 signedUrl={signedUrl}
                 // loadingSignedUrl={loadingSignedUrl}
                 user={user}
@@ -533,6 +640,7 @@ const CourseView = () => {
                     expandedPanels,
                     setExpandedPanels,
                     selectedLesson,
+                    selectedLessonProgress,
                     openLesson,
                     localProgress,
                     parseDurationToSeconds,
@@ -546,61 +654,64 @@ const CourseView = () => {
 
             {/* AUTOPLAY OVERLAY */}
             {autoplayOverlay.show && (
-                <Box
-                    sx={{
-                        position: "fixed",
-                        inset: 0,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        zIndex: 1500,
-                        pointerEvents: "none",
+                <Dialog
+                    open={autoplayOverlay.show}
+                    onClose={() => {
+                        setAutoplayOverlay({ show: false, seconds: 0 });
+                        setAutoplayCountdown(0);
+                    }}
+                    maxWidth="xs"
+                    fullWidth
+                    BackdropProps={{
+                        sx: {
+                            backgroundColor: "rgba(0,0,0,0.6)", // dark backdrop
+                        },
+                    }}
+                    PaperProps={{
+                        sx: {
+                            borderRadius: 3,
+                            p: 2,
+                        },
                     }}
                 >
-                    <Paper
-                        elevation={10}
-                        sx={{
-                            pointerEvents: "auto",
-                            width: isSmall ? 300 : 520,
-                            p: 2,
-                            borderRadius: 2,
-                            display: "flex",
-                            gap: 2,
-                            alignItems: "center",
-                        }}
-                    >
-                        <Box sx={{ flex: 1 }}>
-                            <Typography variant="h6">Up Next</Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                Next lesson will start in {autoplayCountdown}s
-                            </Typography>
-                        </Box>
+                    <DialogContent>
+                        <Stack spacing={2}>
+                            <Box>
+                                <Typography variant="h6" fontWeight={600}>
+                                    Up Next
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Next lesson will start in {autoplayCountdown}s
+                                </Typography>
+                            </Box>
 
-                        <Stack direction="row" spacing={1}>
-                            <Button
-                                variant="contained"
-                                onClick={() => {
-                                    setAutoplayOverlay({ show: false, seconds: 0 });
-                                    setAutoplayCountdown(0);
-                                }}
-                            >
-                                Cancel
-                            </Button>
+                            <Stack direction="row" spacing={1} justifyContent="flex-end">
+                                <Button
+                                    variant="outlined"
+                                    onClick={() => {
+                                        setAutoplayOverlay({ show: false, seconds: 0 });
+                                        setAutoplayCountdown(0);
+                                    }}
+                                >
+                                    Cancel
+                                </Button>
 
-                            <Button
-                                variant="outlined"
-                                onClick={() => {
-                                    setAutoplayOverlay({ show: false, seconds: 0 });
-                                    setAutoplayCountdown(0);
-                                    goToNext();
-                                }}
-                            >
-                                Skip Now
-                            </Button>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => {
+                                        setAutoplayOverlay({ show: false, seconds: 0 });
+                                        setAutoplayCountdown(0);
+                                        goToNext();
+                                    }}
+                                >
+                                    Skip Now
+                                </Button>
+                            </Stack>
                         </Stack>
-                    </Paper>
-                </Box>
+                    </DialogContent>
+                </Dialog>
             )}
+
         </Box>
     );
 };

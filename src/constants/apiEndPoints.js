@@ -18,6 +18,9 @@ export const API_ENDPOINTS = {
     UPDATE_COURSE: "/courses/updateCourse",
     DELETE_COURSE: "/courses/deleteCourse",
 
+    UPDATE_LESSON_PROGRESS: "/courses/topic/lesson/progress",
+    UPDATE_COURSE_PROGRESS: "/courses/course/progress",
+
     CREATE_TOPIC: "/courses/topic/create",
     UPDATE_TOPIC: "/courses/topic/update",
     DELETE_TOPIC: "/courses/topic/delete",

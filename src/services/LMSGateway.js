@@ -1,7 +1,7 @@
 import { httpClient } from "../apiClient/httpClient";
 import useApiHandler from "../utils/apiHandler";
 
-const { apiHandler } = useApiHandler();
+const { apiHandler, apiHandlerWithoutLoader } = useApiHandler();
 
 export async function loginUserValidation(dispatch, data) {
     return await apiHandler(dispatch, httpClient.loginUser, data);
@@ -67,8 +67,8 @@ export async function deleteUser(dispatch, id) {
     return await apiHandler(dispatch, httpClient.deleteUser, id);
 }
 
-export async function fetchCourseDeatils(dispatch, courseid) {
-    return await apiHandler(dispatch, httpClient.fetchCourseDeatils, courseid);
+export async function fetchCourseDeatils(dispatch, data) {
+    return await apiHandler(dispatch, httpClient.fetchCourseDeatils, data);
 }
 
 export async function createCourse(dispatch, data) {
@@ -105,4 +105,12 @@ export async function updateLesson(dispatch, id, data) {
 
 export async function deleteLesson(dispatch, id) {
     return await apiHandler(dispatch, httpClient.deleteLesson, id);
+}
+
+export async function updateLessonProgress(dispatch, data) {
+    return await apiHandlerWithoutLoader(dispatch, httpClient.updateLessonProgress, data);
+}
+
+export async function updateCourseProgress(dispatch, data) {
+    return await apiHandler(dispatch, httpClient.updateCourseProgress, data);
 }

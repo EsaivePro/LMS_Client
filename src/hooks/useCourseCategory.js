@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setCourseDetail, setCurrentEditingCourseId, fetchCourses } from "../redux/slices/coursesSlice";
+import { setCourseDetail, setCurrentEditingCourseId, fetchCourses, updateLessonProgress, updateCourseProgress } from "../redux/slices/coursesSlice";
 
 const useCourseCategory = () => {
     const dispatch = useDispatch();
@@ -23,13 +23,34 @@ const useCourseCategory = () => {
 
     // Load courses helper
     const loadCourses = useCallback(() => {
-        dispatch(fetchCourses());
+        // dispatch(fetchCourses());
     }, [dispatch]);
 
     // Optionally auto-load on first use (can be removed if caller wants explicit control)
     useEffect(() => {
-        if (!allCourses || allCourses.length === 0) loadCourses();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+        if (!allCourses || allCourses.length === 0) {
+
+        }
+    }, [allCourses, loadCourses]);
+
+    // Dispatch wrappers for progress updates
+    const updateLessonProgressInCourse = useCallback(async (data) => {
+        try {
+            const res = await dispatch(updateLessonProgress(data)).unwrap();
+            return res;
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, [dispatch]);
+
+    const updateCourseProgressInCourse = useCallback(async (data) => {
+        try {
+            const res = await dispatch(updateCourseProgress(data)).unwrap();
+            return res;
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, [dispatch]);
 
     return useMemo(() => ({
         allCourses: allCourses || [],
@@ -43,6 +64,8 @@ const useCourseCategory = () => {
         coursesLoading,
         coursesError,
         updateCourseDetail: (course) => dispatch(setCourseDetail(course)),
+        updateLessonProgress: updateLessonProgressInCourse,
+        updateCourseProgress: updateCourseProgressInCourse,
     }), [allCourses, courseDetails, topicsInCourse, lessonsInTopics, currentEditingCourseId, getCourseById, setEditingCourse, dispatch]);
 };
 

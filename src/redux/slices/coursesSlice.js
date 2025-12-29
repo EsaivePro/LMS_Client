@@ -7,7 +7,9 @@ import {
   createTopic,
   updateTopic as updateTopicAPI,
   deleteTopic as deleteTopicAPI,
-  fetchCourseDeatils as fetchCourseDeatilsAPI
+  fetchCourseDeatils as fetchCourseDeatilsAPI,
+  updateLessonProgress as updateLessonProgressAPI,
+  updateCourseProgress as updateCourseProgressAPI
 } from "../../services/LMSGateway";
 import { addTopic, updateTopic as topicUpdateThunk, deleteTopic as topicDeleteThunk } from "./topicsSlice";
 import { addLesson, updateLesson as lessonUpdateThunk, deleteLesson as lessonDeleteThunk } from "./lessonsSlice";
@@ -22,8 +24,8 @@ export const fetchCourses = createAsyncThunk(
 
 export const fetchCourseDeatils = createAsyncThunk(
   "courses/getCourseDetails",
-  async (courseid, { dispatch }) => {
-    const res = fetchCourseDeatilsAPI(dispatch, courseid);
+  async (data, { dispatch }) => {
+    const res = fetchCourseDeatilsAPI(dispatch, data);
     return res;
   }
 );
@@ -48,6 +50,22 @@ export const deleteCourse = createAsyncThunk(
   "courses/delete",
   async (id, { dispatch }) => {
     const res = deleteCourseAPI(dispatch, id);
+    return res;
+  }
+);
+
+export const updateLessonProgress = createAsyncThunk(
+  "courses/updateLessonProgress",
+  async (data, { dispatch }) => {
+    const res = updateLessonProgressAPI(dispatch, data);
+    return res;
+  }
+);
+
+export const updateCourseProgress = createAsyncThunk(
+  "courses/updateCourseProgress",
+  async (data, { dispatch }) => {
+    const res = updateCourseProgressAPI(dispatch, data);
     return res;
   }
 );
@@ -91,7 +109,7 @@ const courseSlice = createSlice({
 
       /* FETCH */
       .addCase(fetchCourses.pending, (state) => {
-        state.loading = true;
+        // state.loading = true;
       })
       .addCase(fetchCourses.fulfilled, (state, action) => {
         state.loading = false;
@@ -105,7 +123,7 @@ const courseSlice = createSlice({
 
       /* FETCH COURSE DETAILS */
       .addCase(fetchCourseDeatils.pending, (state) => {
-        state.loading = true;
+        // state.loading = true;
       })
       .addCase(fetchCourseDeatils.fulfilled, (state, action) => {
         state.loading = false;
@@ -298,6 +316,78 @@ const courseSlice = createSlice({
             });
           }
         }
+      })
+
+      /* LESSON PROGRESS */
+      .addCase(updateLessonProgress.pending, (state) => {
+        // state.loading = false;
+      })
+      .addCase(updateLessonProgress.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = action?.payload?.data?.error;
+        state.message = action?.payload?.data?.message;
+        if (!(state.error) && !(action?.payload?.isError)) {
+          const courseProgress = action?.payload?.data?.response?.courseProgress;
+          // Update course progress in allCourses
+          if (courseProgress != null) {
+            const courseId = courseProgress?.id || courseProgress?.courseId || courseProgress?.course_id;
+            const dIdx = state.courseDetails.findIndex(c => c.id == courseId || c.courseId == courseId || c.course_id == courseId);
+            if (dIdx !== -1) {
+              state.courseDetails[dIdx].courseProgress = { ...state.courseDetails[dIdx].courseProgress, ...courseProgress };
+            }
+          }
+          // Update lesson progress in courseDetails
+          const updated = action?.payload?.data?.response?.lessonProgress;
+          if (!updated) return;
+          const changeObj = {
+            watched_seconds: updated?.watched_seconds,
+            is_completed: updated?.is_completed,
+            progress_percent: updated?.progress_percent,
+            last_watched_at: updated?.last_watched_at,
+            completed_at: updated?.completed_at,
+            total_seconds: updated?.total_seconds
+          };
+          const lessonId = updated?.lesson_id;
+          const topicId = updated?.topic_id || updated?.topicId;
+          const editingCourseId = updated?.course_id;
+          const courseIdx = state.courseDetails.findIndex(c =>
+            (c.courseId == editingCourseId || c.course_id == editingCourseId || c.id == editingCourseId)
+          );
+          if (courseIdx !== -1) {
+            (state.courseDetails[courseIdx].topics || []).forEach(t => {
+              const lIdx = (t.lessons || []).findIndex(l => l.id == lessonId);
+              if (lIdx !== -1) {
+                t.lessons[lIdx] = { ...t.lessons[lIdx], ...changeObj };
+              }
+            });
+          }
+        }
+      })
+      .addCase(updateLessonProgress.rejected, (state) => {
+        // state.loading = false;
+      })
+
+      /* COURSE PROGRESS */
+      .addCase(updateCourseProgress.pending, (state) => {
+        // state.loading = true;
+      })
+      .addCase(updateCourseProgress.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = action?.payload?.data?.error;
+        state.message = action?.payload?.data?.message;
+        if (!(state.error) && !(action?.payload?.isError)) {
+          const updated = action?.payload?.data?.response || action?.payload?.response || action?.payload;
+          const courseId = updated?.id || updated?.courseId || updated?.course_id;
+          const idx = state.allCourses.findIndex(c => c.id === courseId || c.courseId === courseId || c.course_id === courseId);
+          if (idx !== -1) state.allCourses[idx] = { ...state.allCourses[idx], ...updated };
+          const dIdx = state.courseDetails.findIndex(c => c.id == courseId || c.courseId == courseId || c.course_id == courseId);
+          if (dIdx !== -1) {
+            state.courseDetails[dIdx] = { ...state.courseDetails[dIdx], ...updated, topics: state.courseDetails[dIdx].topics };
+          }
+        }
+      })
+      .addCase(updateCourseProgress.rejected, (state) => {
+        state.loading = false;
       });
   },
 });
