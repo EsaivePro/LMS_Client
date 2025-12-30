@@ -26,7 +26,7 @@ const initialState = {
     module: null,
     pagePermissions: [],
     hasPermissionView: false,
-    permissions: {},
+    permissions: [],
     loading: false,
     error: null,
 };

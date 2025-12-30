@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+
 import {
     Box,
     Typography,
@@ -20,6 +21,11 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import StyleIcon from '@mui/icons-material/Style';
 import useCourseCategory from "../../../hooks/useCourseCategory";
+import useEnrollment from "../../../hooks/useEnrollment";
+import { useAuth } from "../../../hooks/useAuth";
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 // import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 // import MenuBookIcon from "@mui/icons-material/MenuBook";
 // import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
@@ -40,17 +46,12 @@ const fadeUp = keyframes`
 
 function CourseCard({ course, index, width = 300 }) {
     const accent = ACCENTS[index % ACCENTS.length];
+    const navigate = useNavigate();
 
-    const lessons =
-        course.lessons ||
-        (course.topics || []).reduce(
-            (s, t) => s + (t.lessons?.length || 0),
-            0
-        ) ||
-        "87";
+    const lessons = course.lessons || 0;
 
-    const minutes = course.duration || course.minutes || "00:00:00";
-    const progress = course.progress ?? 0; // optional %
+    const minutes = course.duration || "00:00:00";
+    const progress = course.progress ?? 0;
 
     return (
         <Box
@@ -188,6 +189,7 @@ function CourseCard({ course, index, width = 300 }) {
                             backgroundColor: accent,
                         },
                     }}
+                    onClick={() => navigate("/course/view/" + course.id)}
                 >
                     {progress ? "Continue" : "Start"}
                 </Button>
@@ -288,6 +290,7 @@ function CourseCarousel({ title, courses }) {
                     gap: 3,
                     p: 3,
                     pt: 2,
+                    pb: 2,
                     overflowX: "auto",
                     scrollBehavior: "smooth",
                     "&::-webkit-scrollbar": { height: 6 },
@@ -298,14 +301,22 @@ function CourseCarousel({ title, courses }) {
                     backgroundColor: "transparent",
                 }}
             >
-                {courses.map((course, idx) => (
+                {courses.length > 0 ? courses.map((course, idx) => (
                     <CourseCard
                         key={course.id || idx}
                         course={course}
                         index={idx}
                         width={320}
                     />
-                ))}
+                )) : <Box sx={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", minHeight: 150 }}>
+
+                    <Typography variant="h6" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <CollectionsBookmarkIcon color="text.secondary" fontSize="large" />
+                    </Typography>
+                    <Typography variant="h6" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}>
+                        No courses have been assigned yet.
+                    </Typography>
+                </Box>}
             </Box>
         </Box>
     );
@@ -314,26 +325,38 @@ function CourseCarousel({ title, courses }) {
 /* ================== MAIN EXPORT ================== */
 
 export default function CourseWidget({ title }) {
-    const { allCourses, courseDetails, coursesLoading } =
-        useCourseCategory();
+    // use enrollment data for current user instead of global course lists
+    const { enrollmentCoursesByUser, loading: enrollmentLoading } = useEnrollment();
+    const { user } = useAuth();
 
-    const courses =
-        allCourses && allCourses.length ? allCourses : courseDetails;
+    // Map enrollment records to simplified course-like objects for display
+    const courses = useMemo(() => {
+        const rows = (user && enrollmentCoursesByUser && enrollmentCoursesByUser[user.id]) || [];
+        return rows.map((e) => ({
+            id: e.course_id,
+            title: e.title || "Untitled Course",
+            description: e.description || "Untitled description",
+            minutes: e.duration || 0,
+            lessons: e.total_lessons || 0,
+            topics: e.total_topics || [],
+            progress: e.progress_percent || 0,
+        }));
+    }, [enrollmentCoursesByUser, user]);
 
-    if (coursesLoading) {
-        return (
-            <Box
-                sx={{
-                    minHeight: 200,
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                }}
-            >
-                <CircularProgress />
-            </Box>
-        );
-    }
+    // if (enrollmentLoading) {
+    //     return (
+    //         <Box
+    //             sx={{
+    //                 minHeight: 200,
+    //                 display: "flex",
+    //                 justifyContent: "center",
+    //                 alignItems: "center",
+    //             }}
+    //         >
+    //             <CircularProgress />
+    //         </Box>
+    //     );
+    // }
 
     return (
         <Box sx={{ width: "100%" }}>

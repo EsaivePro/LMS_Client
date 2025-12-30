@@ -114,3 +114,15 @@ export async function updateLessonProgress(dispatch, data) {
 export async function updateCourseProgress(dispatch, data) {
     return await apiHandler(dispatch, httpClient.updateCourseProgress, data);
 }
+
+export async function getEnrollmentCourses(dispatch) {
+    return await apiHandler(dispatch, httpClient.getEnrollmentCourses);
+}
+
+export async function courseManualEnrollment(dispatch, data) {
+    return await apiHandler(dispatch, httpClient.courseManualEnrollment, data);
+}
+
+export async function getEnrollmentCoursesByUserId(dispatch, userId) {
+    return await apiHandler(dispatch, httpClient.getEnrollmentCoursesByUserId, userId);
+}

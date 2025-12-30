@@ -7,7 +7,7 @@ export const ProtectedRoute = ({ redirectTo = "/login" }) => {
     return isAuthenticated ? <Outlet /> : <Navigate to={redirectTo} />;
 };
 
-export const RequireRole = ({ module, children }) => {
+export const RequireRole = ({ role, children }) => {
     const { isAuthenticated } = useSelector((s) => s.auth);
     const { permissions } = useSelector((s) => s.admin);
 
@@ -16,7 +16,7 @@ export const RequireRole = ({ module, children }) => {
     useEffect(() => {
         // Not authenticated → redirect handled below
         if (!isAuthenticated) return;
-        if (module == null || module === "") {
+        if (role == null || role === "") {
             setAllowed("");
             return;
         }
@@ -26,18 +26,17 @@ export const RequireRole = ({ module, children }) => {
             return;
         }
 
-        const modulePermission = permissions[module] || [];
-        const hasView = modulePermission.some((p) => p.includes(".view"));
+        const hasView = permissions.some((p) => p?.key?.includes(role));
 
         setAllowed(hasView);
 
-    }, [permissions, module, isAuthenticated]);
+    }, [permissions, role, isAuthenticated]);
 
     // User not logged in
     if (!isAuthenticated) return <Navigate to="/login" />;
 
     // Still loading permissions
-    if (allowed === null) return <div style={{ padding: 20 }}>Checking permissions...</div>;
+    if (allowed === null) return null; //<div style={{ padding: 20 }}>Checking permissions...</div>;
 
     // User unauthorized
     if (!allowed) return <Navigate to="/unauthorized" />;

@@ -18,10 +18,12 @@ import useCommon from "./hooks/useCommon";
 import UserManagement from "./modules/user/pages/UserManagement";
 import AdminDashboard from "./modules/dashboard/pages/AdminDashBoard";
 import UserProfile from "./modules/user/pages/UserProfile";
+import IndividualEnrollment from "./components/enrollment/IndividualEnrollment";
+import EnrollmentBase from "./modules/enrollment/pages/EnrollmentBase";
 
 export default function App() {
   const { setPermissionsAPI } = useAdmin();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { showLoader, hideLoader } = useCommon()
   const [isRouteReady, setIsRouteReady] = useState(false);
   const hasFetched = useRef(false);
@@ -35,9 +37,9 @@ export default function App() {
     if (isAuthenticated && !hasFetched.current) {
       hasFetched.current = true;
       showLoader("Validating Permission");
-      httpClient.fetchPermissionByUserId(1).then((response) => {
+      httpClient.fetchPermissionByUserId(user?.id).then((response) => {
         if (response?.data?.statusCode === 200 && response?.data?.error === false) {
-          const res = response.data.response;
+          const res = response?.data?.response;
           setPermissionsAPI(res); // ⬅ store permissions globally
         }
         setIsRouteReady(true); // ROUTES ARE READY NOW
@@ -59,14 +61,13 @@ export default function App() {
             </AuthLayout>
           }
         />
-        {/* ---------- PROTECTED APP PAGES ---------- */}
+        {/* ---------- PROTECTED APP PAGES WITH REQUIRED ROLE ---------- */}
         <Route element={<ProtectedRoute />}>
-          {/* Dashboard – requires: dashboard.view */}
           <Route
             path="/"
             element={
               <AppLayout title="Dashboard" titleDescription="Get a centralized overview of system activities, user engagement, and key metrics to monitor and manage the platform effectively.">
-                <RequireRole module="Dashboard">
+                <RequireRole role="dashboard.view">
                   <AdminDashboard />
                 </RequireRole>
               </AppLayout>
@@ -79,7 +80,9 @@ export default function App() {
             path="/courses"
             element={
               <AppLayout title="Course Management" titleDescription="Create, organize, and maintain courses with structured content such as videos and documents, ensuring smooth learning experiences for users.">
-                <CoursesList />
+                <RequireRole role="course.list">
+                  <CoursesList />
+                </RequireRole>
               </AppLayout>
             }
           />
@@ -90,7 +93,9 @@ export default function App() {
             path="/course/view/:id"
             element={
               <AppLayout containerCard={false} courseCard={true}>
-                <CourseView />
+                <RequireRole role="course.view">
+                  <CourseView />
+                </RequireRole>
               </AppLayout>
             }
           />
@@ -100,8 +105,13 @@ export default function App() {
           <Route
             path="/course/edit/:id"
             element={
-              <AppLayout>
-                <CourseEdit />
+              <AppLayout
+                title="Course Edit"
+                titleDescription="Manage platform users efficiently by creating, updating, assigning roles, and controlling access permissions across the system."
+              >
+                <RequireRole role="course.edit">
+                  <CourseEdit />
+                </RequireRole>
               </AppLayout>
             }
           />
@@ -115,7 +125,9 @@ export default function App() {
                 title="User Management"
                 titleDescription="Manage platform users efficiently by creating, updating, assigning roles, and controlling access permissions across the system."
               >
+                {/* <RequireRole role="user.management"> */}
                 <UserManagement />
+                {/* </RequireRole> */}
               </AppLayout>
             }
           />
@@ -126,7 +138,22 @@ export default function App() {
             path="user/profile/:id"
             element={
               <AppLayout title="User Profile" titleDescription="Manage platform users efficiently by creating, updating, assigning roles, and controlling access permissions across the system.">
-                <UserProfile />
+                <RequireRole role="user.profile.view">
+                  <UserProfile />
+                </RequireRole>
+              </AppLayout>
+            }
+          />
+        </Route>
+
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path="user/enrollment/*"
+            element={
+              <AppLayout title="Enrollment" titleDescription="Manage platform users efficiently by creating, updating, assigning roles, and controlling access permissions across the system.">
+                <RequireRole role="enrollment.management">
+                  <EnrollmentBase />
+                </RequireRole>
               </AppLayout>
             }
           />

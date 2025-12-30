@@ -47,4 +47,10 @@ export const httpClient = {
     createUser: async (data) => axiosInstance.post(API_ENDPOINTS.CREATE_USER, data),
     updateUser: async (id, data) => axiosInstance.put(API_ENDPOINTS.UPDATE_USER + "/" + id, data),
     deleteUser: async (id) => axiosInstance.delete(API_ENDPOINTS.DELETE_USER + "/" + id),
+
+    // Enrollment APIs
+    getEnrollmentCourses: async () => axiosInstance.get(API_ENDPOINTS.GET_ENROLLMENT_COURSES),
+    courseManualEnrollment: async (data) => axiosInstance.post(API_ENDPOINTS.COURSE_MANUAL_ENROLLMENT, data),
+    getEnrollmentCoursesByUserId: async (userId) => axiosInstance.get(API_ENDPOINTS.GET_ENROLLMENT_COURSES_BY_USER_ID + "/" + userId),
+
 };

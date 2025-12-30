@@ -4,30 +4,38 @@ import {
     LibraryBooks as LibraryBooksIcon,
     OnlinePrediction as OnlinePredictionIcon,
 } from "@mui/icons-material";
+import ChecklistIcon from '@mui/icons-material/Checklist';
+import RemoveDoneIcon from '@mui/icons-material/RemoveDone';
+import DoNotTouchIcon from '@mui/icons-material/DoNotTouch';
+import useEnrollment from "../../../hooks/useEnrollment";
+import { useAuth } from "../../../hooks/useAuth";
+import { useMemo } from "react";
 
 /* ---------- Dummy Data ---------- */
-const summaryData = [
-    {
-        title: "Total Courses",
-        value: "2,450",
-        icon: LibraryBooksIcon,
-        color: "#5b90faff",
-    },
-    {
-        title: "Completed Courses",
-        value: "0",
-        icon: LibraryBooksIcon,
-        color: "#5b90faff",
-    },
-    {
-        title: "Active Users",
-        value: "157",
-        icon: OnlinePredictionIcon,
-        color: "#5b90faff",
-    },
+// Default/dummy summary configuration (values will be replaced dynamically)
+const baseSummary = [
+    { title: "Total Courses", icon: LibraryBooksIcon, color: "#5b90faff" },
+    { title: "Completed Courses", icon: ChecklistIcon, color: "#5b90faff" },
+    { title: "Not Started", icon: DoNotTouchIcon, color: "#5b90faff" },
 ];
 
 export default function StudentCountWidget() {
+    const { enrollmentCoursesByUser } = useEnrollment();
+    const { user } = useAuth();
+
+    const summaryData = useMemo(() => {
+        const rows = (user && enrollmentCoursesByUser && enrollmentCoursesByUser[user.id]) || [];
+        const total = rows.length;
+        const completed = rows.filter((r) => r.completed_at || r.status === "completed").length;
+        const notStarted = rows.filter((r) => !r.started_at).length;
+
+        return [
+            { ...baseSummary[0], value: String(total) },
+            { ...baseSummary[1], value: String(completed) },
+            { ...baseSummary[2], value: String(notStarted) },
+        ];
+    }, [enrollmentCoursesByUser, user]);
+
     return (
         <Box sx={{ flexGrow: 1, gap: 5, display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr" } }}>
             {summaryData.map((item, index) => {

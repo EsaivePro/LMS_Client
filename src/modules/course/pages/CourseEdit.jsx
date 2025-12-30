@@ -29,7 +29,7 @@ import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-
+import FileUploadOffIcon from '@mui/icons-material/FileUploadOff';
 // Components
 import TopicHandler from "../../../components/course/topic/TopicHandler";
 import LessonHandler from "../../../components/course/lesson/LessonHandler";
@@ -265,7 +265,7 @@ const CourseEdit = () => {
                 <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
                     <Stack direction="row" spacing={1} alignItems="center">
                         <Typography variant="h5" fontWeight={500} sx={{ mb: 2 }}>
-                            Edit Course Curriculum
+                            {courseDetail?.title}
                         </Typography>
                     </Stack>
 
@@ -389,7 +389,6 @@ const CourseEdit = () => {
                                                     )}
                                                 </Box>
 
-
                                                 <Tooltip title="Preview">
                                                     <IconButton
                                                         onClick={() => handlePreview(lesson)}
@@ -406,13 +405,11 @@ const CourseEdit = () => {
                                                     </IconButton>
                                                 </Tooltip>
 
-
-
-                                                <Tooltip title="Edit Lesson">
+                                                <Tooltip title={(lesson?.video_url == "" || lesson?.video_url == null) ? "Upload Content" : "Edit Lesson"}>
                                                     <IconButton
                                                         onClick={() => handleUpdateLesson(topic.id, lesson.id)}
                                                     >
-                                                        <EditIcon color="primary" />
+                                                        {(lesson?.video_url == "" || lesson?.video_url == null) ? <FileUploadOffIcon sx={{ color: "#555555ff" }} /> : <EditIcon color="primary" />}
                                                     </IconButton>
                                                 </Tooltip>
 

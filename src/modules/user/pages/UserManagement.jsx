@@ -6,8 +6,8 @@ import {
     Breadcrumbs,
     Link,
     Fade,
-    ToggleButton,
-    ToggleButtonGroup,
+    Tabs,
+    Tab,
     Select,
     MenuItem,
     useMediaQuery,
@@ -102,18 +102,19 @@ export default function UserManagement() {
 
                     {/* ---------- Tabs / Dropdown ---------- */}
                     {!isMobile ? (
-                        <ToggleButtonGroup
+                        <Tabs
                             value={currentTab}
-                            exclusive
                             onChange={handleChange}
                             sx={{
                                 backgroundColor: "#ffffffff",
-                                borderRadius: 1,
-                                "& .MuiToggleButton-root": {
+                                borderRadius: 0,
+                                minHeight: 0,
+                                "& .MuiTab-root": {
                                     textTransform: "none",
                                     fontWeight: 600,
                                     px: 3,
                                     py: 1,
+                                    minHeight: 0,
                                     border: 0,
                                 },
                                 "& .Mui-selected": {
@@ -121,16 +122,12 @@ export default function UserManagement() {
                                     color: "#353535ff",
                                 },
                             }}
+                            aria-label="User management tabs"
                         >
                             {tabs.map((tab) => (
-                                <ToggleButton
-                                    key={tab.value}
-                                    value={tab.value}
-                                >
-                                    {tab.label}
-                                </ToggleButton>
+                                <Tab key={tab.value} label={tab.label} value={tab.value} />
                             ))}
-                        </ToggleButtonGroup>
+                        </Tabs>
                     ) : (
                         <Select
                             fullWidth

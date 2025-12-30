@@ -19,6 +19,7 @@ import {
     useMediaQuery,
     Dialog,
     DialogContent,
+    Alert,
 } from "@mui/material";
 
 import { useParams } from "react-router-dom";
@@ -29,7 +30,10 @@ import useCourseCategory from "../../../hooks/useCourseCategory";
 
 // === IMPORT NEW COMPONENTS ===
 import CourseLayoutDrawer from "../../../components/course/CourseLayoutDrawer";
-import { errorValidation } from "../../../utils/resolver.utils";
+import { errorValidation, hasPermission } from "../../../utils/resolver.utils";
+import { useAdmin } from "../../../hooks/useAdmin";
+import useEnrollment from "../../../hooks/useEnrollment";
+import { set } from "react-hook-form";
 
 // constants
 const LOCAL_PROGRESS_KEY = "lms_progress_v1";
@@ -46,6 +50,7 @@ const CourseView = () => {
     const { id } = useParams();
     const { user } = useAuth();
     const { getCourseById, courseDetails, updateLessonProgress } = useCourseCategory();
+    const { permissions } = useAdmin();
 
     // Refs
     const hasFetched = useRef(false);
@@ -69,6 +74,7 @@ const CourseView = () => {
 
     const [value, setValue] = useState(0);
     const [darkMode, setDarkMode] = useState(false);
+    const [enrolledCourse, setEnrolledCourse] = useState(false);
     const [courseDetail, setCourseDetail] = useState({});
 
     const [autoplayOverlay, setAutoplayOverlay] = useState({ show: false, seconds: 5 });
@@ -77,7 +83,6 @@ const CourseView = () => {
     const [isFav, setIsFav] = useState(false);
 
     const storageKey = `favorite_${courseDetail.id}`;
-
     // ================================================
     // Load Favorite
     // ================================================
@@ -147,79 +152,93 @@ const CourseView = () => {
     // ================================================
     // Load Course
     // ================================================
+    const { fetchEnrollCoursesByUser, enrollmentCoursesByUser } = useEnrollment();
+
+    useEffect(() => {
+        if (user && enrollmentCoursesByUser && enrollmentCoursesByUser[user.id]?.length == 0) {
+            fetchEnrollCoursesByUser(user.id);
+        }
+    }, [user, fetchEnrollCoursesByUser]);
+
     useEffect(() => {
         const courseId = parseInt(id);
         if (!courseId) return;
 
-        // Use hook helper to get course
-        const found = getCourseById(courseId);
-
-        if (found) {
-            setCourseDetail({
-                id: found.courseId || found.id,
-                title: found.courseTitle || found.title || "",
-                description: found.courseDescription || found.description || "",
-            });
-
-            const topics = found.topics || [];
-            setCourseProgress(found.courseProgress || {});
-            setIsFav(found.courseProgress?.is_favorite || false);
-            setCurriculum(topics);
-            setCompleted((topics || []).reduce((acc, topic) => {
-                const lessons = topic?.lessons || [];
-                return acc + lessons.filter((l) => l.is_completed).length;
-            }, 0));
-            setTotal((topics || []).reduce((acc, topic) => {
-                const lessons = topic?.lessons || [];
-                return acc + lessons.length;
-            }, 0));
-
-            if (!selectedLesson && topics.length > 0) {
-                // Find first lesson that is not completed (is_completed === false)
-                let chosenTopic = null;
-                let chosenLesson = null;
-
-                for (let t = 0; t < topics.length; t++) {
-                    const topic = topics[t];
-                    const lessons = topic?.lessons || [];
-                    for (let l = 0; l < lessons.length; l++) {
-                        const lesson = lessons[l];
-                        if (lesson && lesson.is_completed === false) {
-                            chosenTopic = topic;
-                            chosenLesson = lesson;
-                            break;
-                        }
-                    }
-                    if (chosenLesson) break;
-                }
-
-                // Fallback to the very first lesson if no uncompleted lesson found
-                if (!chosenLesson) {
-                    const firstTopic = topics[0];
-                    chosenTopic = firstTopic;
-                    chosenLesson = firstTopic?.lessons?.[0] || null;
-                }
-
-                if (chosenTopic && chosenLesson) {
-                    setTopicName(chosenTopic.title || "");
-                    setSelectedLesson(chosenLesson);
-                    setSignedUrl(chosenLesson.video_url || null);
-                    setExpandedPanels(new Set([chosenTopic.id]));
-                }
-            }
-        } else if (!hasFetched.current) {
-            hasFetched.current = true;
-            (async () => {
-                try {
-                    await dispatch(
-                        fetchCourseDeatils({ course_id: courseId, user_id: user ? user.id : null })
-                    ).unwrap();
-                } catch (e) {
-                    // optional: handle error (silent for now)
-                }
-            })();
+        if (enrollmentCoursesByUser && enrollmentCoursesByUser[user.id]?.length > 0) {
+            setEnrolledCourse(enrollmentCoursesByUser[user.id].find((c) => c.course_id === courseId));
         }
-    }, [id, courseDetails, dispatch, getCourseById]);
+        if (hasPermission(permissions, "course.manage") || enrolledCourse) {
+            setEnrolledCourse(true);
+            // Use hook helper to get course
+            const found = getCourseById(courseId);
+
+            if (found) {
+                setCourseDetail({
+                    id: found.courseId || found.id,
+                    title: found.courseTitle || found.title || "",
+                    description: found.courseDescription || found.description || "",
+                });
+
+                const topics = found.topics || [];
+                setCourseProgress(found.courseProgress || {});
+                setIsFav(found.courseProgress?.is_favorite || false);
+                setCurriculum(topics);
+                setCompleted((topics || []).reduce((acc, topic) => {
+                    const lessons = topic?.lessons || [];
+                    return acc + lessons.filter((l) => l.is_completed).length;
+                }, 0));
+                setTotal((topics || []).reduce((acc, topic) => {
+                    const lessons = topic?.lessons || [];
+                    return acc + lessons.length;
+                }, 0));
+
+                if (!selectedLesson && topics.length > 0) {
+                    // Find first lesson that is not completed (is_completed === false)
+                    let chosenTopic = null;
+                    let chosenLesson = null;
+
+                    for (let t = 0; t < topics.length; t++) {
+                        const topic = topics[t];
+                        const lessons = topic?.lessons || [];
+                        for (let l = 0; l < lessons.length; l++) {
+                            const lesson = lessons[l];
+                            if (lesson && lesson.is_completed === false) {
+                                chosenTopic = topic;
+                                chosenLesson = lesson;
+                                break;
+                            }
+                        }
+                        if (chosenLesson) break;
+                    }
+
+                    // Fallback to the very first lesson if no uncompleted lesson found
+                    if (!chosenLesson) {
+                        const firstTopic = topics[0];
+                        chosenTopic = firstTopic;
+                        chosenLesson = firstTopic?.lessons?.[0] || null;
+                    }
+
+                    if (chosenTopic && chosenLesson) {
+                        setTopicName(chosenTopic.title || "");
+                        setSelectedLesson(chosenLesson);
+                        setSignedUrl(chosenLesson.video_url || null);
+                        setExpandedPanels(new Set([chosenTopic.id]));
+                    }
+                }
+            } else if (!hasFetched.current) {
+                hasFetched.current = true;
+                (async () => {
+                    try {
+                        await dispatch(
+                            fetchCourseDeatils({ course_id: courseId, user_id: user ? user.id : null })
+                        ).unwrap();
+                    } catch (e) {
+                        // optional: handle error (silent for now)
+                    }
+                })();
+            }
+        }
+    }, [id, courseDetails, dispatch, getCourseById, enrollmentCoursesByUser]);
 
     // helper
     const parseDurationToSeconds = (str) => {
@@ -608,11 +627,12 @@ const CourseView = () => {
         <Box sx={{
             background: darkMode ? "#0f1724" : "#f5f7fb", width: "100%",
             maxWidth: "100%",
+            minHeight: "100vh",
             p: 0,
             m: 0,
         }}>
 
-            <CourseLayoutDrawer
+            {enrolledCourse ? <CourseLayoutDrawer
                 selectedLesson={selectedLesson}
                 courseProgress={courseProgress}
                 signedUrl={signedUrl}
@@ -650,7 +670,12 @@ const CourseView = () => {
                     curriculumRef,
                     HEADER_HEIGHT,
                 }}
-            />
+            /> :
+                <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 240, px: 2 }}>
+                    <Alert severity="warning" variant="outlined" sx={{ width: "100%", maxWidth: 700, textAlign: "center" }}>
+                        You are not enrolled in this course.
+                    </Alert>
+                </Box>}
 
             {/* AUTOPLAY OVERLAY */}
             {autoplayOverlay.show && (

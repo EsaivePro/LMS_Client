@@ -38,7 +38,7 @@ export default function CoursesList() {
     };
 
     loadCourses();
-  }, [allCourses]);
+  }, []);
 
   const [open, setOpen] = useState(false);
   const [alert, setAlert] = useState({ open: false, type: "", message: "" });
@@ -119,6 +119,27 @@ export default function CoursesList() {
       maxWidth: 450,
       type: "string",
       filterable: true,
+    },
+    {
+      field: "total_topics",
+      headerName: "Total Topics",
+      flex: 2,
+      maxWidth: 450,
+      type: "string",
+    },
+    {
+      field: "total_lessons",
+      headerName: "Total Lessons",
+      flex: 2,
+      maxWidth: 450,
+      type: "string",
+    },
+    {
+      field: "duration",
+      headerName: "Duration",
+      flex: 2,
+      maxWidth: 450,
+      type: "string",
     },
     {
       field: "actions",

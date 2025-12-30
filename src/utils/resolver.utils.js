@@ -1,4 +1,4 @@
-import React from "react";
+// utility functions for resolvers
 
 export function secondsToTime(seconds) {
     if (!seconds || seconds < 0) return "00:00";
@@ -68,3 +68,11 @@ export const buildServerQueryFromColumns = ({
 
     return params.toString();
 };
+
+// NOTE: Hooks (like useAdmin) must not be called from plain functions.
+// Accept `permissions` as the first argument so callers can pass hook-derived data.
+export function hasPermission(permissions, role) {
+    if (!role) return false;
+    if (!permissions || permissions.length === 0) return false;
+    return permissions.some((p) => p?.key?.includes(role));
+}

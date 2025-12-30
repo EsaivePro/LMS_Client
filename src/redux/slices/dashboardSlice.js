@@ -8,7 +8,7 @@ const initialState = {
     widgets: {
         // start with available widget keys defined in dashboard.config
         admin: ["welcome", "counts", "myCourses", "courses"],
-        student: ["welcome", "myCourses", "schedule", "progress"],
+        student: ["welcome", "studentCounts", "myCourses"], //"scheduledCourses"
     },
 };
 

@@ -3,6 +3,7 @@ import { combineReducers } from "redux";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import courses from "../slices/coursesSlice";
+import enrollment from "../slices/enrollmentSlice";
 import auth from "../slices/authSlice";
 import permission from "../slices/permissionSlice";
 import ui from "../slices/uiSlice";
@@ -16,7 +17,7 @@ import dashboard from "../slices/dashboardSlice";
 
 import { setAxiosStore } from "../../apiClient/apiStoreProvider";
 
-const rootReducer = combineReducers({ ui, dashboard, auth, courses, permission, common, admin, topics, lessons, users, role, dashboard });
+const rootReducer = combineReducers({ ui, dashboard, auth, courses, enrollment, permission, common, admin, topics, lessons, users, role, dashboard });
 const persistConfig = {
   key: "root",
   storage,

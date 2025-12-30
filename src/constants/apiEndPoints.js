@@ -35,4 +35,11 @@ export const API_ENDPOINTS = {
     CREATE_USER: "/user/createuser",
     UPDATE_USER: "/user/updateuser",
     DELETE_USER: "/user/deleteuser",
+
+    //Enrollment APIs
+    GET_ENROLLMENT_COURSES: "/enrollment/getEnrollmentCourses",
+    COURSE_MANUAL_ENROLLMENT: "/enrollment/course/manual",
+
+    GET_ENROLLMENT_COURSES_BY_USER_ID: "/user/course/enrollments",
+
 };

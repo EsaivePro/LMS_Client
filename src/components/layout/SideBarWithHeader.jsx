@@ -43,6 +43,8 @@ import useCommon from "../../hooks/useCommon"
 import CourseContainer from "./CourseContainer";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import { useAdmin } from "../../hooks/useAdmin";
 
 const drawerWidth = 240;
 
@@ -64,18 +66,29 @@ const MENU = [
         icon: <DashboardIcon />,
         to: "/",
         type: "item",
+        role: "dashboard.view"
     },
     {
         label: "Courses",
         icon: <FeedIcon />,
         to: "/courses",
         type: "item",
+        role: "course.list"
     },
     {
         label: "User managemet",
         icon: <ManageAccountsIcon />,
         to: "/usermanagement/users",
         type: "item",
+        role: "user.management"
+    },
+    ,
+    {
+        label: "Enrollment",
+        icon: <FolderSharedIcon />,
+        to: "/user/enrollment",
+        type: "item",
+        role: "enrollment.management"
     },
     // {
     //     label: "Permissions",
@@ -104,8 +117,9 @@ export default function SideBarWithHeader({ children }) {
     const [open, setOpen] = React.useState(false);
     const [expandedGroup, setExpandedGroup] = React.useState(null);
     const sidebarRef = React.useRef(null);
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const { viewContainerCard, viewCourseCard } = useCommon();
+    const { permissions } = useAdmin();
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -113,7 +127,7 @@ export default function SideBarWithHeader({ children }) {
         navigate("/login");
     };
     const handleProfile = () => {
-        navigate("/user/profile/1");
+        navigate("/user/profile/" + user?.id);
     }
     // Auto expand the group of active child
     React.useEffect(() => {
@@ -208,6 +222,10 @@ export default function SideBarWithHeader({ children }) {
                     {/* MENU LIST */}
                     <List>
                         {MENU.map((item, index) => {
+                            // Check permission
+                            if (!(item?.role && permissions && permissions.length > 0 && permissions?.some((p) => p?.key?.includes(item?.role)))) {
+                                return null;
+                            }
                             const isActive = location.pathname === item.to;
                             const isGroupActive = item.children?.some(
                                 (child) => child.to === location.pathname
@@ -352,7 +370,7 @@ export default function SideBarWithHeader({ children }) {
                     {/* LOGOUT */}
                     <List>
                         <Link
-                            to="/user/profile/1"
+                            to={"/user/profile/" + user?.id}
                             style={{ textDecoration: "none", color: "inherit" }}
                             onClick={() => setOpen(false)}
                         >
@@ -381,18 +399,45 @@ export default function SideBarWithHeader({ children }) {
                                     >
                                         < Person2Icon />
                                     </ListItemIcon>
-                                    <ListItemText primary="User Preference" />
+                                    <ListItemText primary="User Profile" />
                                 </ListItemButton>
                             </ListItem>
                         </Link>
-                        <ListItem disablePadding>
-                            <ListItemButton onClick={handleLogout}>
-                                <ListItemIcon sx={{ color: "white" }}>
-                                    <LogoutIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Logout" />
-                            </ListItemButton>
-                        </ListItem>
+
+                        <Link
+                            to="/login"
+                            style={{ textDecoration: "none", color: "inherit" }}
+                            onClick={handleLogout}
+                        >
+                            <ListItem disablePadding>
+                                <ListItemButton
+                                    sx={{
+                                        backgroundColor: false
+                                            ? "rgba(255,255,255,0.9)"
+                                            : "transparent",
+                                        color: false ? "#000" : "#fff",
+                                        borderLeft: false
+                                            ? "4px solid #fff"
+                                            : "4px solid transparent",
+                                        "&:hover": {
+                                            backgroundColor: false
+                                                ? "rgba(255,255,255,0.9)"
+                                                : "rgba(255,255,255,0.12)",
+                                        },
+                                    }}
+                                >
+                                    <ListItemIcon
+                                        sx={{
+                                            color: false ? "#000" : "#fff",
+                                            minWidth: 40,
+                                        }}
+                                    >
+                                        < LogoutIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Logout" />
+                                </ListItemButton>
+                            </ListItem>
+                        </Link>
                     </List>
                 </Box>
 
