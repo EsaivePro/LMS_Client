@@ -11,6 +11,7 @@ import { useAdmin } from "./hooks/useAdmin";
 import { httpClient } from "./apiClient/httpClient";
 import useCommon from "./hooks/useCommon";
 
+import { useNavigate } from "react-router-dom";
 import RouteRenderer from "./routes/RouteRenderer";
 import { protectedRoutes } from "./routes/routeConfig";
 
@@ -22,21 +23,19 @@ export default function App() {
   const [ready, setReady] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
   const fetched = useRef(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated) {
       setReady(true);
       return;
     }
-
     if (fetched.current || !user?.id) return;
     fetched.current = true;
-
-    showLoader("Validating permissions...");
-
-    httpClient
-      .fetchPermissionByUserId(user.id)
-      .then((res) => {
+    const loadPermissions = async () => {
+      try {
+        showLoader("Validating permissions...");
+        const res = await httpClient.fetchPermissionByUserId(user.id);
         const data = res?.data;
         if (data?.response?.length) {
           setPermissionsAPI(data.response);
@@ -44,48 +43,55 @@ export default function App() {
         } else {
           setHasPermission(false);
         }
-      })
-      .finally(() => {
+      } catch (err) {
+        setHasPermission(false);
+      } finally {
         hideLoader();
         setReady(true);
-      });
+      }
+    };
+    loadPermissions();
   }, [isAuthenticated, user]);
+
+  React.useEffect(() => {
+    if (isAuthenticated && ready && !hasPermission) {
+      navigate("/unauthorized", { replace: true });
+    }
+  }, [isAuthenticated, ready, hasPermission, navigate]);
 
   if (!ready) return null;
 
-  if (isAuthenticated && ready && !hasPermission) {
-    return <Navigate to="/unauthorized" replace />;
-  }
-
   return (
-    <Routes>
-      {/* ---------- AUTH ---------- */}
-      <Route
-        path="/login"
-        element={
-          <AuthLayout>
-            <LoginPage />
-          </AuthLayout>
-        }
-      />
+    <main>
+      <Routes>
+        {/* ---------- AUTH ---------- */}
+        <Route
+          path="/login"
+          element={
+            <AuthLayout>
+              <LoginPage />
+            </AuthLayout>
+          }
+        />
 
-      {/* ---------- UNAUTHORIZED ---------- */}
-      <Route
-        path="/unauthorized"
-        element={
-          <ProtectedRoute>
-            <UnauthorizedPage />
-          </ProtectedRoute>
-        }
-      />
+        {/* ---------- UNAUTHORIZED ---------- */}
+        <Route
+          path="/unauthorized"
+          element={
+            <ProtectedRoute>
+              <UnauthorizedPage />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* ---------- PROTECTED ---------- */}
-      <Route element={<ProtectedRoute />}>
-        {RouteRenderer({ routes: protectedRoutes })}
-      </Route>
+        {/* ---------- PROTECTED ---------- */}
+        <Route element={<ProtectedRoute />}>
+          {RouteRenderer({ routes: protectedRoutes })}
+        </Route>
 
-      {/* ---------- FALLBACK ---------- */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        {/* ---------- FALLBACK ---------- */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </main>
   );
 }
