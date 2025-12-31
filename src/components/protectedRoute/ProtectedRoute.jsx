@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-export const ProtectedRoute = ({ redirectTo = "/login" }) => {
+export const ProtectedRoute = ({ redirectTo = "/login", children }) => {
     const isAuthenticated = useSelector((s) => s.auth.isAuthenticated);
-    return isAuthenticated ? <Outlet /> : <Navigate to={redirectTo} />;
+    if (!isAuthenticated) return <Navigate to={redirectTo} />;
+    return children ? children : <Outlet />;
 };
 
 export const RequireRole = ({ role, children }) => {
@@ -17,7 +18,7 @@ export const RequireRole = ({ role, children }) => {
         // Not authenticated → redirect handled below
         if (!isAuthenticated) return;
         if (role == null || role === "") {
-            setAllowed("");
+            setAllowed(true);
             return;
         }
         // Permissions not loaded yet
