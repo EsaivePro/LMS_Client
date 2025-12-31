@@ -23,6 +23,7 @@ import { useLocation } from "react-router-dom";
 import useCommon from "../../hooks/useCommon";
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
 
 export default function ContentContainer({ children }) {
   const { containerTitle, containerTitleDescription } = useCommon();
@@ -43,6 +44,7 @@ export default function ContentContainer({ children }) {
     if (title.includes("course")) return <SchoolIcon fontSize="large" />;
     if (title.includes("user management")) return <ManageAccountsIcon fontSize="large" />;
     if (title.includes("enrollment")) return <FolderSharedIcon fontSize="large" />;
+    if (title.includes("profile")) return <AccountBoxIcon fontSize="large" />;
     return <StarIcon fontSize="large" />; // ⭐ fallback icon
   };
 
@@ -60,7 +62,7 @@ export default function ContentContainer({ children }) {
             display: "flex",
             alignItems: "center",
             gap: 2,
-            mt: "50px",
+            mt: "43px",
             width: "100%",
             borderRadius: "0 0 12px 12px",
           }}
@@ -97,10 +99,11 @@ export default function ContentContainer({ children }) {
             display: "flex",
             flexDirection: "column",
             gap: 2,
-            mb: 3,
+            // mb: 3,
             mt: 3,
             pt: 3,
             pb: 3,
+            mb: 0,
             background: "linear-gradient(135deg, #f8fbff 0%, #f8fbff 100%)",
             borderRadius: "12px"
           }}

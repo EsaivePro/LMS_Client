@@ -8,7 +8,7 @@ export default function useApiHandler() {
             res = await apiFunction(...params);
             return res;
         } catch (err) {
-            dispatch(errorAlert(err?.response?.data?.message || err.message || CONSTANTS.UNEXPECTED_ERROR));
+            dispatch(errorAlert(err?.data?.data?.message || err.message || CONSTANTS.UNEXPECTED_ERROR));
             return { isError: true, message: err.message };
         } finally {
             dispatch(hideLoading());

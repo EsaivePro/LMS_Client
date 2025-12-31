@@ -6,12 +6,14 @@ import useEnrollment from "../../../hooks/useEnrollment";
 import { useAuth } from "../../../hooks/useAuth";
 
 export default function AdminDashboard() {
-    const { fetchEnrollCoursesByUser } = useEnrollment();
+    const { fetchEnrollCoursesByUser, enrollmentCoursesByUser } = useEnrollment();
     const { user } = useAuth();
 
     useEffect(() => {
-        if (user && user.id) fetchEnrollCoursesByUser(user.id);
-    }, [user, fetchEnrollCoursesByUser]);
+        if (user && user.id && enrollmentCoursesByUser.length === 0) {
+            fetchEnrollCoursesByUser(user.id);
+        }
+    }, [user, fetchEnrollCoursesByUser, enrollmentCoursesByUser]);
 
     return (
         <Box>

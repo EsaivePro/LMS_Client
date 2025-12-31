@@ -60,7 +60,10 @@ export default function UserProfile() {
             avatar: null,
         },
     });
-
+    const onCancelNavigation = () => {
+        // navigate to previous page
+        return () => window.history.back();
+    }
     const onSubmit = (data) => {
         const payload = new FormData();
         Object.entries(data).forEach(([k, v]) => payload.append(k, v?.file ?? v));
@@ -98,7 +101,7 @@ export default function UserProfile() {
                 <Box sx={{ flexGrow: 1 }}>
                     {user && (
                         <Box sx={{ width: '100%' }}>
-                            <UserForm mode="edit" user={user} onCancel={() => setDrawerOpen(false)} onSuccess={() => setDrawerOpen(false)} profileMode={true} />
+                            <UserForm mode="edit" user={user} onCancel={onCancelNavigation()} onSuccess={() => setDrawerOpen(false)} profileMode={true} />
                         </Box>
                     )}
                 </Box>

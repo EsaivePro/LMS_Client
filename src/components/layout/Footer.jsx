@@ -23,7 +23,7 @@ export default function Footer() {
         sx={{
           background: "#f2f4f7", // light gray
           color: "black",
-          mt: "auto",
+          marginTop: "-35px",
           pt: 6,
           pb: 3,
           px: { xs: 3, md: 10 },

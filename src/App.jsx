@@ -53,12 +53,6 @@ export default function App() {
     loadPermissions();
   }, [isAuthenticated, user]);
 
-  React.useEffect(() => {
-    if (isAuthenticated && ready && !hasPermission) {
-      navigate("/unauthorized", { replace: true });
-    }
-  }, [isAuthenticated, ready, hasPermission, navigate]);
-
   if (!ready) return null;
 
   return (

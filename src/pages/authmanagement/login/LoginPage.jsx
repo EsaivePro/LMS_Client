@@ -15,16 +15,17 @@ import {
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { useAuth } from "../../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { httpClient } from "../../../apiClient/httpClient";
+import { tokenStorage } from "../../../utils/tokenStorage.utils";
+import { useAdmin } from "../../../hooks/useAdmin";
+import useCommon from "../../../hooks/useCommon";
 import GlobalAlert from "../../../components/common/alert/GlobalAlert.jsx";
 
 export default function LoginPage() {
     const navigate = useNavigate();
-    const { login, isAuthenticated } = useAuth();
-    React.useEffect(() => {
-        if (isAuthenticated) {
-            navigate("/");
-        }
-    }, [isAuthenticated, navigate]);
+    const { login } = useAuth();
+    const { setPermissionsAPI } = useAdmin();
+    const { showLoader, hideLoader } = useCommon();
     const [alert, setAlert] = useState({ open: false, type: "", message: "" });
 
     const [loginData, setLoginData] = useState({
@@ -64,7 +65,40 @@ export default function LoginPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await login(loginData);
+        if (!validate()) return;
+        try {
+            const resultAction = await login(loginData);
+            const fulfilled = resultAction?.type && resultAction.type.endsWith('/fulfilled');
+            if (!fulfilled) {
+                setAlert({ open: true, type: "error", message: resultAction?.error?.message || "Login failed" });
+                return;
+            }
+
+            // get user id from token storage (set by login thunk)
+            const userStr = tokenStorage.getUserToken();
+            const userObj = userStr ? JSON.parse(userStr) : null;
+            const userId = userObj?.id || userObj?.userId || userObj?.user?.id;
+            if (!userId) {
+                setAlert({ open: true, type: "error", message: "Unable to determine user id after login." });
+                navigate("/unauthorized", { replace: true });
+                return;
+            }
+
+            showLoader("Fetching permissions...");
+            const res = await httpClient.fetchPermissionByUserId(userId);
+            const data = res?.data;
+            if (data?.response?.length) {
+                setPermissionsAPI(data.response);
+                navigate("/", { replace: true });
+            } else {
+                navigate("/unauthorized", { replace: true });
+            }
+        } catch (err) {
+            setAlert({ open: true, type: "error", message: err?.message || "Login failed" });
+            navigate("/unauthorized", { replace: true });
+        } finally {
+            hideLoader();
+        }
     };
 
     return (

@@ -38,13 +38,14 @@ const fadeUp = keyframes`
 `;
 
 export default function WelcomeWidget() {
-    const { user } = useAuth();
-    const name = "Super User";
-    // user?.name ||
-    // user?.fullName ||
-    // user?.firstName ||
-    // user?.email ||
-    // "User";
+    const { user, isAuthenticated } = useAuth();
+    const [name, setName] = useState("");
+
+    useEffect(() => {
+        let userName = user?.fullname || user?.username || user?.email || "User";
+        userName = userName.charAt(0).toUpperCase() + userName.slice(1);
+        setName(userName);
+    }, [user, isAuthenticated]);
 
     const [quoteIndex, setQuoteIndex] = useState(
         () => Math.floor(Math.random() * QUOTES.length)

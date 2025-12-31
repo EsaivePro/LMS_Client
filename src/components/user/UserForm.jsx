@@ -153,6 +153,11 @@ export default function UserForm({ mode = "create", user, onSuccess, onCancel, p
         };
         delete payload.confirmPassword;
 
+        if (profileMode) {
+            delete payload.role_id;
+            delete payload.username;
+            delete payload.email;
+        }
         showLoader();
         try {
             if (mode === "create") {
@@ -197,10 +202,10 @@ export default function UserForm({ mode = "create", user, onSuccess, onCancel, p
                 {/* Account */}
                 <Section title="Account Information">
                     <Controller name="username" control={control} render={({ field }) => (
-                        <TextField {...field} label="Username *" size="small" fullWidth error={!!errors.username} helperText={errors.username?.message} />
+                        <TextField {...field} label="Username *" disabled={profileMode} size="small" fullWidth error={!!errors.username} helperText={errors.username?.message} />
                     )} />
                     <Controller name="email" control={control} render={({ field }) => (
-                        <TextField {...field} label="Email *" size="small" fullWidth error={!!errors.email} helperText={errors.email?.message} />
+                        <TextField {...field} label="Email *" disabled={profileMode} size="small" fullWidth error={!!errors.email} helperText={errors.email?.message} />
                     )} />
                     <Controller name="phonenumber" control={control} render={({ field }) => (
                         <TextField {...field} label="Phone Number *" size="small" fullWidth error={!!errors.phonenumber} helperText={errors.phonenumber?.message} />

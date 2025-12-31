@@ -14,7 +14,7 @@ const useEnrollment = () => {
     return useMemo(
         () => ({
             enrollmentCourses: enrollmentCourses || [],
-            enrollmentCoursesByUser: enrollmentCoursesByUser || {},
+            enrollmentCoursesByUser: enrollmentCoursesByUser || [],
             loading: !!loading,
             error,
             message,

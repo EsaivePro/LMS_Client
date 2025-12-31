@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -8,13 +9,19 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Badge from '@mui/material/Badge';
 
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import CloseIcon from '@mui/icons-material/Close';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import Slide from '@mui/material/Slide';
+import Divider from '@mui/material/Divider';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -25,7 +32,15 @@ import Paper from '@mui/material/Paper';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import { Alert } from '@mui/material';
+import DashboardCustomizer from '../dashboard/admin/DashboardCustomizer';
 
+/* ========================================================= */
+/* 🔧 FIX 1: Transition moved OUTSIDE component               */
+/* ========================================================= */
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const sideBarItems = [
     { label: "Dashboard", to: "/" },
@@ -36,33 +51,16 @@ const sideBarItems = [
 
 function Header({ toggleSidebar, profile, logout, open }) {
     const navigate = useNavigate();
+    const { user } = useAuth();
 
-    // Search state
+    /* ---------------- SEARCH ---------------- */
     const [search, setSearch] = React.useState("");
     const [results, setResults] = React.useState([]);
     const [searchFocused, setSearchFocused] = React.useState(false);
 
-    // Notification menu state
-    const [anchorNotif, setAnchorNotif] = React.useState(null);
-    const [notifications, setNotifications] = React.useState([
-        "New user registered",
-        "Payment received",
-        "New course added",
-        "Exam results published",
-        "New support ticket received"
-    ]);
-    const settings = [
-        { label: "Profile", to: profile },
-        { label: "Logout", to: logout }
-    ];
-
-    // User menu state
-    const [anchorElUser, setAnchorElUser] = React.useState(null);
-
-    // ➊ SEARCH LOGIC
     React.useEffect(() => {
         if (search.length >= 3) {
-            const filter = sideBarItems.filter((item) =>
+            const filter = sideBarItems.filter(item =>
                 item.label.toLowerCase().includes(search.toLowerCase())
             );
             setResults(filter);
@@ -75,18 +73,63 @@ function Header({ toggleSidebar, profile, logout, open }) {
         setTimeout(() => setSearchFocused(false), 150);
     };
 
-    // ➋ NOTIFICATION CLICK HANDLING
-    const handleNotificationClick = (index) => {
-        const updated = notifications.filter((_, i) => i !== index);
-        setNotifications(updated);
+    /* ---------------- USER MENU ---------------- */
+    const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+    /* ---------------- SETTINGS MODAL ---------------- */
+    const [settingsOpen, setSettingsOpen] = React.useState(false);
+    const [settingsMenu, setSettingsMenu] = React.useState("dashboard");
+
+    const [showWelcomeWidget, setShowWelcomeWidget] = React.useState(true);
+    const [showQuickLinks, setShowQuickLinks] = React.useState(true);
+
+    /* ========================================================= */
+    /* 🔧 FIX 2: Open settings safely (close menu + reset tab)   */
+    /* ========================================================= */
+    const handleOpenSettings = () => {
+        setAnchorElUser(null);
+        setSettingsMenu("dashboard");
+        setSettingsOpen(true);
     };
+
+    /* ========================================================= */
+    /* 🔧 FIX 3: Simple close handler (no blocking reasons)      */
+    /* ========================================================= */
+    const handleSettingsClose = () => {
+        setSettingsOpen(false);
+    };
+
+    /* ---------------- USER DATA ---------------- */
+    const userInitial = React.useMemo(() => {
+        const name =
+            user?.fullName ||
+            user?.name ||
+            user?.username ||
+            user?.email ||
+            "U";
+        return String(name).charAt(0).toUpperCase();
+    }, [user]);
+
+    const roleName =
+        user?.role ||
+        user?.roleName ||
+        user?.roles?.[0]?.name ||
+        "Role";
+
+    const username =
+        user?.username || user?.email || "username";
+
+    const settings = [
+        { label: "Profile", to: profile },
+        { label: "Logout", to: logout }
+    ];
 
     return (
         <AppBar position="fixed" color="default" elevation={1}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
 
-                    {/* LEFT SIDE: LOGO + TITLE */}
+                    {/* LEFT SIDE */}
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <IconButton onClick={() => toggleSidebar(!open)}>
                             <MenuIcon />
@@ -111,7 +154,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                         </Typography>
                     </Box>
 
-                    {/* RIGHT SIDE: equal spaced */}
+                    {/* RIGHT SIDE */}
                     <Box
                         sx={{
                             display: "flex",
@@ -122,7 +165,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                         }}
                     >
 
-                        {/* SEARCH BAR (expand on focus) */}
+                        {/* SEARCH */}
                         <Box sx={{ position: "relative" }}>
                             <TextField
                                 size="small"
@@ -146,7 +189,6 @@ function Header({ toggleSidebar, profile, logout, open }) {
                                 }}
                             />
 
-                            {/* SEARCH DROPDOWN */}
                             {results.length > 0 && (
                                 <Paper
                                     elevation={4}
@@ -176,80 +218,142 @@ function Header({ toggleSidebar, profile, logout, open }) {
                             )}
                         </Box>
 
-                        {/* NOTIFICATION ICON */}
-                        {/* <IconButton onClick={(e) => setAnchorNotif(e.currentTarget)}>
-                            <Badge badgeContent={notifications.length || 0} color="error">
-                                <NotificationsIcon />
-                            </Badge>
-                        </IconButton> */}
-
-                        {/* NOTIFICATION DROPDOWN */}
-                        <Menu
-                            anchorEl={anchorNotif}
-                            open={Boolean(anchorNotif)}
-                            onClose={() => setAnchorNotif(null)}
-                            PaperProps={{
-                                elevation: 4,
-                                sx: {
-                                    width: 300,
-                                    maxHeight: 300,
-                                    overflowY: "auto",
-                                    mt: 1.2,
-                                    borderRadius: "10px",
-                                }
-                            }}
-                        >
-                            {notifications.length === 0 && (
-                                <MenuItem disabled sx={{ justifyContent: "center", py: 2 }}>
-                                    No new notifications
-                                </MenuItem>
-                            )}
-
-                            {notifications.map((note, index) => (
-                                <Box key={index}>
-                                    <MenuItem
-                                        onClick={() => handleNotificationClick(index)}
-                                        sx={{ whiteSpace: "normal", py: 1.5 }}
-                                    >
-                                        {note}
-                                    </MenuItem>
-
-                                    {/* Divider */}
-                                    {index !== notifications.length - 1 && (
-                                        <Box
-                                            sx={{
-                                                height: "1px",
-                                                bgcolor: "rgba(0,0,0,0.1)",
-                                                mx: 2,
-                                            }}
-                                        />
-                                    )}
-                                </Box>
-                            ))}
-                        </Menu>
-
                         {/* SETTINGS ICON */}
-                        <IconButton>
+                        <IconButton onClick={handleOpenSettings}>
                             <ManageAccountsIcon />
                         </IconButton>
 
-                        {/* AVATAR */}
-                        <Tooltip title="User Menu">
-                            <IconButton onClick={(e) => setAnchorElUser(e.currentTarget)}>
-                                <Avatar sx={{ bgcolor: "var(--primaryColor)" }}>S</Avatar>
-                            </IconButton>
-                        </Tooltip>
+                        {/* USER INFO (UNCHANGED UI) */}
+                        <Box sx={{ display: "flex", alignItems: "center", borderRadius: 2 }}>
+                            <Box sx={{ display: "flex", gap: 1 }}>
+                                <Avatar
+                                    sx={{
+                                        width: 40,
+                                        height: 40,
+                                        bgcolor: "var(--primaryColor)",
+                                        fontWeight: 500,
+                                    }}
+                                >
+                                    {userInitial}
+                                </Avatar>
 
-                        {/* AVATAR MENU */}
+                                <Box>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{ fontWeight: 700, textTransform: "capitalize" }}
+                                    >
+                                        {username}
+                                    </Typography>
+
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                        sx={{
+                                            maxWidth: 140,
+                                            whiteSpace: "nowrap",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            display: "block",
+                                        }}
+                                    >
+                                        {roleName}
+                                    </Typography>
+                                </Box>
+                            </Box>
+
+                            <IconButton
+                                size="small"
+                                onClick={(e) => setAnchorElUser(e.currentTarget)}
+                                sx={{ ml: 0.5 }}
+                            >
+                                <ExpandMoreIcon />
+                            </IconButton>
+                        </Box>
+
+                        {/* USER MENU */}
                         <Menu
                             anchorEl={anchorElUser}
                             open={Boolean(anchorElUser)}
                             onClose={() => setAnchorElUser(null)}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                         >
                             {settings.map((setting, index) => (
-                                <MenuItem key={index} onClick={setting.to}>{setting.label}</MenuItem>
+                                <MenuItem key={index} onClick={() => {
+                                    setAnchorElUser(null); // ✅ CLOSE MENU
+                                    setting.to();          // ✅ EXECUTE ACTION (navigate / logout)
+                                }} >
+                                    {setting.label}
+                                </MenuItem>
                             ))}
                         </Menu>
+
+                        {/* SETTINGS MODAL */}
+                        <Dialog
+                            fullWidth
+                            maxWidth="md"
+                            open={settingsOpen}
+                            onClose={handleSettingsClose}
+                            TransitionComponent={Transition}
+                            keepMounted
+                            PaperProps={{ sx: { borderRadius: 2 } }}
+                        >
+                            <DialogTitle sx={{ pr: 5 }}>
+                                Settings
+                                <IconButton
+                                    onClick={handleSettingsClose}
+                                    sx={{ position: 'absolute', right: 8, top: 8 }}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </DialogTitle>
+
+                            <DialogContent>
+                                <Box sx={{ display: 'flex', gap: 2, minHeight: 240 }}>
+
+                                    <Box sx={{ width: 260, borderRight: '1px solid', borderColor: 'divider', pr: 1 }}>
+                                        <List>
+                                            <ListItemButton
+                                                selected={settingsMenu === 'dashboard'}
+                                                onClick={() => setSettingsMenu('dashboard')}
+                                            >
+                                                <ListItemText primary="Dashboard Customizer" />
+                                            </ListItemButton>
+                                            <Divider />
+                                            <ListItemButton
+                                                selected={settingsMenu === 'account'}
+                                                onClick={() => setSettingsMenu('account')}
+                                            >
+                                                <ListItemText primary="Account" />
+                                            </ListItemButton>
+                                            <ListItemButton
+                                                selected={settingsMenu === 'preferences'}
+                                                onClick={() => setSettingsMenu('preferences')}
+                                            >
+                                                <ListItemText primary="Preferences" />
+                                            </ListItemButton>
+                                        </List>
+                                    </Box>
+
+                                    <Box sx={{ flex: 1, p: 1 }}>
+                                        {settingsMenu === 'dashboard' && (
+                                            <>
+                                                <DashboardCustomizer role="student" />
+                                            </>
+                                        )}
+
+                                        {settingsMenu === 'account' && (
+                                            <Alert severity="warning">Currently you don't have settings like that.</Alert>
+                                        )}
+
+                                        {settingsMenu === 'preferences' && (
+                                            <Alert severity="warning">Currently you don't have display preferences.</Alert>
+                                        )}
+                                    </Box>
+
+                                </Box>
+                            </DialogContent>
+                        </Dialog>
 
                     </Box>
                 </Toolbar>
