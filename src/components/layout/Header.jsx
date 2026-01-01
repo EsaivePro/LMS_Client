@@ -20,8 +20,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import Slide from '@mui/material/Slide';
 import Divider from '@mui/material/Divider';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -33,11 +31,13 @@ import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { Alert } from '@mui/material';
+
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+
 import DashboardCustomizer from '../dashboard/admin/DashboardCustomizer';
 
-/* ========================================================= */
-/* 🔧 FIX 1: Transition moved OUTSIDE component               */
-/* ========================================================= */
+/* ---------------- TRANSITION ---------------- */
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -53,24 +53,32 @@ function Header({ toggleSidebar, profile, logout, open }) {
     const navigate = useNavigate();
     const { user, isAuthenticated } = useAuth();
 
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
     /* ---------------- SEARCH ---------------- */
     const [search, setSearch] = React.useState("");
     const [results, setResults] = React.useState([]);
     const [searchFocused, setSearchFocused] = React.useState(false);
+    const [mobileSearchOpen, setMobileSearchOpen] = React.useState(false);
 
     React.useEffect(() => {
         if (search.length >= 3) {
-            const filter = sideBarItems.filter(item =>
-                item.label.toLowerCase().includes(search.toLowerCase())
+            setResults(
+                sideBarItems.filter(item =>
+                    item.label.toLowerCase().includes(search.toLowerCase())
+                )
             );
-            setResults(filter);
         } else {
             setResults([]);
         }
     }, [search]);
 
-    const handleSearchBlur = () => {
-        setTimeout(() => setSearchFocused(false), 150);
+    const closeSearch = () => {
+        setSearch("");
+        setResults([]);
+        setSearchFocused(false);
+        setMobileSearchOpen(false);
     };
 
     /* ---------------- USER MENU ---------------- */
@@ -80,281 +88,364 @@ function Header({ toggleSidebar, profile, logout, open }) {
     const [settingsOpen, setSettingsOpen] = React.useState(false);
     const [settingsMenu, setSettingsMenu] = React.useState("dashboard");
 
-    const [showWelcomeWidget, setShowWelcomeWidget] = React.useState(true);
-    const [showQuickLinks, setShowQuickLinks] = React.useState(true);
-
-    /* ========================================================= */
-    /* 🔧 FIX 2: Open settings safely (close menu + reset tab)   */
-    /* ========================================================= */
     const handleOpenSettings = () => {
         setAnchorElUser(null);
         setSettingsMenu("dashboard");
         setSettingsOpen(true);
     };
 
-    /* ========================================================= */
-    /* 🔧 FIX 3: Simple close handler (no blocking reasons)      */
-    /* ========================================================= */
-    const handleSettingsClose = () => {
-        setSettingsOpen(false);
-    };
-
-    /* ---------------- USER DATA (in state + synced) ---------------- */
+    /* ---------------- USER INFO ---------------- */
     const [userInitial, setUserInitial] = React.useState("U");
     const [roleName, setRoleName] = React.useState("Role");
     const [username, setUsername] = React.useState("username");
-    const [settingsList, setSettingsList] = React.useState([
-        { label: "Profile", to: profile },
-        { label: "Logout", to: logout },
-    ]);
 
     React.useEffect(() => {
         const name =
             user?.fullName || user?.name || user?.username || user?.email || "U";
         setUserInitial(String(name).charAt(0).toUpperCase());
-
         setRoleName(user?.role || user?.roleName || user?.roles?.[0]?.name || "Role");
         setUsername(user?.username || user?.email || "username");
-
     }, [user, isAuthenticated]);
+
     const settings = [
         { label: "Profile", to: profile },
         { label: "Logout", to: logout },
     ];
-    return (
-        <AppBar position="fixed" color="default" elevation={1}>
-            <Container maxWidth="xl">
-                <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
 
-                    {/* LEFT SIDE */}
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <IconButton onClick={() => toggleSidebar(!open)}>
+    return (
+        <AppBar
+            position="fixed"
+            color="default"
+            elevation={1}
+            sx={{
+                px: { xs: 0.5, sm: 1, md: 0 }, // 🔥 MOBILE PX REDUCED
+            }}
+        >
+            <Container
+                maxWidth="xl"
+                sx={{
+                    px: { xs: 0, sm: 1, md: 2 }, // 🔥 MOBILE PX REDUCED
+                }}
+            >
+                <Toolbar
+                    disableGutters
+                    sx={{
+                        justifyContent: "space-between",
+                        px: { xs: 0.5, sm: 1, md: 0 }, // 🔥 MOBILE PX REDUCED
+                    }}
+                >
+
+                    {/* ---------------- LEFT ---------------- */}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0, md: 1 } }}>
+                        <IconButton size="small" onClick={() => toggleSidebar(!open)}>
                             <MenuIcon />
                         </IconButton>
 
-                        <img
-                            src="/logo/EsaiLogo.png"
-                            alt="Esai"
-                            width="45"
-                            style={{ borderRadius: 8 }}
-                        />
+                        <img src="/logo/EsaiLogo.png" alt="Esai" width="42" />
 
                         <Typography
                             variant="h6"
                             sx={{
                                 fontWeight: 600,
+                                fontSize: { xs: 16, sm: 18, md: 20 },
                                 color: "var(--primaryColor)",
-                                display: { xs: "none", sm: "block" }
+
+                                /* 🔑 no wrap + ellipsis */
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+
+                                /* 🔑 important: limit width so ellipsis can happen */
+                                maxWidth: { xs: 160, sm: 220, md: "none" },
+
+                                display: "block",
                             }}
                         >
                             LMS Platform
                         </Typography>
+
                     </Box>
 
-                    {/* RIGHT SIDE */}
+                    {/* ---------------- RIGHT ---------------- */}
                     <Box
                         sx={{
                             display: "flex",
                             alignItems: "center",
-                            gap: 3,
-                            minWidth: "380px",
-                            justifyContent: "flex-end",
+                            gap: { xs: 0.75, sm: 1.5, md: 3 }, // 🔥 GAP REDUCED
                         }}
                     >
 
-                        {/* SEARCH */}
-                        <Box sx={{ position: "relative" }}>
-                            <TextField
-                                size="small"
-                                placeholder="Search..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                onFocus={() => setSearchFocused(true)}
-                                onBlur={handleSearchBlur}
-                                sx={{
-                                    width: searchFocused ? "300px" : "260px",
-                                    transition: "width 0.25s ease",
-                                    background: "#fff",
-                                    borderRadius: "8px",
-                                }}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon fontSize="small" />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-
-                            {results.length > 0 && (
-                                <Paper
-                                    elevation={4}
+                        {/* ---------- DESKTOP SEARCH ---------- */}
+                        {!isMobile && (
+                            <Box sx={{ position: "relative" }}>
+                                <TextField
+                                    size="small"
+                                    placeholder="Search..."
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    onFocus={() => setSearchFocused(true)}
                                     sx={{
-                                        position: "absolute",
-                                        top: "45px",
-                                        width: "100%",
-                                        zIndex: 2000,
+                                        width: searchFocused ? 300 : 260,
+                                        transition: "width 0.25s ease",
+                                        background: "#fff",
+                                        borderRadius: 2,
+                                    }}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <SearchIcon fontSize="small" />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                                {results.length > 0 && (
+                                    <Paper sx={{ position: "absolute", top: 45, width: "100%", zIndex: 2000 }}>
+                                        <List>
+                                            {results.map((item, i) => (
+                                                <ListItemButton
+                                                    key={i}
+                                                    onClick={() => {
+                                                        navigate(item.to);
+                                                        closeSearch();
+                                                    }}
+                                                >
+                                                    <ListItemText primary={item.label} />
+                                                </ListItemButton>
+                                            ))}
+                                        </List>
+                                    </Paper>
+                                )}
+                            </Box>
+                        )}
+
+                        {/* ---------- MOBILE SEARCH ---------- */}
+                        {/* {isMobile && (
+                            <IconButton size="medium" onClick={() => setMobileSearchOpen(true)}>
+                                <SearchIcon fontSize="medium" />
+                            </IconButton>
+                        )} */}
+
+                        {!isMobile && (<IconButton size="medium" onClick={handleOpenSettings}>
+                            <ManageAccountsIcon fontSize="medium" />
+                        </IconButton>)}
+
+                        {/* ---------- USER BLOCK ---------- */}
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                            <Avatar sx={{ width: isMobile ? 31 : 36, height: isMobile ? 31 : 36, fontSize: isMobile ? 16 : 20 }}>
+                                {userInitial}
+                            </Avatar>
+
+                            <Box sx={{ lineHeight: 1, ml: isMobile ? 0.2 : .5, textAlign: { xs: "left", sm: "right" } }}>
+                                <Typography
+                                    variant={isMobile ? "body3" : "body2"}
+                                    sx={{
+                                        fontWeight: 700,
+                                        lineHeight: 1.3,
+
+                                        /* no wrap + ellipsis */
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+
+                                        /* limit width so ellipsis can happen */
+                                        maxWidth: { xs: 160, sm: 220, md: "none" },
+
+                                        display: "block",
                                     }}
                                 >
-                                    <List>
-                                        {results.map((item, i) => (
-                                            <ListItemButton
-                                                key={i}
-                                                onClick={() => {
-                                                    navigate(item.to);
-                                                    setSearch("");
-                                                    setResults([]);
-                                                    setSearchFocused(false);
-                                                }}
-                                            >
-                                                <ListItemText primary={item.label} />
-                                            </ListItemButton>
-                                        ))}
-                                    </List>
-                                </Paper>
-                            )}
-                        </Box>
-
-                        {/* SETTINGS ICON */}
-                        <IconButton onClick={handleOpenSettings}>
-                            <ManageAccountsIcon />
-                        </IconButton>
-
-                        {/* USER INFO (UNCHANGED UI) */}
-                        <Box sx={{ display: "flex", alignItems: "center", borderRadius: 2 }}>
-                            <Box sx={{ display: "flex", gap: 1 }}>
-                                <Avatar
+                                    {username}
+                                </Typography>
+                                <Typography
+                                    variant="caption"
+                                    color="text.secondary"
                                     sx={{
-                                        width: 40,
-                                        height: 40,
-                                        bgcolor: "var(--primaryColor)",
-                                        fontWeight: 500,
+                                        lineHeight: 1,
+
+                                        /* no wrap + ellipsis */
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+
+                                        /* limit width so ellipsis can happen */
+                                        maxWidth: { xs: 160, sm: 220, md: "none" },
+
+                                        display: "block",
                                     }}
                                 >
-                                    {userInitial}
-                                </Avatar>
-
-                                <Box>
-                                    <Typography
-                                        variant="body2"
-                                        sx={{ fontWeight: 700, textTransform: "capitalize" }}
-                                    >
-                                        {username}
-                                    </Typography>
-
-                                    <Typography
-                                        variant="caption"
-                                        color="text.secondary"
-                                        sx={{
-                                            maxWidth: 140,
-                                            whiteSpace: "nowrap",
-                                            overflow: "hidden",
-                                            textOverflow: "ellipsis",
-                                            display: "block",
-                                        }}
-                                    >
-                                        {roleName}
-                                    </Typography>
-                                </Box>
+                                    {roleName}
+                                </Typography>
                             </Box>
 
                             <IconButton
                                 size="small"
                                 onClick={(e) => setAnchorElUser(e.currentTarget)}
-                                sx={{ ml: 0.5 }}
                             >
-                                <ExpandMoreIcon />
+                                <ExpandMoreIcon fontSize="small" />
                             </IconButton>
                         </Box>
 
-                        {/* USER MENU */}
+                        {/* ---------- PROFILE / LOGOUT MENU ---------- */}
                         <Menu
                             anchorEl={anchorElUser}
                             open={Boolean(anchorElUser)}
                             onClose={() => setAnchorElUser(null)}
-                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                            transformOrigin={{ vertical: "top", horizontal: "right" }}
+                            sx={{ mt: isMobile ? 1.6 : 2 }}
                         >
-                            {settings.map((setting, index) => (
-                                <MenuItem key={index} onClick={() => {
-                                    setAnchorElUser(null); // ✅ CLOSE MENU
-                                    setting.to();          // ✅ EXECUTE ACTION (navigate / logout)
-                                }} >
-                                    {setting.label}
+                            {settings.map((s, i) => (
+                                <MenuItem
+                                    key={i}
+                                    sx={{
+                                        justifyContent: "left",
+                                        px: { xs: 1, sm: 1.5 },
+                                        py: 0.5,
+                                        minHeight: isMobile ? 10 : 36,
+                                        minWidth: 150,
+                                    }}
+                                    onClick={() => {
+                                        setAnchorElUser(null);
+                                        s.to();
+                                    }}
+                                >
+                                    {s.label}
                                 </MenuItem>
                             ))}
+                            {isMobile && (
+                                <MenuItem
+                                    sx={{ px: { xs: 1, sm: 1.5 }, py: 0.5, minHeight: 36 }}
+                                    onClick={handleOpenSettings}
+                                >
+                                    Settings
+                                </MenuItem>
+                            )}
                         </Menu>
 
-                        {/* SETTINGS MODAL */}
+                        {/* ---------- SETTINGS MODAL ---------- */}
                         <Dialog
                             fullWidth
                             maxWidth="md"
                             open={settingsOpen}
-                            onClose={handleSettingsClose}
+                            onClose={() => setSettingsOpen(false)}
                             TransitionComponent={Transition}
-                            keepMounted
-                            PaperProps={{ sx: { borderRadius: 2 } }}
                         >
-                            <DialogTitle sx={{ pr: 5 }}>
+                            <DialogTitle>
                                 Settings
                                 <IconButton
-                                    onClick={handleSettingsClose}
-                                    sx={{ position: 'absolute', right: 8, top: 8 }}
+                                    onClick={() => setSettingsOpen(false)}
+                                    sx={{ position: "absolute", right: 8, top: 8 }}
                                 >
                                     <CloseIcon />
                                 </IconButton>
                             </DialogTitle>
 
                             <DialogContent>
-                                <Box sx={{ display: 'flex', gap: 2, minHeight: 240 }}>
-
-                                    <Box sx={{ width: 260, borderRight: '1px solid', borderColor: 'divider', pr: 1 }}>
-                                        <List>
-                                            <ListItemButton
-                                                selected={settingsMenu === 'dashboard'}
-                                                onClick={() => setSettingsMenu('dashboard')}
-                                            >
-                                                <ListItemText primary="Dashboard Customizer" />
-                                            </ListItemButton>
-                                            <Divider />
-                                            <ListItemButton
-                                                selected={settingsMenu === 'account'}
-                                                onClick={() => setSettingsMenu('account')}
-                                            >
-                                                <ListItemText primary="Account" />
-                                            </ListItemButton>
-                                            <ListItemButton
-                                                selected={settingsMenu === 'preferences'}
-                                                onClick={() => setSettingsMenu('preferences')}
-                                            >
-                                                <ListItemText primary="Preferences" />
-                                            </ListItemButton>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        gap: 2,
+                                        flexDirection: { xs: "column", md: "row" },
+                                    }}
+                                >
+                                    <Box
+                                        sx={{
+                                            width: { xs: "100%", md: 260 },
+                                            borderRight: { md: "1px solid" },
+                                            borderBottom: { xs: "1px solid", md: "none" },
+                                            borderColor: "divider",
+                                        }}
+                                    >
+                                        <List
+                                            sx={{
+                                                display: "flex",
+                                                flexDirection: { xs: "row", md: "column" },
+                                                p: 0,
+                                            }}
+                                        >
+                                            {["dashboard", "account", "preferences"].map((key) => (
+                                                <ListItemButton
+                                                    key={key}
+                                                    selected={settingsMenu === key}
+                                                    onClick={() => setSettingsMenu(key)}
+                                                    sx={{ flex: 1, textAlign: { xs: "left", md: "center" } }}
+                                                >
+                                                    <ListItemText
+                                                        primary={
+                                                            key === "dashboard"
+                                                                ? "Dashboard Customizer"
+                                                                : key.charAt(0).toUpperCase() + key.slice(1)
+                                                        }
+                                                    />
+                                                </ListItemButton>
+                                            ))}
                                         </List>
                                     </Box>
 
-                                    <Box sx={{ flex: 1, p: 1 }}>
-                                        {settingsMenu === 'dashboard' && (
-                                            <>
-                                                <DashboardCustomizer role="student" />
-                                            </>
+                                    <Box sx={{ flex: 1 }}>
+                                        {settingsMenu === "dashboard" && (
+                                            <DashboardCustomizer role="student" />
                                         )}
-
-                                        {settingsMenu === 'account' && (
-                                            <Alert severity="warning">Currently you don't have settings like that.</Alert>
-                                        )}
-
-                                        {settingsMenu === 'preferences' && (
-                                            <Alert severity="warning">Currently you don't have display preferences.</Alert>
+                                        {settingsMenu !== "dashboard" && (
+                                            <Alert severity="warning">
+                                                Currently no settings available.
+                                            </Alert>
                                         )}
                                     </Box>
-
                                 </Box>
                             </DialogContent>
                         </Dialog>
-
                     </Box>
                 </Toolbar>
             </Container>
+
+            {/* ---------- MOBILE SEARCH OVERLAY ---------- */}
+            {isMobile && mobileSearchOpen && (
+                <Box
+                    sx={{
+                        position: "fixed",
+                        inset: 0,
+                        bgcolor: "#fff",
+                        zIndex: 1300,
+                        p: 2,
+                    }}
+                >
+                    <TextField
+                        autoFocus
+                        fullWidth
+                        placeholder="Search..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={closeSearch}>
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+
+                    <List>
+                        {results.map((item, i) => (
+                            <ListItemButton
+                                key={i}
+                                onClick={() => {
+                                    navigate(item.to);
+                                    closeSearch();
+                                }}
+                            >
+                                <ListItemText primary={item.label} />
+                            </ListItemButton>
+                        ))}
+                    </List>
+                </Box>
+            )}
         </AppBar>
     );
 }

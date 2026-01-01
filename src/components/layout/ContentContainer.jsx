@@ -49,69 +49,67 @@ export default function ContentContainer({ children }) {
   };
 
   return (
-    <React.Fragment>
-      <Box>
-        <Box height={isMobile ? 20 : 30} />
-        {/* HEADER/HERO SECTION */}
-        <Box
+    <Box sx={{ m: 0 }}>
+      <Box height={isMobile ? 27 : 30} />
+      {/* HEADER/HERO SECTION */}
+      <Box
+        sx={{
+          background: "linear-gradient(135deg, #1976d2 0%, #ffffff 100%)",
+          color: "white",
+          px: isMobile ? 2 : 4,
+          py: isMobile ? 3 : 4,
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          mt: "43px",
+          width: "100%",
+          borderRadius: "0 0 12px 12px",
+        }}
+      >
+        {/* Icon */}
+        <Avatar
           sx={{
-            background: "linear-gradient(135deg, #1976d2 0%, #ffffff 100%)",
-            color: "white",
-            px: isMobile ? 2 : 4,
-            py: isMobile ? 3 : 4,
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            mt: "43px",
-            width: "100%",
-            borderRadius: "0 0 12px 12px",
+            bgcolor: "rgba(255,255,255,0.25)",
+            width: isMobile ? 46 : 56,
+            height: isMobile ? 46 : 56,
           }}
         >
-          {/* Icon */}
-          <Avatar
-            sx={{
-              bgcolor: "rgba(255,255,255,0.25)",
-              width: isMobile ? 46 : 56,
-              height: isMobile ? 46 : 56,
-            }}
+          {getHeaderIcon()}
+        </Avatar>
+
+        {/* Title text */}
+        <Box>
+          <Typography
+            variant={isMobile ? "h5" : "h4"}
+            sx={{ fontWeight: 700, letterSpacing: 0.3 }}
           >
-            {getHeaderIcon()}
-          </Avatar>
+            {containerTitle}
+          </Typography>
 
-          {/* Title text */}
-          <Box>
-            <Typography
-              variant={isMobile ? "h6" : "h4"}
-              sx={{ fontWeight: 700, letterSpacing: 0.3 }}
-            >
-              {containerTitle}
-            </Typography>
-
-            <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5 }}>
-              {containerTitleDescription}
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* PAGE CONTENT */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            // mb: 3,
-            mt: 3,
-            pt: 3,
-            pb: 3,
-            mb: 0,
-            background: "linear-gradient(135deg, #f8fbff 0%, #f8fbff 100%)",
-            borderRadius: "12px"
-          }}
-        >
-          {children}
+          <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5 }}>
+            {containerTitleDescription}
+          </Typography>
         </Box>
       </Box>
-    </React.Fragment>
+
+      {/* PAGE CONTENT */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          // mb: 3,
+          mt: isMobile ? 2 : 3,
+          pt: isMobile ? 1 : 3,
+          pb: isMobile ? 1 : 3,
+          mb: 0,
+          background: "linear-gradient(135deg, #f8fbff 0%, #f8fbff 100%)",
+          borderRadius: 1
+        }}
+      >
+        {children}
+      </Box>
+    </Box>
   );
 }
 

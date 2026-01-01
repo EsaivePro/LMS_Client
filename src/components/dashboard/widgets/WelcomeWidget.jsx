@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Paper, Box, Typography } from "@mui/material";
 import { keyframes } from "@mui/system";
 import { useAuth } from "../../../hooks/useAuth";
-import WavingHandIcon from '@mui/icons-material/WavingHand';
+import WavingHandIcon from "@mui/icons-material/WavingHand";
+import { red } from "@mui/material/colors";
+
 /* ---------- Quotes ---------- */
 const QUOTES = [
     "The secret of getting ahead is getting started.",
@@ -71,8 +73,7 @@ export default function WelcomeWidget() {
             sx={{
                 borderRadius: 2,
                 boxShadow: 0,
-                backgroundColor:
-                    "transparent",
+                backgroundColor: "transparent",
                 display: "flex",
                 alignItems: "center",
             }}
@@ -84,18 +85,43 @@ export default function WelcomeWidget() {
                     fontWeight={600}
                     sx={{
                         display: "flex",
-                        alignItems: "end",
+                        alignItems: "center",
                         gap: 1,
+                        flexWrap: "wrap",                 // ✅ responsive wrap
+                        fontSize: {
+                            xs: "1.35rem",
+                            sm: "1.75rem",
+                            md: "2.125rem",
+                        },
                     }}
                 >
-                    {greeting}, <Typography variant="h5" fontWeight={500}>{name}</Typography>
-                    <Box
-                        component="span"
+                    <Box component="span" sx={{ flexBasis: { xs: "100%", sm: "auto" }, display: { xs: "block", sm: "inline" }, color: "#000000ec", fontWeight: 500 }}>
+                        {greeting},
+                    </Box>
+                    <Typography
+                        variant="h5"
+                        fontWeight={500}
                         sx={{
-                            display: "inline-block",
+                            fontSize: {
+                                xs: "1.1rem",
+                                sm: "1.4rem",
+                                md: "1.5rem",
+                            },
+                        }}
+                    >
+                        {name}
+                    </Typography>
+
+                    <Box
+                        sx={{
+                            display: "inline-flex",
                             transformOrigin: "70% 70%",
                             animation: `${wave} 2.5s infinite`,
-                            fontSize: 28,
+                            fontSize: {
+                                xs: 22,
+                                sm: 26,
+                                md: 28,
+                            },
                         }}
                     >
                         <WavingHandIcon htmlColor="#434343ff" />
@@ -108,9 +134,13 @@ export default function WelcomeWidget() {
                     variant="body2"
                     color="text.secondary"
                     sx={{
-                        mt: 0.75,
-                        maxWidth: 520,
+                        mt: { xs: 0.5, sm: 0.75 },
+                        fontSize: {
+                            xs: "0.85rem",
+                            sm: "0.875rem",
+                        },
                         animation: `${fadeUp} 0.6s ease`,
+                        maxWidth: 520,
                     }}
                 >
                     {QUOTES[quoteIndex]}

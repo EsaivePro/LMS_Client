@@ -14,7 +14,8 @@ import {
     ListItemButton,
     ListItemIcon,
     ListItemText,
-    Collapse
+    Collapse,
+    useMediaQuery
 } from "@mui/material";
 
 import MuiAppBar from "@mui/material/AppBar";
@@ -56,7 +57,6 @@ const Main = styled("main")(({ theme }) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
 }));
-
 // ==============================
 // DYNAMIC MENU CONFIGURATION
 // ==============================
@@ -112,6 +112,8 @@ const MENU = [
 
 export default function SideBarWithHeader({ children }) {
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
     const location = useLocation();
     const viewSidebarHeader = useSelector((s) => s.ui.viewSidebarHeader) || true;
     const [open, setOpen] = React.useState(false);
@@ -442,8 +444,8 @@ export default function SideBarWithHeader({ children }) {
                 </Box>
 
                 {/* MAIN CONTENT */}
-                <Main sx={{ m: 0, p: 0 }}>
-                    <Box sx={{ m: 4, mt: 2 }}>
+                <Main sx={{ m: 0, p: 0, maxWidth: '100%' }}>
+                    <Box sx={{ m: isMobile ? 1.8 : 4, mt: isMobile ? 0 : 2 }}>
                         {viewContainerCard && <ContentContainer>{children}</ContentContainer>}
                         {(!viewContainerCard && !viewCourseCard) && <Box>{children}</Box>}
                     </Box>

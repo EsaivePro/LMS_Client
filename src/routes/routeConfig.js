@@ -10,8 +10,7 @@ export const protectedRoutes = [
     {
         path: "/",
         title: "Dashboard",
-        description:
-            "Provides a centralized overview of system activity, key metrics, user statistics, and quick insights to help administrators monitor platform performance efficiently.",
+        description: "View overall system status, key metrics, and quick insights.",
         permission: "dashboard.view",
         layoutProps: {},
         element: <AdminDashboard />,
@@ -19,16 +18,14 @@ export const protectedRoutes = [
     {
         path: "/courses",
         title: "Course Management",
-        description:
-            "Allows administrators to browse, create, organize, update, and manage all courses, including course metadata, structure, and overall learning flow.",
+        description: "View, create, and manage courses and their content.",
         permission: "course.list",
         element: <CoursesList />,
     },
     {
         path: "/course/view/:id",
         title: "Course Details",
-        description:
-            "Displays detailed information about a selected course, including topics, lessons, progress tracking, and content structure for review and monitoring purposes.",
+        description: "View course information, lessons, and learning progress.",
         permission: "course.view",
         layoutProps: { containerCard: false, courseCard: true },
         element: <CourseView />,
@@ -36,32 +33,28 @@ export const protectedRoutes = [
     {
         path: "/course/edit/:id",
         title: "Edit Course",
-        description:
-            "Enables authorized users to modify course details, update topics and lessons, manage content structure, and ensure course information stays accurate and up to date.",
+        description: "Update course details, topics, and lessons.",
         permission: "course.edit",
         element: <CourseEdit />,
     },
     {
         path: "/usermanagement/*",
         title: "User Management",
-        description:
-            "Used to manage platform users by creating accounts, assigning roles, controlling permissions, and maintaining secure access across different system modules.",
+        description: "Create users, assign roles, and manage access.",
         permission: "user.management",
         element: <UserManagement />,
     },
     {
         path: "/user/profile/:id",
         title: "User Profile",
-        description:
-            "Shows complete user profile information, including personal details, assigned roles, preferences, and activity data for review and administrative management.",
+        description: "View and manage user profile details and roles.",
         permission: "user.profile.view",
         element: <UserProfile />,
     },
     {
         path: "/user/enrollment/*",
         title: "Enrollment Management",
-        description:
-            "Manages course enrollment operations such as assigning users to courses, handling bulk or individual enrollments, and tracking enrollment status effectively.",
+        description: "Assign users to courses and manage enrollments.",
         permission: "enrollment.management",
         element: <EnrollmentBase />,
     },

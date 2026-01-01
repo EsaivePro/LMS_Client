@@ -10,6 +10,8 @@ import {
     Pagination,
     IconButton,
     CircularProgress,
+    useMediaQuery,
+    useTheme
 } from "@mui/material";
 import { keyframes } from "@mui/system";
 
@@ -43,7 +45,8 @@ const fadeUp = keyframes`
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 `;
-
+const theme = useTheme();
+const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 function CourseCard({ course, index, width = 300 }) {
     const accent = ACCENTS[index % ACCENTS.length];
     const navigate = useNavigate();
@@ -260,7 +263,7 @@ function CourseCarousel({ title, courses }) {
     };
 
     return (
-        <Box sx={{ width: "90vw" }}>
+        <Box sx={{ width: "100%" }}>
             <Box
                 sx={{
                     mb: 2,
@@ -269,7 +272,7 @@ function CourseCarousel({ title, courses }) {
                     alignItems: "center",
                 }}
             >
-                <Typography variant="h5" fontWeight={500}>
+                <Typography variant={isMobile ? "h6" : "h5"} fontWeight={500}>
                     {title}
                 </Typography>
 
@@ -311,9 +314,9 @@ function CourseCarousel({ title, courses }) {
                 )) : <Box sx={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", minHeight: 150 }}>
 
                     <Typography variant="h6" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <CollectionsBookmarkIcon color="text.secondary" fontSize="large" />
+                        <CollectionsBookmarkIcon color="text.secondary" fontSize={isMobile ? "medium" : "large"} />
                     </Typography>
-                    <Typography variant="h6" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}>
+                    <Typography variant={isMobile ? "h7" : "h6"} color="text.secondary" sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, mt: 1 }}>
                         No courses have been assigned yet.
                     </Typography>
                 </Box>}

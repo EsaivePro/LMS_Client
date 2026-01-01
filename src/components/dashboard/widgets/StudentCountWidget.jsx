@@ -1,4 +1,4 @@
-import { Box, Typography, Grid, Paper } from "@mui/material";
+import { Box, Typography, Grid, Paper, useMediaQuery, useTheme } from "@mui/material";
 import {
     People as PeopleIcon,
     LibraryBooks as LibraryBooksIcon,
@@ -22,6 +22,8 @@ const baseSummary = [
 export default function StudentCountWidget() {
     const { enrollmentCoursesByUser } = useEnrollment();
     const { user } = useAuth();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const summaryData = useMemo(() => {
         const rows = (user && enrollmentCoursesByUser && enrollmentCoursesByUser[user.id]) || [];
@@ -37,7 +39,7 @@ export default function StudentCountWidget() {
     }, [enrollmentCoursesByUser, user]);
 
     return (
-        <Box sx={{ flexGrow: 1, gap: 5, display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr" } }}>
+        <Box sx={{ flexGrow: 1, gap: isMobile ? 2 : 5, display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr" } }}>
             {summaryData.map((item, index) => {
                 const Icon = item.icon;
 
@@ -46,7 +48,7 @@ export default function StudentCountWidget() {
                         <Paper
                             elevation={0}
                             sx={{
-                                p: 3,
+                                p: isMobile ? 2 : 3,
                                 height: "100%",
                                 borderRadius: 1,
                                 border: "1px solid",
@@ -85,8 +87,8 @@ export default function StudentCountWidget() {
                             {/* ICON */}
                             <Box
                                 sx={{
-                                    width: 56,
-                                    height: 56,
+                                    width: isMobile ? 40 : 56,
+                                    height: isMobile ? 40 : 56,
                                     borderRadius: "50%",
                                     display: "flex",
                                     alignItems: "center",

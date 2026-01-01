@@ -3,8 +3,7 @@ import {
   Box,
   Typography,
   Grid,
-  IconButton,
-  Stack
+  IconButton
 } from "@mui/material";
 
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -15,85 +14,113 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useSelector } from "react-redux";
 
 export default function Footer() {
-  const viewFooter = useSelector((s) => s.ui.viewFooter) || true;
+  const viewFooter = useSelector((s) => s.ui.viewFooter) ?? true;
+  if (!viewFooter) return null;
+
   return (
-    <div> {viewFooter &&
-      <Box
-        component="footer"
-        sx={{
-          background: "#f2f4f7", // light gray
-          color: "black",
-          marginTop: "-35px",
-          pt: 6,
-          pb: 3,
-          px: { xs: 3, md: 10 },
-          width: "100%",
-        }}
-      >
+    <Box
+      component="footer"
+      sx={{
+        background: "#f2f4f7",
+        marginTop: { xs: "-48px", md: "-35px" },
+        pt: { xs: 4, md: 6 },
+        pb: 3,
+        px: { xs: 3, md: 10 },
+        width: "100%",
+      }}
+    >
+      <Grid container spacing={4}>
+        {/* ================= PLATFORM CAPABILITIES ================= */}
         <Grid
-          container
-          spacing={4}
-          alignItems="flex-start"
-          justifyContent="space-between"
+          item
+          xs={12}
+          md={7}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: { xs: "center", md: "flex-start" },
+          }}
         >
-
-          {/* LEFT SIDE — PLATFORM CAPABILITIES */}
-          <Grid item xs={12} md={7}>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: "var(--primaryColor)" }}>
-              Platform Capabilities
-            </Typography>
-
-            <Grid container spacing={2}>
-              {/* Column 1 */}
-              <Grid item xs={12} sm={4}>
-                <Stack spacing={1.5}>
-                  <FooterFeature text="Course Management" />
-                  <FooterFeature text="Topic Organization" />
-                </Stack>
-              </Grid>
-
-              {/* Column 2 */}
-              <Grid item xs={12} sm={4}>
-                <Stack spacing={1.5}>
-                  <FooterFeature text="Examination Automation" />
-                  <FooterFeature text="Result Generation" />
-                </Stack>
-              </Grid>
-
-              {/* Column 3 */}
-              <Grid item xs={12} sm={4}>
-                <Stack spacing={1.5}>
-                  <FooterFeature text="Student Progress Tracking" />
-                  <FooterFeature text="Secure Role-based Access" />
-                </Stack>
-              </Grid>
-            </Grid>
-          </Grid>
-
-          {/* RIGHT SIDE — CONTACT INFO (RIGHT ALIGNED PERFECTLY) */}
-          <Grid
-            item
-            xs={12}
-            md={4}
+          <Typography
+            variant="h6"
             sx={{
-              textAlign: { xs: "center", md: "right" },
+              fontWeight: 700,
+              mb: 2,
+              color: "var(--primaryColor)",
+              textAlign: "center",
             }}
           >
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: "var(--primaryColor)" }}>
+            Platform Capabilities
+          </Typography>
+
+          <Grid container spacing={1.5} >
+            {[
+              "Course Management",
+              // "Examination Automation",
+              "Secure Role-based Access",
+              "Student Progress Tracking",
+              "Result Generation",
+            ].map((item, i) => (
+              <Grid
+                key={i}
+                item
+                xs={12}
+                sm={6}
+                sx={{ display: "flex", justifyContent: "center" }}
+              >
+                <FooterFeature text={item} />
+              </Grid>
+            ))}
+          </Grid>
+        </Grid>
+
+        {/* ================= CONTACT US ================= */}
+        <Grid
+          item
+          xs={12}
+          md={4}
+          sx={{
+            display: "flex",
+            justifyContent: { xs: "center", md: "flex-end" }, // ✅ real centering
+            width: "100%",
+          }}
+        >
+          {/* INNER WRAPPER – THIS FIXES IT */}
+          <Box
+            sx={{
+              textAlign: "center",
+              width: "100%",
+              maxWidth: 360, // keeps it visually centered
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 700,
+                mb: 2,
+                color: "var(--primaryColor)",
+              }}
+            >
               Contact Us
             </Typography>
 
-            <Typography>Email: support@esai.com</Typography>
-            <Typography>Phone: +91 75300 78007</Typography>
-            <Typography>Chennai, India</Typography>
+            <Typography sx={{ fontSize: 14, lineHeight: 1.6 }}>
+              Email: support@esai.com
+            </Typography>
+            <Typography sx={{ fontSize: 14, lineHeight: 1.6 }}>
+              Phone: +91 75300 78007
+            </Typography>
+            <Typography sx={{ fontSize: 14, lineHeight: 1.6 }}>
+              Chennai, India
+            </Typography>
 
-            {/* SOCIAL ICONS RIGHT-ALIGNED */}
+            {/* SOCIAL ICONS */}
             <Box
               sx={{
                 display: "flex",
-                gap: 1.7,
+                justifyContent: "center", // ✅ page center
+                gap: 2,
                 mt: 3,
-                justifyContent: { xs: "center", md: "flex-end" },
               }}
             >
               {[
@@ -106,11 +133,9 @@ export default function Footer() {
                   key={i}
                   sx={{
                     color: "var(--primaryColor)",
-                    transition: "all 0.3s ease",
                     "&:hover": {
-                      transform: "scale(1.25)",
+                      transform: "scale(1.2)",
                       color: item.color,
-                      filter: "drop-shadow(0 0 6px rgba(0,0,0,0.4))",
                     },
                   }}
                 >
@@ -118,32 +143,57 @@ export default function Footer() {
                 </IconButton>
               ))}
             </Box>
-          </Grid>
+          </Box>
         </Grid>
+      </Grid>
 
-        {/* COPYRIGHT */}
-        <Box
+      {/* ================= COPYRIGHT ================= */}
+      <Box
+        sx={{
+          borderTop: "1px solid rgba(0,0,0,0.2)",
+          mt: 4,
+          pt: 2,
+          textAlign: "center",
+        }}
+      >
+        <Typography
+          variant="body2"
           sx={{
-            borderTop: "1px solid rgba(0,0,0,0.2)",
-            textAlign: "center",
-            mt: 4,
-            pt: 2,
+            fontSize: 12,
+            opacity: 0.7,
+            color: "var(--primaryColor)",
           }}
         >
-          <Typography variant="body2" sx={{ opacity: 0.7, color: "var(--primaryColor)" }}>
-            © {new Date().getFullYear()} LMS Platform — All Rights Reserved.
-          </Typography>
-        </Box>
+          © {new Date().getFullYear()} LMS Platform — All Rights Reserved.
+        </Typography>
       </Box>
-    }</div>
+    </Box>
   );
 }
 
+/* ================= FOOTER FEATURE ================= */
 function FooterFeature({ text }) {
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-      <CheckCircleIcon sx={{ fontSize: 18, color: "var(--primaryColor)", opacity: 0.7 }} />
-      <Typography sx={{ opacity: 0.9 }}>{text}</Typography>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 1.2,
+        width: "100%",
+      }}
+    >
+      <CheckCircleIcon
+        sx={{
+          fontSize: 18,
+          color: "var(--primaryColor)",
+          opacity: 0.7,
+          flexShrink: 0,
+        }}
+      />
+      <Typography sx={{ fontSize: 14, lineHeight: 1.4 }}>
+        {text}
+      </Typography>
     </Box>
   );
 }
