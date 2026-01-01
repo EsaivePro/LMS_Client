@@ -28,7 +28,7 @@ video {
 
 video {
     outline: none;
-    background: #000;
+    background: var(--textPrimary);
     border-radius: 0;
     opacity: 1;
     transition: opacity 0.25s ease-in-out, filter 0.25s ease-in-out;

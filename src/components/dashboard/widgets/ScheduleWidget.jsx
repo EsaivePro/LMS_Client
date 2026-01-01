@@ -37,9 +37,9 @@ function CourseCard({ course, index, width = 300 }) {
     const progress = course.progress ?? 0;
 
     return (
-        <Box sx={{ minWidth: width, maxWidth: width, height: 230, borderRadius: 1, overflow: "hidden", backgroundColor: "#fff", boxShadow: 1, transition: "transform .35s ease, box-shadow .35s ease", "&:hover": { transform: "scale(1.02)", boxShadow: 2 } }}>
+        <Box sx={{ minWidth: width, maxWidth: width, height: 230, borderRadius: 1, overflow: "hidden", backgroundColor: "var(--surface)", boxShadow: 1, transition: "transform .35s ease, box-shadow .35s ease", "&:hover": { transform: "scale(1.02)", boxShadow: 2 } }}>
             <Box sx={{ p: 2.5, position: "relative" }}>
-                <Box sx={{ position: "absolute", top: 16, right: 16, width: 42, height: 42, borderRadius: "50%", backgroundColor: accent, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700 }}>
+                <Box sx={{ position: "absolute", top: 16, right: 16, width: 42, height: 42, borderRadius: "50%", backgroundColor: accent, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--onPrimary)", fontWeight: 700 }}>
                     <StyleIcon />
                 </Box>
 
@@ -54,7 +54,7 @@ function CourseCard({ course, index, width = 300 }) {
 
             {progress !== null && (
                 <Box sx={{ px: 2.5 }}>
-                    <LinearProgress variant="determinate" value={progress} sx={{ height: 6, borderRadius: 3, backgroundColor: "#eee", "& .MuiLinearProgress-bar": { backgroundColor: accent } }} />
+                    <LinearProgress variant="determinate" value={progress} sx={{ height: 6, borderRadius: 3, backgroundColor: "var(--lightgrey)", "& .MuiLinearProgress-bar": { backgroundColor: accent } }} />
                     <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block" }}>{progress}% completed</Typography>
                 </Box>
             )}
@@ -102,7 +102,7 @@ function CourseCarousel({ title, courses }) {
                     </Typography>
                 </Box>
             ) : (
-                <Box ref={ref} sx={{ display: "flex", gap: 3, p: 3, pt: 2, overflowX: "auto", scrollBehavior: "smooth", "&::-webkit-scrollbar": { height: 6 }, "&::-webkit-scrollbar-thumb": { backgroundColor: "#ccc", borderRadius: 4 }, backgroundColor: "transparent" }}>
+                <Box ref={ref} sx={{ display: "flex", gap: 3, p: 3, pt: 2, overflowX: "auto", scrollBehavior: "smooth", "&::-webkit-scrollbar": { height: 6 }, "&::-webkit-scrollbar-thumb": { backgroundColor: "var(--lightgrey)", borderRadius: 4 }, backgroundColor: "transparent" }}>
                     {courses.map((course, idx) => (<CourseCard key={course.id || idx} course={course} index={idx} width={320} />))}
                 </Box>)}
         </Box>

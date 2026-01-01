@@ -275,7 +275,7 @@ export default function DataTable({
                     gap: 1,
                     alignItems: "center",
                     p: 2,
-                    borderBottom: "1px solid #eee",
+                    borderBottom: "1px solid var(--lightgrey)",
                 }}
             >
                 {columns
@@ -303,8 +303,8 @@ export default function DataTable({
                                             display: "flex",
                                             alignItems: "center",
                                             justifyContent: "center",
-                                            backgroundColor: "#f5f5f5",
-                                            border: "1px solid #e0e0e0",
+                                            backgroundColor: "var(--lightgrey)",
+                                            border: "1px solid var(--lightgrey)",
                                             borderRadius: 1,
                                             height: 40,
                                         }}
@@ -453,7 +453,7 @@ export default function DataTable({
                                     onClick={() => handleSort(col)}
                                     sx={{
                                         fontWeight: 600,
-                                        background: "#fafafa",
+                                        background: "var(--lightgrey)",
                                         cursor: col.sortable === false ? "default" : "pointer",
                                     }}
                                 >

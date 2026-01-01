@@ -625,7 +625,7 @@ const CourseView = () => {
     // ================================================
     return (
         <Box sx={{
-            background: darkMode ? "#0f1724" : "#f5f7fb", width: "100%",
+            background: darkMode ? "var(--textPrimary)" : "var(--bg)", width: "100%",
             maxWidth: "100%",
             minHeight: "100vh",
             p: 0,

@@ -6,25 +6,30 @@
     --primary: #1f5fbf;
     --primary-light: #e6f0ff;
     --secondary: #3B82F6;
-    --bgLight: linear-gradient(180deg, var(--primary-light) 0%, #ffffff 100%);
+    --bgLight: linear-gradient(180deg, var(--primary-light) 0%, var(--surface) 100%);
     --accent: #60A5FA;
     --bg: #f7fbff;
     --surface: rgb(255, 255, 255);
+    --onPrimary: #ffffff;
     --text: #123a6b;
     --lightgrey: #f4f4f4ff;
 
-    --primaryColor: #0586f5;
-    --secondaryColor: #004568;
+    --primary: #1E88E5;
+    --secondary: #9ACD32;
     --thridColor: #005985;
     --fourthColor: #006395;
+    --accent: #9ACD32;
+    --bg: #ffffff;
+    --surface: #fbfbfbff;
+    --text: #212121;
 }
 
 .primaryColor {
-    color: var(--primaryColor);
+    color: var(--primary);
 }
 
 .secondaryColor {
-    color: var(--secondaryColor);
+    color: var(--secondary);
 }
 
 .thridColor {

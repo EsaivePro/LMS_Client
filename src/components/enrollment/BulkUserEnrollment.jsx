@@ -18,7 +18,7 @@ import ShowPopup from "../common/dialog/ShowPopup";
 /* ---------------- Section ---------------- */
 const Section = ({ title, children }) => (
     <Card variant="outlined">
-        <Box sx={{ px: 3, py: 1.5, bgcolor: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
+        <Box sx={{ px: 3, py: 1.5, bgcolor: "var(--lightgrey)", borderBottom: "1px solid var(--lightgrey)" }}>
             <Typography fontWeight={600}>{title}</Typography>
         </Box>
         <CardContent>
@@ -158,8 +158,8 @@ export default function BulkUserEnrollment({
                             bottom: 0,
                             mt: 4,
                             p: 2,
-                            bgcolor: "#fff",
-                            borderTop: "1px solid #e5e7eb",
+                            bgcolor: "var(--surface)",
+                            borderTop: "1px solid var(--lightgrey)",
                             display: "flex",
                             gap: 2,
                         }}

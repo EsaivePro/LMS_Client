@@ -68,7 +68,7 @@ export default function Dashboard() {
     dispatch(setContainerTitle("Dashboard"));
   }, [dispatch]);
   return (
-    <Box sx={{ p: { xs: 2, sm: 3 }, mt: 4, backgroundColor: "#f9f9f9", minHeight: "100vh" }}>
+    <Box sx={{ p: { xs: 2, sm: 3 }, mt: 4, backgroundColor: "var(--lightgrey)", minHeight: "100vh" }}>
 
       {/* ---------- Summary Cards ---------- */}
       <Box
@@ -139,7 +139,7 @@ export default function Dashboard() {
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="users" fill="#1976d2" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="users" fill="var(--primary)" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </Paper>
@@ -161,7 +161,7 @@ export default function Dashboard() {
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="pass" stroke="#1976d2" strokeWidth={3} />
+              <Line type="monotone" dataKey="pass" stroke="var(--primary)" strokeWidth={3} />
             </LineChart>
           </ResponsiveContainer>
         </Paper>

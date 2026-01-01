@@ -63,7 +63,7 @@ function CourseCard({ course, index, width = 300 }) {
                 height: 230,
                 borderRadius: 1,
                 overflow: "hidden",
-                backgroundColor: "#fff",
+                backgroundColor: "var(--surface)",
                 boxShadow: 1,
                 // boxShadow: "0 10px 20px rgba(0, 0, 0, 0.12)",
                 transition: "transform .35s ease, box-shadow .35s ease",
@@ -88,7 +88,7 @@ function CourseCard({ course, index, width = 300 }) {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        color: "#fff",
+                        color: "var(--onPrimary)",
                         fontWeight: 700,
                     }}
                 >
@@ -154,7 +154,7 @@ function CourseCard({ course, index, width = 300 }) {
                         sx={{
                             height: 6,
                             borderRadius: 3,
-                            backgroundColor: "#eee",
+                            backgroundColor: "var(--lightgrey)",
                             "& .MuiLinearProgress-bar": {
                                 backgroundColor: accent,
                             },
@@ -299,7 +299,7 @@ function CourseCarousel({ title, courses }) {
                     scrollBehavior: "smooth",
                     "&::-webkit-scrollbar": { height: 6 },
                     "&::-webkit-scrollbar-thumb": {
-                        backgroundColor: "#ccc",
+                        backgroundColor: "var(--lightgrey)",
                         borderRadius: 4,
                     },
                     backgroundColor: "transparent",
@@ -312,7 +312,7 @@ function CourseCarousel({ title, courses }) {
                         index={idx}
                         width={320}
                     />
-                )) : <Box sx={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", minHeight: 150, backgroundColor: "#fdfdfdff", borderRadius: 1, boxShadow: 1, p: 3 }}>
+                )) : <Box sx={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", minHeight: 150, backgroundColor: "var(--surface)", borderRadius: 1, boxShadow: 1, p: 3 }}>
 
                     <Typography variant="h6" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <CollectionsBookmarkIcon color="text.secondary" fontSize={isMobile ? "medium" : "medium"} />

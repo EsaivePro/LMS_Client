@@ -71,7 +71,7 @@ export default function AddQuestions() {
             minHeight: 200,
             fontSize: "16px",
             lineHeight: "1.6",
-            backgroundColor: "#f9fafb", // light gray background
+            backgroundColor: "var(--lightgrey)", // light gray background
             padding: "10px",
             borderRadius: "8px",
             border: "0px", // light border
@@ -141,11 +141,10 @@ export default function AddQuestions() {
                 </label>
 
                 <button
-                  className={`p-2 rounded-md transition ${
-                    canRemoveOption(i) && qstate.options.length > 2
+                  className={`p-2 rounded-md transition ${canRemoveOption(i) && qstate.options.length > 2
                       ? "bg-red-500 hover:bg-red-600 text-white"
                       : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  }`}
+                    }`}
                   onClick={() =>
                     canRemoveOption(i) &&
                     qstate.options.length > 2 &&
@@ -167,11 +166,10 @@ export default function AddQuestions() {
 
         <div className="mt-3 flex items-center gap-3">
           <button
-            className={`inline-flex items-center gap-2 px-3 py-2 rounded-md ${
-              qstate.options.length >= MAX_OPTIONS
+            className={`inline-flex items-center gap-2 px-3 py-2 rounded-md ${qstate.options.length >= MAX_OPTIONS
                 ? "bg-gray-200 text-gray-400"
                 : "bg-green-600 text-white hover:bg-green-700"
-            }`}
+              }`}
             onClick={handleAddOption}
             disabled={qstate.options.length >= MAX_OPTIONS}
             id="add-option-btn"

@@ -18,7 +18,7 @@ export default function RoleDrawer({ open, mode, roleData, onClose, onSave, exis
                     sx={{
                         px: 3,
                         py: 2,
-                        borderBottom: "1px solid #e5e7eb",
+                        borderBottom: "1px solid var(--lightgrey)",
                         display: "flex",
                         justifyContent: "space-between",
                     }}

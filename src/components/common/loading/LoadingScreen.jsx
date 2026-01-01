@@ -20,7 +20,7 @@ export default function LoadingScreen() {
     return (
         <Backdrop
             sx={{
-                color: "#fff",
+                color: "var(--onPrimary)",
                 zIndex: (theme) => theme.zIndex.drawer + 1000,
             }}
             open={loadingOverlay}

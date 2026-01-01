@@ -21,7 +21,7 @@ export default function Footer() {
     <Box
       component="footer"
       sx={{
-        background: "#fbfbfbff",
+        background: "var(--surface)",
         marginTop: { xs: "-48px", md: "-48px" },
         pt: { xs: 4, md: 6 },
         pb: 3,
@@ -33,7 +33,7 @@ export default function Footer() {
         <Box >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, textAlign: { xs: 'center', md: 'left' } }}>
             <img src="/logo/EsaiLogo.png" alt="LMS" width={42} />
-            <Typography variant="h6" sx={{ fontWeight: 700, color: 'var(--primaryColor)', textTransform: 'uppercase' }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase' }}>
               lms
             </Typography>
           </Box>
@@ -55,7 +55,7 @@ export default function Footer() {
               <IconButton
                 key={i}
                 sx={{
-                  color: "var(--primaryColor)",
+                  color: "var(--primary)",
                   "&:hover": {
                     transform: "scale(1.2)",
                     color: item.color,
@@ -73,7 +73,7 @@ export default function Footer() {
             sx={{
               fontWeight: 700,
               mb: 2,
-              color: "var(--primaryColor)",
+              color: "var(--primary)",
               textAlign: "center",
             }}
           >
@@ -113,7 +113,7 @@ export default function Footer() {
               sx={{
                 fontWeight: 700,
                 mb: 2,
-                color: "var(--primaryColor)",
+                color: "var(--primary)",
               }}
             >
               Contact Us
@@ -146,7 +146,7 @@ export default function Footer() {
           sx={{
             fontSize: 12,
             opacity: 0.7,
-            color: "var(--primaryColor)",
+            color: "var(--primary)",
           }}
         >
           © {new Date().getFullYear()} LMS Platform — All Rights Reserved.
@@ -171,7 +171,7 @@ function FooterFeature({ text }) {
       <CheckCircleIcon
         sx={{
           fontSize: 18,
-          color: "var(--primaryColor)",
+          color: "var(--primary)",
           opacity: 0.7,
           flexShrink: 0,
         }}

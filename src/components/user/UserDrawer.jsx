@@ -11,7 +11,7 @@ export default function UserDrawer({ mode, user, onClose }) {
                 sx={{
                     px: 3,
                     py: 2,
-                    borderBottom: "1px solid #e5e7eb",
+                    borderBottom: "1px solid var(--lightgrey)",
                     display: "flex",
                     justifyContent: "space-between",
                 }}

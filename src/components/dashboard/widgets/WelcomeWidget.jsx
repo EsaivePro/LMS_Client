@@ -126,7 +126,7 @@ export default function WelcomeWidget() {
                             },
                         }}
                     >
-                        <WavingHandIcon htmlColor="#434343ff" />
+                        <WavingHandIcon htmlColor="var(--textPrimary)" />
                     </Box> */}
                 </Typography>
 

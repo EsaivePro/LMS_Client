@@ -78,8 +78,8 @@ export default function UserManagement() {
                     position: "sticky",
                     top: 64,
                     zIndex: 10,
-                    borderBottom: "1px solid #e0e0e0",
-                    backgroundColor: "#fff",
+                    borderBottom: "1px solid var(--lightgrey)",
+                    backgroundColor: "var(--surface)",
                 }}
             >
                 <Box sx={{ px: { xs: 2, md: 3 }, py: 1.5 }}>
@@ -106,7 +106,7 @@ export default function UserManagement() {
                             value={currentTab}
                             onChange={handleChange}
                             sx={{
-                                backgroundColor: "#ffffffff",
+                                backgroundColor: "var(--surface)",
                                 borderRadius: 0,
                                 minHeight: 0,
                                 "& .MuiTab-root": {
@@ -118,8 +118,8 @@ export default function UserManagement() {
                                     border: 0,
                                 },
                                 "& .Mui-selected": {
-                                    backgroundColor: "#efefefff !important",
-                                    color: "#353535ff",
+                                    backgroundColor: "var(--lightgrey) !important",
+                                    color: "var(--textPrimary)",
                                 },
                             }}
                             aria-label="User management tabs"

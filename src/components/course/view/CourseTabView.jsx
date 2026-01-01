@@ -4,13 +4,13 @@ import { Box, Tabs, Tab, Card, Typography, TextField, Rating, Button } from "@mu
 const CourseTabView = ({ value, handleChange, selectedLesson, darkMode }) => {
     return (
         <>
-            <Box sx={{ borderBottom: "1px solid #ddd", width: "100%", backgroundColor: "white" }}>
+            <Box sx={{ borderBottom: "1px solid var(--lightgrey)", width: "100%", backgroundColor: "var(--surface)" }}>
                 <Tabs
                     value={value}
                     onChange={handleChange}
                     sx={{
                         px: 2,
-                        "& .MuiTabs-indicator": { backgroundColor: "#1f1f1f", height: 2 }
+                        "& .MuiTabs-indicator": { backgroundColor: "var(--textPrimary)", height: 2 }
                     }}
                 >
                     <Tab label="Overview" sx={{ textTransform: "none", fontSize: "16px", fontWeight: 600 }} />

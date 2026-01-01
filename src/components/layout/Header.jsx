@@ -149,7 +149,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                             sx={{
                                 fontWeight: 600,
                                 fontSize: { xs: 18, sm: 18, md: 20 },
-                                color: "var(--primaryColor)",
+                                color: "var(--primary)",
 
                                 /* 🔑 no wrap + ellipsis */
                                 whiteSpace: "nowrap",
@@ -188,7 +188,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                                     sx={{
                                         width: searchFocused ? 300 : 260,
                                         transition: "width 0.25s ease",
-                                        background: "#fff",
+                                        background: "var(--surface)",
                                         borderRadius: 2,
                                     }}
                                     InputProps={{
@@ -405,7 +405,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                     sx={{
                         position: "fixed",
                         inset: 0,
-                        bgcolor: "#fff",
+                        bgcolor: "var(--surface)",
                         zIndex: 1300,
                         p: 2,
                     }}

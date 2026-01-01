@@ -35,7 +35,7 @@ const CourseHeader = ({
             position="static"          // <<< FIX: STATIC HEADER (NOT FIXED)
             sx={{
                 width: isMobile ? "100%" : `calc(100% - ${drawerWidth}px)`,
-                backgroundColor: "#1c1c24",
+                backgroundColor: "var(--textPrimary)",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
                 zIndex: 1300,
             }}
@@ -52,7 +52,7 @@ const CourseHeader = ({
                 {/* LEFT SIDE */}
                 <Stack direction="row" spacing={1.5} alignItems="center">
                     {showMenuButton && (
-                        <IconButton onClick={onMenuClick} sx={{ color: "white" }}>
+                        <IconButton onClick={onMenuClick} sx={{ color: "var(--onPrimary)" }}>
                             <MenuIcon sx={{ fontSize: 28 }} />
                         </IconButton>
                     )}
@@ -61,7 +61,7 @@ const CourseHeader = ({
                         sx={{
                             fontSize: "20px",
                             fontWeight: 600,
-                            color: "white",
+                            color: "var(--onPrimary)",
                             maxWidth: isMobile ? "260px" : "520px",
                             whiteSpace: "nowrap",
                             overflow: "hidden",
@@ -77,7 +77,7 @@ const CourseHeader = ({
                     <IconButton
                         onClick={toggleFavorite}
                         sx={{
-                            color: isFav ? "var(--primaryColor)" : "white",
+                            color: isFav ? "var(--primary)" : "var(--onPrimary)",
                         }}
                     >
                         {isFav ? (
@@ -95,7 +95,7 @@ const CourseHeader = ({
                                 value={courseProgress?.progress_percent || 0}
                                 size={42}
                                 thickness={3}
-                                sx={{ color: "var(--primaryColor)" }}
+                                sx={{ color: "var(--primary)" }}
                             />
                             <Box
                                 sx={{
@@ -107,16 +107,16 @@ const CourseHeader = ({
                                 }}
                             >
                                 <EmojiEventsIcon
-                                    sx={{ fontSize: 18, color: "var(--primaryColor)" }}
+                                    sx={{ fontSize: 18, color: "var(--primary)" }}
                                 />
                             </Box>
                         </Box>
 
                         <Box>
-                            <Typography sx={{ fontWeight: 500, color: "white" }}>
+                            <Typography sx={{ fontWeight: 500, color: "var(--onPrimary)" }}>
                                 Your progress
                             </Typography>
-                            <Typography sx={{ fontSize: 12, color: "#d1d1d1" }}>
+                            <Typography sx={{ fontSize: 12, color: "var(--textSecondary)" }}>
                                 {courseProgress?.completed_lessons || 0} of {courseProgress?.total_lessons || 0} complete
                             </Typography>
                         </Box>

@@ -196,8 +196,8 @@ export default function SideBarWithHeader({ children }) {
                         left: open ? 0 : -drawerWidth,
                         width: drawerWidth,
                         height: "calc(100vh - 64px)",
-                        background: "linear-gradient(180deg, #39abe0, #2575fc)",
-                        color: "#fff",
+                        background: "linear-gradient(180deg, var(--primary), var(--primaryLight))",
+                        color: "var(--onPrimary)",
                         transition: "left 0.3s ease",
                         zIndex: 2000,
                         overflowY: "auto",
@@ -214,7 +214,7 @@ export default function SideBarWithHeader({ children }) {
                             px: 2,
                         }}
                     >
-                        <IconButton onClick={() => setOpen(false)} sx={{ color: "white" }}>
+                        <IconButton onClick={() => setOpen(false)} sx={{ color: "var(--onPrimary)" }}>
                             <ChevronLeftIcon />
                         </IconButton>
                     </Box>
@@ -251,9 +251,9 @@ export default function SideBarWithHeader({ children }) {
                                                         backgroundColor: isActive
                                                             ? "rgba(255,255,255,0.9)"
                                                             : "transparent",
-                                                        color: isActive ? "#000" : "#fff",
+                                                        color: isActive ? "var(--textPrimary)" : "var(--onPrimary)",
                                                         borderLeft: isActive
-                                                            ? "4px solid #fff"
+                                                            ? "4px solid var(--onPrimary)"
                                                             : "4px solid transparent",
                                                         "&:hover": {
                                                             backgroundColor: isActive
@@ -264,7 +264,7 @@ export default function SideBarWithHeader({ children }) {
                                                 >
                                                     <ListItemIcon
                                                         sx={{
-                                                            color: isActive ? "#000" : "#fff",
+                                                            color: isActive ? "var(--textPrimary)" : "var(--onPrimary)",
                                                             minWidth: 40,
                                                         }}
                                                     >
@@ -288,14 +288,14 @@ export default function SideBarWithHeader({ children }) {
                                                         ? "rgba(255,255,255,0.15)"
                                                         : "transparent",
                                                     borderLeft: isGroupActive
-                                                        ? "4px solid #fff"
+                                                        ? "4px solid var(--onPrimary)"
                                                         : "4px solid transparent",
                                                     "&:hover": {
                                                         backgroundColor: "rgba(255,255,255,0.20)",
                                                     },
                                                 }}
                                             >
-                                                <ListItemIcon sx={{ color: "#fff", minWidth: 40 }}>
+                                                <ListItemIcon sx={{ color: "var(--onPrimary)", minWidth: 40 }}>
                                                     {item.icon}
                                                 </ListItemIcon>
                                                 <ListItemText primary={item.label} />
@@ -327,10 +327,10 @@ export default function SideBarWithHeader({ children }) {
                                                                                 ? "rgba(255,255,255,0.9)"
                                                                                 : "transparent",
                                                                             color: isChildActive
-                                                                                ? "#000"
-                                                                                : "#fff",
+                                                                                ? "var(--textPrimary)"
+                                                                                : "var(--onPrimary)",
                                                                             borderLeft: isChildActive
-                                                                                ? "4px solid #fff"
+                                                                                ? "4px solid var(--onPrimary)"
                                                                                 : "4px solid transparent",
                                                                             "&:hover": {
                                                                                 backgroundColor:
@@ -343,8 +343,8 @@ export default function SideBarWithHeader({ children }) {
                                                                         <ListItemIcon
                                                                             sx={{
                                                                                 color: isChildActive
-                                                                                    ? "#000"
-                                                                                    : "#fff",
+                                                                                    ? "var(--textPrimary)"
+                                                                                    : "var(--onPrimary)",
                                                                                 minWidth: 40,
                                                                             }}
                                                                         >
@@ -382,9 +382,9 @@ export default function SideBarWithHeader({ children }) {
                                         backgroundColor: false
                                             ? "rgba(255,255,255,0.9)"
                                             : "transparent",
-                                        color: false ? "#000" : "#fff",
+                                        color: false ? "var(--textPrimary)" : "var(--onPrimary)",
                                         borderLeft: false
-                                            ? "4px solid #fff"
+                                            ? "4px solid var(--onPrimary)"
                                             : "4px solid transparent",
                                         "&:hover": {
                                             backgroundColor: false
@@ -395,7 +395,7 @@ export default function SideBarWithHeader({ children }) {
                                 >
                                     <ListItemIcon
                                         sx={{
-                                            color: false ? "#000" : "#fff",
+                                            color: false ? "var(--textPrimary)" : "var(--onPrimary)",
                                             minWidth: 40,
                                         }}
                                     >
@@ -417,9 +417,9 @@ export default function SideBarWithHeader({ children }) {
                                         backgroundColor: false
                                             ? "rgba(255,255,255,0.9)"
                                             : "transparent",
-                                        color: false ? "#000" : "#fff",
+                                        color: false ? "var(--textPrimary)" : "var(--onPrimary)",
                                         borderLeft: false
-                                            ? "4px solid #fff"
+                                            ? "4px solid var(--onPrimary)"
                                             : "4px solid transparent",
                                         "&:hover": {
                                             backgroundColor: false
@@ -430,7 +430,7 @@ export default function SideBarWithHeader({ children }) {
                                 >
                                     <ListItemIcon
                                         sx={{
-                                            color: false ? "#000" : "#fff",
+                                            color: false ? "var(--textPrimary)" : "var(--onPrimary)",
                                             minWidth: 40,
                                         }}
                                     >

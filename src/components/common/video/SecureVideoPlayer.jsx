@@ -335,7 +335,7 @@ export default function SecureVideoPlayer({
                 position: "relative",
                 width: "100%",
                 height: "100%",
-                background: "#000",
+                background: "var(--textPrimary)",
                 overflow: "hidden",
                 userSelect: "none",
                 cursor: showOverlay ? "default" : "none"
@@ -454,13 +454,13 @@ export default function SecureVideoPlayer({
                         max={duration || 0}
                         onChange={handleSeek}
                         sx={{
-                            color: "#1976d2",
+                            color: "var(--primary)",
                             height: 4,
                             "& .MuiSlider-thumb": {
                                 width: 12,
                                 height: 12,
-                                backgroundColor: "#fff",
-                                border: "2px solid #1976d2",
+                                backgroundColor: "var(--surface)",
+                                border: "2px solid var(--primary)",
                             },
                             "& .MuiSlider-rail": {
                                 opacity: 0.3,
@@ -527,7 +527,7 @@ export default function SecureVideoPlayer({
                                 onChange={handleVolume}
                                 sx={{
                                     width: 90,
-                                    color: "#1976d2",
+                                    color: "var(--primary)",
                                     "& .MuiSlider-thumb": {
                                         width: 10,
                                         height: 10,
@@ -553,10 +553,10 @@ export default function SecureVideoPlayer({
                                                 borderRadius: "6px",
                                                 fontSize: "13px",
                                                 color:
-                                                    speed === s ? "#1976d2" : "white",
+                                                    speed === s ? "var(--primary)" : "white",
                                                 border:
                                                     speed === s
-                                                        ? "1px solid #1976d2"
+                                                        ? "1px solid var(--primary)"
                                                         : "1px solid rgba(255,255,255,0.4)",
                                                 cursor: "pointer",
                                                 transition: "0.25s",

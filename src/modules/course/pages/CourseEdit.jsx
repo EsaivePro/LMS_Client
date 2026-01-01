@@ -111,12 +111,10 @@ const CourseEdit = () => {
     useEffect(() => {
         const courseId = parseInt(id);
         if (!courseId) return;
-
         const found = getCourseById(courseId);
 
         if (found) {
             setCourseDetail({
-                id: found.courseId || found.id,
                 title: found.courseTitle || found.title,
                 description: found.courseDescription || found.description,
             });
@@ -143,13 +141,6 @@ const CourseEdit = () => {
         setTopicDialog(true);
         setTopicAction("Create");
     };
-
-    const updateTopic = (topicId) => {
-        setUpdateTopicId(topicId);
-        setTopicDialog(true);
-        setTopicAction("Update");
-    };
-
     const deleteTopic = (topicId) => {
         setUpdateTopicId(topicId);
         setTopicDialog(true);
@@ -281,7 +272,7 @@ const CourseEdit = () => {
                     sx={{
                         mb: 2,
                         borderRadius: 1,
-                        background: "var(--primaryColor)"
+                        background: "var(--primary)"
                     }}
                     onClick={addTopic}
                 >
@@ -345,8 +336,8 @@ const CourseEdit = () => {
                                                 p: 2,
                                                 mb: 1.5,
                                                 borderRadius: 1,
-                                                bgcolor: "#f3f4ff",
-                                                border: "1px solid #e0e7ff"
+                                                bgcolor: "var(--lightgrey)",
+                                                border: "1px solid var(--lightgrey)"
                                             }}
                                         >
                                             <Stack direction="row" spacing={2} alignItems="center">
@@ -393,14 +384,14 @@ const CourseEdit = () => {
                                                     <IconButton
                                                         onClick={() => handlePreview(lesson)}
                                                         sx={{
-                                                            bgcolor: "#eef2ff",
-                                                            "&:hover": { bgcolor: "#e0e7ff" },
+                                                            bgcolor: "var(--lightgrey)",
+                                                            "&:hover": { bgcolor: "var(--lightgrey)" },
                                                             borderRadius: 2
                                                         }}
                                                     >
                                                         {lesson?.type === "Video"
-                                                            ? <PlayCircleOutlineIcon sx={{ color: "#4f46e5" }} />
-                                                            : <PictureAsPdfIcon sx={{ color: "#dc2626" }} />
+                                                            ? <PlayCircleOutlineIcon sx={{ color: "var(--primary)" }} />
+                                                            : <PictureAsPdfIcon sx={{ color: "var(--danger)" }} />
                                                         }
                                                     </IconButton>
                                                 </Tooltip>
@@ -409,7 +400,7 @@ const CourseEdit = () => {
                                                     <IconButton
                                                         onClick={() => handleUpdateLesson(topic.id, lesson.id)}
                                                     >
-                                                        {(lesson?.video_url == "" || lesson?.video_url == null) ? <FileUploadOffIcon sx={{ color: "#555555ff" }} /> : <EditIcon color="primary" />}
+                                                        {(lesson?.video_url == "" || lesson?.video_url == null) ? <FileUploadOffIcon sx={{ color: "var(--textSecondary)" }} /> : <EditIcon color="primary" />}
                                                     </IconButton>
                                                 </Tooltip>
 
@@ -430,9 +421,9 @@ const CourseEdit = () => {
                                         onClick={() => handleAddLesson(topic.id)}
                                         sx={{
                                             mt: 1,
-                                            bgcolor: "#eef2ff",
+                                            bgcolor: "var(--lightgrey)",
                                             borderRadius: 1,
-                                            "&:hover": { bgcolor: "#e0e7ff" },
+                                            "&:hover": { bgcolor: "var(--lightgrey)" },
                                         }}
                                     >
                                         Add Lesson
@@ -464,7 +455,7 @@ const CourseEdit = () => {
                             </Typography>
 
                             <Typography variant="body2" sx={{
-                                background: "#edededff",
+                                background: "var(--lightgrey)",
                                 p: 2.5,
                                 borderRadius: 2
                             }}>
@@ -495,7 +486,7 @@ const CourseEdit = () => {
                         alignItems: "center",
                         px: 2,
                         py: 1,
-                        bgcolor: "#f3f4f6"
+                        bgcolor: "var(--lightgrey)"
                     }}>
                         <Typography fontWeight={500}>
                             {previewLesson?.title}

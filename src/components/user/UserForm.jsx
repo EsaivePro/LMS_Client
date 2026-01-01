@@ -74,7 +74,7 @@ const schema = (mode, resetPassword) =>
 /* -------------------- Section Card -------------------- */
 const Section = ({ title, children }) => (
     <Card variant="outlined" sx={{ width: "100%" }}>
-        <Box sx={{ px: 3, py: 1.5, background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
+        <Box sx={{ px: 3, py: 1.5, background: "var(--lightgrey)", borderBottom: "1px solid var(--lightgrey)" }}>
             <Typography fontWeight={600}>{title}</Typography>
         </Box>
         <CardContent sx={{ p: 3 }}>
@@ -303,7 +303,7 @@ export default function UserForm({ mode = "create", user, onSuccess, onCancel, p
             </Stack>
 
             {/* Sticky Footer */}
-            <Box sx={{ position: "sticky", bottom: 0, mt: 4, background: "#fff", borderTop: "1px solid #e5e7eb", boxShadow: "0 -4px 12px rgba(0,0,0,0.06)", zIndex: 10 }}>
+            <Box sx={{ position: "sticky", bottom: 0, mt: 4, background: "var(--surface)", borderTop: "1px solid var(--lightgrey)", boxShadow: "0 -4px 12px rgba(0,0,0,0.06)", zIndex: 10 }}>
                 {Object.keys(errors).length > 0 && (
                     <Typography variant="caption" color="error" sx={{ px: 2 }}>
                         {Object.keys(errors).length} required field(s) missing

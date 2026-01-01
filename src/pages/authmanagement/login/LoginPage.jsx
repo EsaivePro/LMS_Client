@@ -157,7 +157,7 @@ export default function LoginPage() {
                         <Typography
                             variant="h4"
                             sx={{
-                                color: "white",
+                                color: "var(--text)",
                                 fontWeight: 700,
                                 letterSpacing: "2px"
                             }}
@@ -172,7 +172,7 @@ export default function LoginPage() {
                             variant="body2"
                             sx={{
                                 textAlign: "center",
-                                color: "#eee",
+                                color: "var(--text)",
                                 // fontSize: "13px",
                                 // maxWidth: "90%",
                                 lineHeight: 1.4
@@ -205,7 +205,7 @@ export default function LoginPage() {
                         error={Boolean(errors.user)}
                         helperText={errors.user}
                         sx={{
-                            backgroundColor: "rgba(255,255,255,0.9)",
+                            backgroundColor: "var(--surface)",
                             borderRadius: "6px",
                         }}
                     />
@@ -222,7 +222,7 @@ export default function LoginPage() {
                         error={Boolean(errors.password)}
                         helperText={errors.password}
                         sx={{
-                            backgroundColor: "rgba(255,255,255,0.9)",
+                            backgroundColor: "var(--surface)",
                             borderRadius: "6px",
                         }}
                     />
@@ -239,17 +239,17 @@ export default function LoginPage() {
                             control={
                                 <Checkbox
                                     size="small"
-                                    sx={{ color: "#fff" }}
+                                    sx={{ color: "var(--text)" }}
                                     checked={loginData.remember}
                                     onChange={(e) =>
                                         setLoginData({ ...loginData, remember: e.target.checked })
                                     }
                                 />
                             }
-                            label={<Typography sx={{ color: "#fff", fontSize: 13 }}>Remember me</Typography>}
+                            label={<Typography sx={{ color: "var(--text)", fontSize: 13 }}>Remember me</Typography>}
                         />
 
-                        <Link href="#" sx={{ color: "#fff", fontSize: 13 }}>
+                        <Link href="#" sx={{ color: "var(--text)", fontSize: 13 }}>
                             Forgot password?
                         </Link>
                     </Box>
@@ -257,17 +257,17 @@ export default function LoginPage() {
                     <Button
                         fullWidth
                         variant="contained"
-                        sx={{ backgroundColor: "#fff", color: "#333", fontWeight: 700 }}
+                        sx={{ backgroundColor: "var(--surface)", color: "var(--text)", fontWeight: 700 }}
                         onClick={handleSubmit}
                     >
                         LOGIN
                     </Button>
 
                     <Box sx={{ mt: 1 }}>
-                        <IconButton sx={{ color: "#fff" }}>
+                        <IconButton sx={{ color: "var(--text)" }}>
                             <HelpOutlineIcon />
                         </IconButton>
-                        <Typography variant="caption" sx={{ color: "#fff" }}>
+                        <Typography variant="caption" sx={{ color: "var(--onPrimary)" }}>
                             Help & Support
                         </Typography>
                     </Box>
@@ -278,14 +278,14 @@ export default function LoginPage() {
                     <Typography
                         variant="caption"
                         sx={{
-                            color: "#ddd",
+                            color: "var(--textSecondary)",
                             cursor: "pointer",
                             "&:hover": { textDecoration: "underline" }
                         }}
                     >
                         Terms & Conditions | Privacy Policy
                     </Typography>
-                    <Divider sx={{ borderColor: "#ccc", mb: 1 }} />
+                    <Divider sx={{ borderColor: "var(--textSecondary)", mb: 1 }} />
 
                 </Box>
             </Paper>

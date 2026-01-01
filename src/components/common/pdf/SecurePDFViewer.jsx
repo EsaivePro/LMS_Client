@@ -171,23 +171,23 @@ export default function SecurePDFViewer({ keyPath, user = {}, pageToOpen = 1 }) 
     };
 
     return (
-        <Box sx={{ width: "100%", bgcolor: "#111", p: 1, borderRadius: 2 }} onContextMenu={(e) => e.preventDefault()}>
+        <Box sx={{ width: "100%", bgcolor: "var(--textPrimary)", p: 1, borderRadius: 2 }} onContextMenu={(e) => e.preventDefault()}>
             {/* Controls */}
             <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                 <IconButton size="small" onClick={() => goToPage(page - 1)} disabled={page <= 1}>
-                    <ArrowBackIosNewIcon sx={{ color: "#fff" }} />
+                    <ArrowBackIosNewIcon sx={{ color: "var(--onPrimary)" }} />
                 </IconButton>
 
-                <Typography sx={{ color: "#fff" }}>{page}/{numPages || "—"}</Typography>
+                <Typography sx={{ color: "var(--onPrimary)" }}>{page}/{numPages || "—"}</Typography>
 
                 <IconButton size="small" onClick={() => goToPage(page + 1)} disabled={page >= numPages}>
-                    <ArrowForwardIosIcon sx={{ color: "#fff" }} />
+                    <ArrowForwardIosIcon sx={{ color: "var(--onPrimary)" }} />
                 </IconButton>
 
-                <Typography sx={{ color: "#fff", ml: 1 }}>Zoom</Typography>
+                <Typography sx={{ color: "var(--onPrimary)", ml: 1 }}>Zoom</Typography>
 
                 <IconButton size="small" onClick={() => setScale((s) => Math.max(0.5, s - 0.25))}>
-                    <ZoomOutIcon sx={{ color: "#fff" }} />
+                    <ZoomOutIcon sx={{ color: "var(--onPrimary)" }} />
                 </IconButton>
 
                 <Slider
@@ -200,15 +200,15 @@ export default function SecurePDFViewer({ keyPath, user = {}, pageToOpen = 1 }) 
                 />
 
                 <IconButton size="small" onClick={() => setScale((s) => Math.min(2.5, s + 0.25))}>
-                    <ZoomInIcon sx={{ color: "#fff" }} />
+                    <ZoomInIcon sx={{ color: "var(--onPrimary)" }} />
                 </IconButton>
 
-                <Button variant="outlined" size="small" startIcon={<GetAppIcon />} sx={{ color: "#fff" }}
+                <Button variant="outlined" size="small" startIcon={<GetAppIcon />} sx={{ color: "var(--onPrimary)" }}
                     onClick={handleDownloadAttempt}>
                     Download
                 </Button>
 
-                <Typography sx={{ color: "#aaa", ml: 1 }}>
+                <Typography sx={{ color: "var(--textSecondary)", ml: 1 }}>
                     {fileSize ? `${(fileSize / (1024 * 1024)).toFixed(2)} MB` : ""}
                 </Typography>
             </Box>
@@ -233,7 +233,7 @@ export default function SecurePDFViewer({ keyPath, user = {}, pageToOpen = 1 }) 
                 </Typography>
             </Box>
 
-            {loading && <Typography sx={{ color: "#fff", mt: 2 }}>Loading…</Typography>}
+            {loading && <Typography sx={{ color: "var(--onPrimary)", mt: 2 }}>Loading…</Typography>}
             {error && <Typography sx={{ color: "red", mt: 2 }}>{error}</Typography>}
         </Box>
     );

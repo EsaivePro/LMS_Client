@@ -11,19 +11,19 @@ const summaryData = [
         title: "Total Users",
         value: "2,450",
         icon: PeopleIcon,
-        color: "#5b90faff",
+        color: "var(--primary)",
     },
     {
         title: "Total Courses",
         value: "120",
         icon: LibraryBooksIcon,
-        color: "#5b90faff",
+        color: "var(--primary)",
     },
     {
         title: "Active Users",
         value: "157",
         icon: OnlinePredictionIcon,
-        color: "#5b90faff",
+        color: "var(--primary)",
     },
 ];
 

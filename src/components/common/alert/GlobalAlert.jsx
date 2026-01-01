@@ -40,9 +40,9 @@ export default function GlobalAlert() {
                     py: 1.2,
                     minWidth: 260,
                     textAlign: "center",
-                    color: "#fff",
+                    color: "var(--onPrimary)",
                     // Custom background colors
-                    backgroundColor: "#2d2d2dff",
+                    backgroundColor: "var(--textPrimary)",
                     fontWeight: 500,
                     letterSpacing: 0.3,
                 }}

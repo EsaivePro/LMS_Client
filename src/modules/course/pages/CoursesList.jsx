@@ -230,7 +230,7 @@ export default function CoursesList() {
           <Box>
             <Typography
               variant="h6"
-              sx={{ color: "#1e293b", mb: 0.3, p: .7 }}
+              sx={{ color: "var(--textPrimary)", mb: 0.3, p: .7 }}
             >
               <Button disabled>
                 Total Courses: {filteredCourses?.length ?? 0}
@@ -264,7 +264,7 @@ export default function CoursesList() {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={{ color: "#64748b" }} />
+                <SearchIcon sx={{ color: "var(--textSecondary)" }} />
               </InputAdornment>
             ),
           }}

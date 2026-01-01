@@ -54,8 +54,8 @@ export default function ContentContainer({ children }) {
       {/* HEADER/HERO SECTION */}
       <Box
         sx={{
-          background: "linear-gradient(135deg, #1976d2 0%, #ffffff 100%)",
-          color: "white",
+          background: "linear-gradient(135deg, var(--primary) 0%, var(--surface) 100%)",
+          color: "var(--onPrimary)",
           px: isMobile ? 2 : 4,
           py: isMobile ? 3 : 4,
           display: "flex",
@@ -103,7 +103,7 @@ export default function ContentContainer({ children }) {
           pt: isMobile ? 0 : 3,
           pb: isMobile ? 1 : 3,
           mb: 0,
-          background: "#ffffffff", //"linear-gradient(135deg, #f8fbff 0%, #f8fbff 100%)",
+          background: "var(--surface)", //"linear-gradient(135deg, #f8fbff 0%, #f8fbff 100%)",
           borderRadius: 1
         }}
       >

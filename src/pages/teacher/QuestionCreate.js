@@ -329,20 +329,20 @@ export default function QuestionCreate() {
               <label className="block text-sm font-medium text-gray-700 mb-2">Question Content</label>
               <div className="mb-2 border rounded-lg overflow-hidden">
                 <ReactQuill
-                    theme="snow"
-                    value={qstate.content}
-                    onChange={(v) => setQstate((s) => ({ ...s, content: v }))}
-                    modules={quillModules}
-                    placeholder="Type the question, add images, formatting, or use the formula tool..."
-                    style={{
+                  theme="snow"
+                  value={qstate.content}
+                  onChange={(v) => setQstate((s) => ({ ...s, content: v }))}
+                  modules={quillModules}
+                  placeholder="Type the question, add images, formatting, or use the formula tool..."
+                  style={{
                     minHeight: 200,
                     fontSize: "16px",
                     lineHeight: "1.6",
-                    backgroundColor: "#f9fafb", // light gray background
+                    backgroundColor: "var(--lightgrey)", // light gray background
                     padding: "10px",
                     borderRadius: "8px",
                     border: "0px", // light border
-                    }}
+                  }}
                 />
                 <Tooltip anchorSelect=".ql-bold" content="Bold" place="top" />
                 <Tooltip anchorSelect=".ql-italic" content="Italic" place="top" />
@@ -353,7 +353,7 @@ export default function QuestionCreate() {
                 <Tooltip anchorSelect=".ql-code-block" content="Code block" place="top" />
                 <Tooltip anchorSelect=".ql-formula" content="Insert formula" place="top" />
                 <Tooltip anchorSelect=".ql-clean" content="Remove formatting" place="top" />
-                </div>
+              </div>
               <p className="text-xs text-gray-500 mb-4">
                 Tip: use the <code>formula</code> button for math or embed LaTeX like{" "}
                 <code>{'$$x = \\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$$'}</code>. Preview below.
