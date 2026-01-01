@@ -85,7 +85,7 @@ export default function WelcomeWidget() {
                     fontWeight={600}
                     sx={{
                         display: "flex",
-                        alignItems: "center",
+                        alignItems: "end",
                         gap: 1,
                         flexWrap: "wrap",                 // ✅ responsive wrap
                         fontSize: {
@@ -95,9 +95,11 @@ export default function WelcomeWidget() {
                         },
                     }}
                 >
-                    <Box component="span" sx={{ flexBasis: { xs: "100%", sm: "auto" }, display: { xs: "block", sm: "inline" }, color: "#000000ec", fontWeight: 500 }}>
-                        {greeting},
-                    </Box>
+                    {/* <Box component="span" sx={{ flexBasis: { xs: "100%", sm: "auto" }, display: { xs: "block", sm: "inline" }, color: "#000000ec", fontWeight: 500 }}> */}
+                    <Typography
+                        variant={{ xs: "h6", sm: "h5" }}
+                        fontWeight={500}>{greeting},</Typography>
+                    {/* </Box> */}
                     <Typography
                         variant="h5"
                         fontWeight={500}
@@ -112,7 +114,7 @@ export default function WelcomeWidget() {
                         {name}
                     </Typography>
 
-                    <Box
+                    {/* <Box
                         sx={{
                             display: "inline-flex",
                             transformOrigin: "70% 70%",
@@ -125,7 +127,7 @@ export default function WelcomeWidget() {
                         }}
                     >
                         <WavingHandIcon htmlColor="#434343ff" />
-                    </Box>
+                    </Box> */}
                 </Typography>
 
                 {/* Quote */}

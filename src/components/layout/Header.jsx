@@ -132,6 +132,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                     sx={{
                         justifyContent: "space-between",
                         px: { xs: 0.5, sm: 1, md: 0 }, // 🔥 MOBILE PX REDUCED
+                        minHeight: { xs: 80, sm: 64 },
                     }}
                 >
 
@@ -141,13 +142,13 @@ function Header({ toggleSidebar, profile, logout, open }) {
                             <MenuIcon />
                         </IconButton>
 
-                        <img src="/logo/EsaiLogo.png" alt="Esai" width="42" />
+                        <img src="/logo/EsaiLogo.png" alt="Esai" width="50" />
 
                         <Typography
                             variant="h6"
                             sx={{
                                 fontWeight: 600,
-                                fontSize: { xs: 16, sm: 18, md: 20 },
+                                fontSize: { xs: 18, sm: 18, md: 20 },
                                 color: "var(--primaryColor)",
 
                                 /* 🔑 no wrap + ellipsis */

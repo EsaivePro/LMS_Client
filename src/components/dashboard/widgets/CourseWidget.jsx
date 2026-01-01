@@ -273,7 +273,7 @@ function CourseCarousel({ title, courses }) {
                     alignItems: "center",
                 }}
             >
-                <Typography variant={isMobile ? "h5" : "h5"} fontWeight={500}>
+                <Typography variant={isMobile ? "h6" : "h5"} fontWeight={500}>
                     {title}
                 </Typography>
 
@@ -292,7 +292,7 @@ function CourseCarousel({ title, courses }) {
                 sx={{
                     display: "flex",
                     gap: 3,
-                    p: 3,
+                    p: 0,
                     pt: 2,
                     pb: 2,
                     overflowX: "auto",
@@ -312,12 +312,12 @@ function CourseCarousel({ title, courses }) {
                         index={idx}
                         width={320}
                     />
-                )) : <Box sx={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", minHeight: 150 }}>
+                )) : <Box sx={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", minHeight: 150, backgroundColor: "#fafafa", borderRadius: 1, boxShadow: 1, p: 3 }}>
 
                     <Typography variant="h6" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <CollectionsBookmarkIcon color="text.secondary" fontSize={isMobile ? "medium" : "large"} />
+                        <CollectionsBookmarkIcon color="text.secondary" fontSize={isMobile ? "medium" : "medium"} />
                     </Typography>
-                    <Typography variant={isMobile ? "h7" : "h6"} color="text.secondary" sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, mt: 1 }}>
+                    <Typography variant={isMobile ? "h7" : "h7"} color="text.secondary" sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, mt: 1 }}>
                         No courses have been assigned yet.
                     </Typography>
                 </Box>}

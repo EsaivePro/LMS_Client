@@ -100,10 +100,10 @@ export default function ContentContainer({ children }) {
           gap: 2,
           // mb: 3,
           mt: isMobile ? 2 : 3,
-          pt: isMobile ? 1 : 3,
+          pt: isMobile ? 0 : 3,
           pb: isMobile ? 1 : 3,
           mb: 0,
-          background: "linear-gradient(135deg, #f8fbff 0%, #f8fbff 100%)",
+          background: "#ffffffff", //"linear-gradient(135deg, #f8fbff 0%, #f8fbff 100%)",
           borderRadius: 1
         }}
       >

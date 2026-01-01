@@ -76,7 +76,7 @@ export default function StudentCountWidget() {
                                 </Typography>
 
                                 <Typography
-                                    variant="h4"
+                                    variant={isMobile ? "h5" : "h4"}
                                     fontWeight={700}
                                     lineHeight={1.2}
                                 >
@@ -87,8 +87,8 @@ export default function StudentCountWidget() {
                             {/* ICON */}
                             <Box
                                 sx={{
-                                    width: isMobile ? 40 : 56,
-                                    height: isMobile ? 40 : 56,
+                                    width: isMobile ? 30 : 56,
+                                    height: isMobile ? 30 : 56,
                                     borderRadius: "50%",
                                     display: "flex",
                                     alignItems: "center",
@@ -98,7 +98,7 @@ export default function StudentCountWidget() {
                             >
                                 <Icon
                                     sx={{
-                                        fontSize: 40,
+                                        fontSize: isMobile ? 30 : 40,
                                         color: item.color,
                                     }}
                                 />
