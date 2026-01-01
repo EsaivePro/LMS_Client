@@ -138,7 +138,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
 
                     {/* ---------------- LEFT ---------------- */}
                     <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0, md: 1 } }}>
-                        <IconButton size="small" onClick={() => toggleSidebar(!open)}>
+                        <IconButton size="medium" onClick={() => toggleSidebar(!open)}>
                             <MenuIcon />
                         </IconButton>
 
@@ -292,7 +292,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                             onClose={() => setAnchorElUser(null)}
                             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                             transformOrigin={{ vertical: "top", horizontal: "right" }}
-                            sx={{ mt: isMobile ? 1.6 : 2 }}
+                            sx={{ mt: isMobile ? 2.7 : 2 }}
                         >
                             {settings.map((s, i) => (
                                 <MenuItem
