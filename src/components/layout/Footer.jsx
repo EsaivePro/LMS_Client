@@ -13,11 +13,11 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useSelector } from "react-redux";
+import useCommon from "../../hooks/useCommon";
 
-export default function Footer() {
-  const viewFooter = useSelector((s) => s.ui.viewFooter) ?? true;
-  if (!viewFooter) return null;
-
+export default function Footer({ compView = false }) {
+  const { viewFooter } = useCommon();
+  if (!viewFooter && !compView) return null;
   return (
     <Box
       component="footer"

@@ -15,7 +15,7 @@ export default function DashboardGrid({ role }) {
             <Box>
                 {widgets.map((id) => (
                     <div key={id}>
-                        <Paper sx={{ mt: 0, mx: { xs: 0.5, md: 3 }, mb: { xs: 1, md: 1 }, p: 0.5, height: "100%", boxShadow: 0, borderRadius: 1, backgroundColor: "transparent" }}>
+                        <Paper sx={{ mt: 3, mx: { xs: 0.5, md: 3 }, mb: { xs: 1, md: 1 }, p: 0.5, height: "100%", boxShadow: 0, borderRadius: 1, backgroundColor: "transparent" }}>
                             <WidgetRenderer widgetId={id} />
                         </Paper>
                     </div>

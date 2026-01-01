@@ -89,7 +89,6 @@ export default function ContentContainer({ children }) {
           display: "flex",
           alignItems: "center",
           gap: 2,
-          mt: "43px",
           width: "100%",
           borderRadius: 1,
         }}
@@ -136,8 +135,8 @@ export default function ContentContainer({ children }) {
           flexDirection: "column",
           gap: 2,
           // mb: 3,
-          mt: isMobile ? 2 : 1,
-          pt: isMobile ? 0 : 3,
+          mt: isMobile ? 2 : 2,
+          pt: isMobile ? 0 : 0,
           pb: isMobile ? 1 : 3,
           mb: 0,
           background: "var(--onPrimary)", //"linear-gradient(135deg, #f8fbff 0%, #f8fbff 100%)",

@@ -59,10 +59,9 @@ const CourseHeader = ({
 
                     <Typography
                         sx={{
-                            fontSize: "20px",
-                            fontWeight: 600,
+                            fontSize: "18px",
+                            fontWeight: 500,
                             color: "var(--onPrimary)",
-                            maxWidth: isMobile ? "260px" : "520px",
                             whiteSpace: "nowrap",
                             overflow: "hidden",
                             textOverflow: "ellipsis",

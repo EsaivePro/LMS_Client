@@ -448,11 +448,11 @@ export default function SideBarWithHeader({ children }) {
 
                 {/* MAIN CONTENT */}
                 <Main sx={{ m: 0, p: 0, maxWidth: '100%' }}>
-                    <Box sx={{ m: isMobile ? 1.8 : 4, mt: isMobile ? 4 : 2 }}>
+                    <Box sx={{ m: isMobile ? 1.8 : 4, mt: isMobile ? 4 : 10, mb: 0 }}>
                         {viewContainerCard && <ContentContainer>{children}</ContentContainer>}
                         {(!viewContainerCard && !viewCourseCard) && <Box>{children}</Box>}
                     </Box>
-                    <Box sx={{ mt: 8 }}>
+                    <Box sx={{ mt: 10 }}>
                         {viewCourseCard && <CourseContainer>{children}</CourseContainer>}
                     </Box>
                 </Main>

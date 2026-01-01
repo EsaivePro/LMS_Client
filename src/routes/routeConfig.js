@@ -27,7 +27,7 @@ export const protectedRoutes = [
         title: "Course Details",
         description: "View course information, lessons, and learning progress.",
         permission: "course.view",
-        layoutProps: { containerCard: false, courseCard: true },
+        layoutProps: { containerCard: false, courseCard: true, footer: false },
         element: <CourseView />,
     },
     {

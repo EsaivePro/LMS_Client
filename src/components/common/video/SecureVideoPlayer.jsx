@@ -621,7 +621,7 @@ export default function SecureVideoPlayer({
                     userSelect: "none",
                 }}
             >
-                Protected Content — LMS
+                Protected Content
             </Typography>
 
             {/* ============================

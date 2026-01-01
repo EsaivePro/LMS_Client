@@ -41,7 +41,7 @@ export default function CourseContainer({ children }) {
           borderRadius: "12px",
           display: "flex",
           flexDirection: "column",
-          m: 0
+          marginTop: "-15px"
           // gap: 2,
         }}
       >

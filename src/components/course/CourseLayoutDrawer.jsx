@@ -11,6 +11,7 @@ import CourseHeader from "./view/CourseHeader";
 import VideoView from "./view/VideoView";
 import CourseTabView from "./view/CourseTabView";
 import CurriculumView from "./view/CurriculumView";
+import Footer from "../layout/Footer";
 
 const drawerWidth = 360;
 
@@ -100,12 +101,15 @@ export default function CourseLayoutDrawer({
                         darkMode={darkMode}
                     />
 
-                    <CourseTabView
+                    {/* <CourseTabView
                         value={value}
                         handleChange={handleChange}
                         selectedLesson={selectedLesson}
                         darkMode={darkMode}
-                    />
+                    /> */}
+                    <Box sx={{ pt: 4 }}>
+                        <Footer compView={true} />
+                    </Box>
                 </Box>
 
                 {/* RIGHT DRAWER DESKTOP */}
