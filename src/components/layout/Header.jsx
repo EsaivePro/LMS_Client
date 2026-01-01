@@ -51,7 +51,7 @@ const sideBarItems = [
 
 function Header({ toggleSidebar, profile, logout, open }) {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, isAuthenticated } = useAuth();
 
     /* ---------------- SEARCH ---------------- */
     const [search, setSearch] = React.useState("");
@@ -99,31 +99,28 @@ function Header({ toggleSidebar, profile, logout, open }) {
         setSettingsOpen(false);
     };
 
-    /* ---------------- USER DATA ---------------- */
-    const userInitial = React.useMemo(() => {
+    /* ---------------- USER DATA (in state + synced) ---------------- */
+    const [userInitial, setUserInitial] = React.useState("U");
+    const [roleName, setRoleName] = React.useState("Role");
+    const [username, setUsername] = React.useState("username");
+    const [settingsList, setSettingsList] = React.useState([
+        { label: "Profile", to: profile },
+        { label: "Logout", to: logout },
+    ]);
+
+    React.useEffect(() => {
         const name =
-            user?.fullName ||
-            user?.name ||
-            user?.username ||
-            user?.email ||
-            "U";
-        return String(name).charAt(0).toUpperCase();
-    }, [user]);
+            user?.fullName || user?.name || user?.username || user?.email || "U";
+        setUserInitial(String(name).charAt(0).toUpperCase());
 
-    const roleName =
-        user?.role ||
-        user?.roleName ||
-        user?.roles?.[0]?.name ||
-        "Role";
+        setRoleName(user?.role || user?.roleName || user?.roles?.[0]?.name || "Role");
+        setUsername(user?.username || user?.email || "username");
 
-    const username =
-        user?.username || user?.email || "username";
-
+    }, [user, isAuthenticated]);
     const settings = [
         { label: "Profile", to: profile },
-        { label: "Logout", to: logout }
+        { label: "Logout", to: logout },
     ];
-
     return (
         <AppBar position="fixed" color="default" elevation={1}>
             <Container maxWidth="xl">

@@ -70,7 +70,7 @@ export default function LoginPage() {
             const resultAction = await login(loginData);
             const fulfilled = resultAction?.type && resultAction.type.endsWith('/fulfilled');
             if (!fulfilled) {
-                setAlert({ open: true, type: "error", message: resultAction?.error?.message || "Login failed" });
+                setAlert({ open: true, type: "error", message: resultAction?.data?.message || "Login failed" });
                 return;
             }
 

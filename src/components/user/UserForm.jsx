@@ -170,6 +170,9 @@ export default function UserForm({ mode = "create", user, onSuccess, onCancel, p
                     showError("Failed to create user");
                 }
             } else {
+                if (resetPassword === false) {
+                    delete payload.password;
+                }
                 const res = await update(user?.id, payload).unwrap();
                 hideLoader();
                 if (!errorValidation(res)) {

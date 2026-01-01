@@ -14,6 +14,7 @@ import useCommon from "./hooks/useCommon";
 import { useNavigate } from "react-router-dom";
 import RouteRenderer from "./routes/RouteRenderer";
 import { protectedRoutes } from "./routes/routeConfig";
+import AppLayout from "./components/layout/AppLayout";
 
 export default function App() {
   const { user, isAuthenticated } = useAuth();
@@ -73,7 +74,9 @@ export default function App() {
           path="/unauthorized"
           element={
             <ProtectedRoute>
-              <UnauthorizedPage />
+              <AppLayout containerCard={false} >
+                <UnauthorizedPage />
+              </AppLayout>
             </ProtectedRoute>
           }
         />
