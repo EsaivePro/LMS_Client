@@ -312,7 +312,7 @@ function CourseCarousel({ title, courses }) {
                         index={idx}
                         width={320}
                     />
-                )) : <Box sx={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", minHeight: 150, backgroundColor: "#fafafa", borderRadius: 1, boxShadow: 1, p: 3 }}>
+                )) : <Box sx={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", minHeight: 150, backgroundColor: "#fdfdfdff", borderRadius: 1, boxShadow: 1, p: 3 }}>
 
                     <Typography variant="h6" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <CollectionsBookmarkIcon color="text.secondary" fontSize={isMobile ? "medium" : "medium"} />

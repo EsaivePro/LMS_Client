@@ -21,26 +21,53 @@ export default function Footer() {
     <Box
       component="footer"
       sx={{
-        background: "#f2f4f7",
-        marginTop: { xs: "-48px", md: "-35px" },
+        background: "#fbfbfbff",
+        marginTop: { xs: "-48px", md: "-48px" },
         pt: { xs: 4, md: 6 },
         pb: 3,
         px: { xs: 3, md: 10 },
         width: "100%",
       }}
     >
-      <Grid container spacing={4}>
-        {/* ================= PLATFORM CAPABILITIES ================= */}
-        <Grid
-          item
-          xs={12}
-          md={7}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: { xs: "center", md: "flex-start" },
-          }}
-        >
+      <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, justifyContent: "space-between", gap: 4 }}>
+        <Box >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, textAlign: { xs: 'center', md: 'left' } }}>
+            <img src="/logo/EsaiLogo.png" alt="LMS" width={42} />
+            <Typography variant="h6" sx={{ fontWeight: 700, color: 'var(--primaryColor)', textTransform: 'uppercase' }}>
+              lms
+            </Typography>
+          </Box>
+          {/* SOCIAL ICONS */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center", // ✅ page center
+              gap: 2,
+              mt: 3,
+            }}
+          >
+            {[
+              { icon: <FacebookIcon />, color: "#1877F2" },
+              { icon: <InstagramIcon />, color: "#E4405F" },
+              { icon: <TwitterIcon />, color: "#1DA1F2" },
+              { icon: <LinkedInIcon />, color: "#0077B5" },
+            ].map((item, i) => (
+              <IconButton
+                key={i}
+                sx={{
+                  color: "var(--primaryColor)",
+                  "&:hover": {
+                    transform: "scale(1.2)",
+                    color: item.color,
+                  },
+                }}
+              >
+                {item.icon}
+              </IconButton>
+            ))}
+          </Box>
+        </Box>
+        <Box>
           <Typography
             variant="h6"
             sx={{
@@ -53,39 +80,27 @@ export default function Footer() {
             Platform Capabilities
           </Typography>
 
-          <Grid container spacing={1.5} >
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" },
+              gap: 1.5,
+              alignItems: "center",
+            }}
+          >
             {[
               "Course Management",
-              // "Examination Automation",
               "Secure Role-based Access",
               "Student Progress Tracking",
               "Result Generation",
             ].map((item, i) => (
-              <Grid
-                key={i}
-                item
-                xs={12}
-                sm={6}
-                sx={{ display: "flex", justifyContent: "center" }}
-              >
+              <Box key={i} sx={{ display: "flex", justifyContent: { xs: "center", md: "flex-start" } }}>
                 <FooterFeature text={item} />
-              </Grid>
+              </Box>
             ))}
-          </Grid>
-        </Grid>
-
-        {/* ================= CONTACT US ================= */}
-        <Grid
-          item
-          xs={12}
-          md={4}
-          sx={{
-            display: "flex",
-            justifyContent: { xs: "center", md: "flex-end" }, // ✅ real centering
-            width: "100%",
-          }}
-        >
-          {/* INNER WRAPPER – THIS FIXES IT */}
+          </Box>
+        </Box>
+        <Box>
           <Box
             sx={{
               textAlign: "center",
@@ -113,39 +128,9 @@ export default function Footer() {
             <Typography sx={{ fontSize: 14, lineHeight: 1.6 }}>
               Chennai, India
             </Typography>
-
-            {/* SOCIAL ICONS */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center", // ✅ page center
-                gap: 2,
-                mt: 3,
-              }}
-            >
-              {[
-                { icon: <FacebookIcon />, color: "#1877F2" },
-                { icon: <InstagramIcon />, color: "#E4405F" },
-                { icon: <TwitterIcon />, color: "#1DA1F2" },
-                { icon: <LinkedInIcon />, color: "#0077B5" },
-              ].map((item, i) => (
-                <IconButton
-                  key={i}
-                  sx={{
-                    color: "var(--primaryColor)",
-                    "&:hover": {
-                      transform: "scale(1.2)",
-                      color: item.color,
-                    },
-                  }}
-                >
-                  {item.icon}
-                </IconButton>
-              ))}
-            </Box>
           </Box>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       {/* ================= COPYRIGHT ================= */}
       <Box
@@ -178,7 +163,7 @@ function FooterFeature({ text }) {
       sx={{
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: { xs: "center", md: "flex-start" },
         gap: 1.2,
         width: "100%",
       }}
