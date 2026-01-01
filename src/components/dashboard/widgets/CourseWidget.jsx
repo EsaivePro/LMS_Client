@@ -45,8 +45,7 @@ const fadeUp = keyframes`
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 `;
-const theme = useTheme();
-const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
 function CourseCard({ course, index, width = 300 }) {
     const accent = ACCENTS[index % ACCENTS.length];
     const navigate = useNavigate();
@@ -254,6 +253,8 @@ function CourseGrid({ title, courses }) {
 
 function CourseCarousel({ title, courses }) {
     const ref = useRef();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const scroll = (dir) => {
         ref.current.scrollBy({
@@ -272,7 +273,7 @@ function CourseCarousel({ title, courses }) {
                     alignItems: "center",
                 }}
             >
-                <Typography variant={isMobile ? "h6" : "h5"} fontWeight={500}>
+                <Typography variant={isMobile ? "h5" : "h5"} fontWeight={500}>
                     {title}
                 </Typography>
 
