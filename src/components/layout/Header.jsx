@@ -34,6 +34,7 @@ import { Alert } from '@mui/material';
 
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+import THEME from "../../constants/theme";
 
 import DashboardCustomizer from '../dashboard/admin/DashboardCustomizer';
 
@@ -142,28 +143,27 @@ function Header({ toggleSidebar, profile, logout, open }) {
                             <MenuIcon />
                         </IconButton>
 
-                        <img src="/logo/EsaiLogo.png" alt="Esai" width="50" />
 
-                        <Typography
+                        <img src={THEME?.manifest?.icons?.[0]?.src ? `/${THEME.manifest.icons[0].src}` : '/logo/EsaiLogo.png'} alt={THEME?.manifest?.name || 'Esai'} width="150" />
+
+                        {/* <Typography
                             variant="h6"
                             sx={{
                                 fontWeight: 600,
                                 fontSize: { xs: 18, sm: 18, md: 20 },
                                 color: "var(--primary)",
 
-                                /* 🔑 no wrap + ellipsis */
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
 
-                                /* 🔑 important: limit width so ellipsis can happen */
-                                maxWidth: { xs: 160, sm: 220, md: "none" },
+                        maxWidth: {xs: 160, sm: 220, md: "none" },
 
-                                display: "block",
+                        display: "block",
                             }}
                         >
-                            LMS Platform
-                        </Typography>
+                        {THEME?.manifest?.name || 'LMS Platform'}
+                    </Typography> */}
 
                     </Box>
 
@@ -232,7 +232,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
 
                         {/* ---------- USER BLOCK ---------- */}
                         <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                            <Avatar sx={{ width: isMobile ? 31 : 36, height: isMobile ? 31 : 36, fontSize: isMobile ? 16 : 20 }}>
+                            <Avatar sx={{ width: isMobile ? 31 : 36, height: isMobile ? 31 : 36, fontSize: isMobile ? 16 : 20, backgroundColor: "var(--primary)" }}>
                                 {userInitial}
                             </Avatar>
 
@@ -400,54 +400,56 @@ function Header({ toggleSidebar, profile, logout, open }) {
             </Container>
 
             {/* ---------- MOBILE SEARCH OVERLAY ---------- */}
-            {isMobile && mobileSearchOpen && (
-                <Box
-                    sx={{
-                        position: "fixed",
-                        inset: 0,
-                        bgcolor: "var(--surface)",
-                        zIndex: 1300,
-                        p: 2,
-                    }}
-                >
-                    <TextField
-                        autoFocus
-                        fullWidth
-                        placeholder="Search..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <SearchIcon />
-                                </InputAdornment>
-                            ),
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton onClick={closeSearch}>
-                                        <CloseIcon />
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
+            {
+                isMobile && mobileSearchOpen && (
+                    <Box
+                        sx={{
+                            position: "fixed",
+                            inset: 0,
+                            bgcolor: "var(--surface)",
+                            zIndex: 1300,
+                            p: 2,
                         }}
-                    />
+                    >
+                        <TextField
+                            autoFocus
+                            fullWidth
+                            placeholder="Search..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={closeSearch}>
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
 
-                    <List>
-                        {results.map((item, i) => (
-                            <ListItemButton
-                                key={i}
-                                onClick={() => {
-                                    navigate(item.to);
-                                    closeSearch();
-                                }}
-                            >
-                                <ListItemText primary={item.label} />
-                            </ListItemButton>
-                        ))}
-                    </List>
-                </Box>
-            )}
-        </AppBar>
+                        <List>
+                            {results.map((item, i) => (
+                                <ListItemButton
+                                    key={i}
+                                    onClick={() => {
+                                        navigate(item.to);
+                                        closeSearch();
+                                    }}
+                                >
+                                    <ListItemText primary={item.label} />
+                                </ListItemButton>
+                            ))}
+                        </List>
+                    </Box>
+                )
+            }
+        </AppBar >
     );
 }
 

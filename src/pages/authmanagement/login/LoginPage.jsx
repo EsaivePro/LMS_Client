@@ -20,6 +20,7 @@ import { tokenStorage } from "../../../utils/tokenStorage.utils";
 import { useAdmin } from "../../../hooks/useAdmin";
 import useCommon from "../../../hooks/useCommon";
 import GlobalAlert from "../../../components/common/alert/GlobalAlert.jsx";
+import THEME from "../../../constants/theme";
 
 export default function LoginPage() {
     const navigate = useNavigate();
@@ -152,7 +153,7 @@ export default function LoginPage() {
                             gap: 1
                         }}
                     >
-                        <img src="/logo/EsaiLogo.png" alt="Logo" width="70" />
+                        <img src={THEME?.manifest?.icons?.[0]?.src ? `/${THEME.manifest.icons[0].src}` : '/logo/EsaiLogo.png'} alt={THEME?.manifest?.name || 'Logo'} width="70" />
 
                         <Typography
                             variant="h4"
@@ -162,7 +163,7 @@ export default function LoginPage() {
                                 letterSpacing: "2px"
                             }}
                         >
-                            LMS
+                            {THEME?.manifest?.short_name || THEME?.manifest?.name || 'LMS'}
                         </Typography>
                     </Box>
 

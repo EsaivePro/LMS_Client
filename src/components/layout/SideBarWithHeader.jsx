@@ -15,7 +15,9 @@ import {
     ListItemIcon,
     ListItemText,
     Collapse,
-    useMediaQuery
+    useMediaQuery,
+    Typography,
+    Avatar
 } from "@mui/material";
 
 import MuiAppBar from "@mui/material/AppBar";
@@ -46,6 +48,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import { useAdmin } from "../../hooks/useAdmin";
+import THEME from "../../constants/theme";
 
 const drawerWidth = 240;
 
@@ -180,7 +183,7 @@ export default function SideBarWithHeader({ children }) {
                             width: "100%",
                             height: "calc(100vh - 64px)",
                             backgroundColor: "rgba(0,0,0,0.25)",
-                            backdropFilter: "blur(3px)",
+                            // backdropFilter: "blur(1px)",
                             zIndex: 1500,
                         }}
                         onClick={() => setOpen(false)}
@@ -196,8 +199,8 @@ export default function SideBarWithHeader({ children }) {
                         left: open ? 0 : -drawerWidth,
                         width: drawerWidth,
                         height: "calc(100vh - 64px)",
-                        background: "linear-gradient(180deg, var(--primary), var(--primaryLight))",
-                        color: "var(--onPrimary)",
+                        background: "var(--surface)",
+                        color: "var(--primary)",
                         transition: "left 0.3s ease",
                         zIndex: 2000,
                         overflowY: "auto",
@@ -214,12 +217,12 @@ export default function SideBarWithHeader({ children }) {
                             px: 2,
                         }}
                     >
-                        <IconButton onClick={() => setOpen(false)} sx={{ color: "var(--onPrimary)" }}>
+                        <IconButton onClick={() => setOpen(false)} sx={{ color: "var(--primary)" }}>
                             <ChevronLeftIcon />
                         </IconButton>
                     </Box>
 
-                    <Divider sx={{ borderColor: "rgba(255,255,255,0.2)" }} />
+                    <Divider sx={{ borderColor: "var(--primary)" }} />
 
                     {/* MENU LIST */}
                     <List>
@@ -251,9 +254,9 @@ export default function SideBarWithHeader({ children }) {
                                                         backgroundColor: isActive
                                                             ? "rgba(255,255,255,0.9)"
                                                             : "transparent",
-                                                        color: isActive ? "var(--textPrimary)" : "var(--onPrimary)",
+                                                        color: isActive ? "var(--textPrimary)" : "var(--primary)",
                                                         borderLeft: isActive
-                                                            ? "4px solid var(--onPrimary)"
+                                                            ? "4px solid var(--primary)"
                                                             : "4px solid transparent",
                                                         "&:hover": {
                                                             backgroundColor: isActive
@@ -264,7 +267,7 @@ export default function SideBarWithHeader({ children }) {
                                                 >
                                                     <ListItemIcon
                                                         sx={{
-                                                            color: isActive ? "var(--textPrimary)" : "var(--onPrimary)",
+                                                            color: isActive ? "var(--textPrimary)" : "var(--primary)",
                                                             minWidth: 40,
                                                         }}
                                                     >

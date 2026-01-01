@@ -80,55 +80,28 @@ export default function WelcomeWidget() {
         >
             <Box sx={{ flex: 1 }}>
                 {/* Greeting */}
-                <Typography
-                    variant="h4"
-                    fontWeight={600}
-                    sx={{
-                        display: "flex",
-                        alignItems: "end",
-                        gap: 1,
-                        flexWrap: "wrap",                 // ✅ responsive wrap
-                        fontSize: {
-                            xs: "1.35rem",
-                            sm: "1.75rem",
-                            md: "2.125rem",
-                        },
-                    }}
-                >
-                    {/* <Box component="span" sx={{ flexBasis: { xs: "100%", sm: "auto" }, display: { xs: "block", sm: "inline" }, color: "#000000ec", fontWeight: 500 }}> */}
-                    <Typography
-                        variant={{ xs: "h6", sm: "h5" }}
-                        fontWeight={500}>{greeting},</Typography>
-                    {/* </Box> */}
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Typography
                         variant="h5"
-                        fontWeight={500}
-                        sx={{
-                            fontSize: {
-                                xs: "1.1rem",
-                                sm: "1.4rem",
-                                md: "1.5rem",
-                            },
-                        }}
+                        sx={{ fontWeight: 700, animation: `${fadeUp} 0.6s ease` }}
                     >
-                        {name}
+                        {"Hi"},{' '}
                     </Typography>
-
-                    {/* <Box
-                        sx={{
-                            display: "inline-flex",
-                            transformOrigin: "70% 70%",
-                            animation: `${wave} 2.5s infinite`,
-                            fontSize: {
-                                xs: 22,
-                                sm: 26,
-                                md: 28,
-                            },
-                        }}
+                    <Typography
+                        variant="h5"
+                        sx={{ fontWeight: 700, animation: `${fadeUp} 0.6s ease` }}
                     >
-                        <WavingHandIcon htmlColor="var(--textPrimary)" />
-                    </Box> */}
-                </Typography>
+                        {name}!
+                    </Typography>
+                    <WavingHandIcon
+                        sx={{
+                            fontSize: 18,
+                            color: "var(--primaryLight)",
+                            animation: `${wave} 2s infinite`,
+                            transformOrigin: "70% 70%",
+                        }}
+                    />
+                </Box>
 
                 {/* Quote */}
                 <Typography

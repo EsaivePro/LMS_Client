@@ -11,10 +11,11 @@ import {
     IconButton,
     CircularProgress,
     useMediaQuery,
-    useTheme
+    useTheme,
+    Divider
 } from "@mui/material";
 import { keyframes } from "@mui/system";
-
+import HourglassFullIcon from '@mui/icons-material/HourglassFull';
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -33,13 +34,29 @@ import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 // import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 // import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
-const ACCENTS = [
-    "#83acffff", // blue
-    "#fe808dff", // rose
-    "#a27affff", // violet
-    "#face75ff", // amber
-    "#7dffc5ff", // green
+import THEME from "../../../constants/theme";
+
+// Build ACCENTS from theme.card1..card20 with a safe fallback list
+const FALLBACK_ACCENTS = [
+    "#83acffff", "#fe808dff", "#a27affff", "#face75ff", "#7dffc5ff",
+    "#cfe9ffff", "#ffd6e6ff", "#f7d8baff", "#e6d7ffff", "#fff3b0ff",
+    "#d6f5e0ff", "#e9e0ffff", "#ffdfd0ff", "#d0f0ffff", "#f0e6ffff",
+    "#ffe8ccff", "#e0fff4ff", "#fbe7ffff", "#e8f6ffff", "#f6fff0ff",
 ];
+
+const ACCENTS = Array.from({ length: 20 }, (_, i) => THEME?.colors?.[`card${i + 1}`] || FALLBACK_ACCENTS[i]);
+
+// Return a stable pseudo-random accent for a given key (course id/title)
+function getAccentForKey(key) {
+    const s = String(key ?? "");
+    let hash = 0;
+    for (let i = 0; i < s.length; i++) {
+        hash = ((hash << 5) - hash) + s.charCodeAt(i);
+        hash |= 0; // force 32-bit int
+    }
+    const idx = Math.abs(hash) % ACCENTS.length;
+    return ACCENTS[idx];
+}
 
 const fadeUp = keyframes`
   from { opacity: 0; transform: translateY(12px); }
@@ -47,62 +64,97 @@ const fadeUp = keyframes`
 `;
 
 function CourseCard({ course, index, width = 300 }) {
-    const accent = ACCENTS[index % ACCENTS.length];
+    const accent = getAccentForKey(course.id ?? course.title ?? index);
     const navigate = useNavigate();
 
-    const lessons = course.lessons || 0;
-
-    const minutes = course.duration || "00:00:00";
     const progress = course.progress ?? 0;
+
+    function formatDurationToHHMMSS(val) {
+        if (!val) return "00:00:00";
+        const parts = String(val).split(":").map(Number);
+        let seconds =
+            parts.length === 3
+                ? parts[0] * 3600 + parts[1] * 60 + parts[2]
+                : parts.length === 2
+                    ? parts[0] * 60 + parts[1]
+                    : Number(val) || 0;
+
+        const pad = (n) => String(n).padStart(2, "0");
+        return `${pad(Math.floor(seconds / 3600))}:${pad(
+            Math.floor((seconds % 3600) / 60)
+        )}:${pad(seconds % 60)}`;
+    }
+
+    const displayDuration = formatDurationToHHMMSS(course.duration ?? course.minutes);
+    const image = course.image || "/course/default-course-card.png";
 
     return (
         <Box
             sx={{
                 minWidth: width,
                 maxWidth: width,
-                height: 230,
                 borderRadius: 1,
                 overflow: "hidden",
                 backgroundColor: "var(--surface)",
                 boxShadow: 1,
-                // boxShadow: "0 10px 20px rgba(0, 0, 0, 0.12)",
-                transition: "transform .35s ease, box-shadow .35s ease",
-                "&:hover": {
-                    transform: "scale(1.02)",
-                    boxShadow: 2
-                }
+                transition: "transform .3s ease, box-shadow .3s ease",
+                animation: `${fadeUp} 420ms ease both`,
+                animationDelay: `${index * 60}ms`,
+                willChange: "transform, opacity",
+                "&:hover": { transform: "scale(1.02)", boxShadow: 2 },
+                "&:hover .course-image": { transform: "scale(1.04)" },
             }}
         >
-            {/* HEADER */}
-            <Box sx={{ p: 2.5, position: "relative" }}>
-                {/* ICON BADGE */}
+            {/* ================= IMAGE HEADER ================= */}
+            <Box
+                className="course-image"
+                sx={{
+                    height: 140,
+                    backgroundImage: `url(${image})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    position: "relative",
+                    transition: "transform .35s ease",
+                    transformOrigin: "center center",
+                }}
+            >
+                {/* Gradient overlay */}
                 <Box
                     sx={{
                         position: "absolute",
-                        top: 16,
-                        right: 16,
-                        width: 42,
-                        height: 42,
-                        borderRadius: "50%",
-                        backgroundColor: accent,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "var(--onPrimary)",
-                        fontWeight: 700,
+                        inset: 0,
+                        background:
+                            "linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.7))",
+                    }}
+                />
+
+                {/* Duration badge */}
+                <Box
+                    sx={{
+                        position: "absolute",
+                        bottom: 8,
+                        right: 8,
+                        px: 1,
+                        py: 0.3,
+                        fontSize: 12,
+                        borderRadius: 1,
+                        backgroundColor: "rgba(0,0,0,0.65)",
+                        color: "#fff",
+                        fontWeight: 600,
                     }}
                 >
-                    <StyleIcon />
+                    {displayDuration}
                 </Box>
+            </Box>
 
+            {/* ================= CONTENT ================= */}
+            <Box sx={{ p: 2 }}>
                 <Typography
                     fontWeight={700}
                     fontSize={16}
-                    mb={1}
                     sx={{
                         display: "-webkit-box",
                         WebkitLineClamp: 1,
-                        paddingRight: 5,
                         WebkitBoxOrient: "vertical",
                         overflow: "hidden",
                     }}
@@ -110,44 +162,33 @@ function CourseCard({ course, index, width = 300 }) {
                     {course.title || "Untitled Course"}
                 </Typography>
 
+                {/* <Divider
+                    sx={{
+                        backgroundColor: accent,
+                        height: 4,
+                        my: 1,
+                        borderRadius: 1,
+                    }}
+                /> */}
+
                 <Typography
                     variant="body2"
                     color="text.secondary"
                     sx={{
-                        lineHeight: 1.5,
-                        paddingRight: 3,
                         display: "-webkit-box",
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: "vertical",
                         overflow: "hidden",
                     }}
                 >
-                    {course.description || "Learn and master this course with guided lessons and hands-on examples."}
+                    {course.description ||
+                        "Learn and master this course with guided lessons."}
                 </Typography>
             </Box>
 
-            {/* META */}
-            <Box
-                sx={{
-                    px: 2.5,
-                    mb: 1,
-                    display: "flex",
-                    gap: 2,
-                    color: "text.secondary",
-                    fontSize: 13,
-                }}
-            >
-                <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
-                    <MenuBookIcon fontSize="small" /> {lessons}
-                </Box>
-                <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
-                    <AccessTimeIcon fontSize="small" /> {minutes} min
-                </Box>
-            </Box>
-
-            {/* PROGRESS (OPTIONAL) */}
+            {/* ================= PROGRESS ================= */}
             {progress !== null && (
-                <Box sx={{ px: 2.5 }}>
+                <Box sx={{ px: 2 }}>
                     <LinearProgress
                         variant="determinate"
                         value={progress}
@@ -170,11 +211,11 @@ function CourseCard({ course, index, width = 300 }) {
                 </Box>
             )}
 
-            {/* FOOTER */}
+            {/* ================= FOOTER ================= */}
             <Box
                 sx={{
-                    px: 2.5,
-                    py: 1,
+                    px: 2,
+                    py: 1.5,
                     display: "flex",
                     justifyContent: "flex-end",
                 }}
@@ -183,15 +224,13 @@ function CourseCard({ course, index, width = 300 }) {
                     variant="contained"
                     endIcon={<PlayArrowIcon />}
                     sx={{
-                        backgroundColor: accent,
+                        backgroundColor: "var(--primaryLight)",
                         borderRadius: 1,
                         textTransform: "none",
                         px: 3,
-                        "&:hover": {
-                            backgroundColor: accent,
-                        },
+                        "&:hover": { backgroundColor: "var(--primary)" },
                     }}
-                    onClick={() => navigate("/course/view/" + course.id)}
+                    onClick={() => navigate(`/course/view/${course.id}`)}
                 >
                     {progress ? "Continue" : "Start"}
                 </Button>
@@ -199,6 +238,7 @@ function CourseCard({ course, index, width = 300 }) {
         </Box>
     );
 }
+
 
 
 /* ================== COURSE GRID ================== */
@@ -291,7 +331,7 @@ function CourseCarousel({ title, courses }) {
                 ref={ref}
                 sx={{
                     display: "flex",
-                    gap: 3,
+                    gap: 6,
                     p: 0,
                     pt: 2,
                     pb: 2,

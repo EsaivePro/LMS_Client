@@ -5,6 +5,7 @@ import {
   Grid,
   IconButton
 } from "@mui/material";
+import THEME from "../../constants/theme";
 
 import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -30,43 +31,7 @@ export default function Footer() {
       }}
     >
       <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, justifyContent: "space-between", gap: 4 }}>
-        <Box >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, textAlign: { xs: 'center', md: 'left' } }}>
-            <img src="/logo/EsaiLogo.png" alt="LMS" width={42} />
-            <Typography variant="h6" sx={{ fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase' }}>
-              lms
-            </Typography>
-          </Box>
-          {/* SOCIAL ICONS */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center", // ✅ page center
-              gap: 2,
-              mt: 3,
-            }}
-          >
-            {[
-              { icon: <FacebookIcon />, color: "#1877F2" },
-              { icon: <InstagramIcon />, color: "#E4405F" },
-              { icon: <TwitterIcon />, color: "#1DA1F2" },
-              { icon: <LinkedInIcon />, color: "#0077B5" },
-            ].map((item, i) => (
-              <IconButton
-                key={i}
-                sx={{
-                  color: "var(--primary)",
-                  "&:hover": {
-                    transform: "scale(1.2)",
-                    color: item.color,
-                  },
-                }}
-              >
-                {item.icon}
-              </IconButton>
-            ))}
-          </Box>
-        </Box>
+
         <Box>
           <Typography
             variant="h6"
@@ -103,7 +68,7 @@ export default function Footer() {
         <Box>
           <Box
             sx={{
-              textAlign: "center",
+              textAlign: "left",
               width: "100%",
               maxWidth: 360, // keeps it visually centered
             }}
@@ -130,6 +95,46 @@ export default function Footer() {
             </Typography>
           </Box>
         </Box>
+        <Box >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, textAlign: { xs: 'center', md: 'left' } }}>
+            <img src={THEME?.manifest?.icons?.[0]?.src ? `/${THEME.manifest.icons[0].src}` : '/logo/EsaiLogo.png'} alt={THEME?.manifest?.name || 'LMS'} width={42} />
+            <Typography variant="h6" sx={{ fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase' }}>
+              {THEME?.manifest?.short_name ? THEME.manifest.short_name.toUpperCase() : 'LMS'}
+            </Typography>
+          </Box>
+          <Typography variant="h7" sx={{ fontWeight: 400, color: 'var(--primaryLight)' }}>
+            {THEME?.manifest?.description ? THEME.manifest.description : 'LMS'}
+          </Typography>
+          {/* SOCIAL ICONS */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center", // ✅ page center
+              gap: 2,
+              mt: 3,
+            }}
+          >
+            {[
+              { icon: <FacebookIcon />, color: "#1877F2" },
+              { icon: <InstagramIcon />, color: "#E4405F" },
+              { icon: <TwitterIcon />, color: "#1DA1F2" },
+              { icon: <LinkedInIcon />, color: "#0077B5" },
+            ].map((item, i) => (
+              <IconButton
+                key={i}
+                sx={{
+                  color: "var(--primary)",
+                  "&:hover": {
+                    transform: "scale(1.2)",
+                    color: item.color,
+                  },
+                }}
+              >
+                {item.icon}
+              </IconButton>
+            ))}
+          </Box>
+        </Box>
       </Box>
 
       {/* ================= COPYRIGHT ================= */}
@@ -149,7 +154,7 @@ export default function Footer() {
             color: "var(--primary)",
           }}
         >
-          © {new Date().getFullYear()} LMS Platform — All Rights Reserved.
+          © {new Date().getFullYear()} {THEME?.manifest?.name || 'LMS Platform'} — All Rights Reserved.
         </Typography>
       </Box>
     </Box>
