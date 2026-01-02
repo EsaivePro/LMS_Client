@@ -9,7 +9,6 @@ import {
   Chip,
   Card,
 } from "@mui/material";
-import { Fade } from "react-awesome-reveal";
 import { useLocation } from "react-router-dom";
 
 const courseData = {
