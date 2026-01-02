@@ -122,10 +122,10 @@ export default function ContentContainer({ children }) {
         </Box>
         {/* Right side: last login */}
         <Box sx={{ ml: isMobile ? 0 : "auto", mt: isMobile ? 1 : 0, textAlign: isMobile ? "left" : "right", animation: `${loginAnim} 520ms ease both` }}>
-          <Typography variant="caption" sx={{ color: "text.secondary", display: "block" }}>
+          <Typography variant="caption" sx={{ color: "var(--onPrimary)", display: "block" }}>
             Last login
           </Typography>
-          <Typography variant="body2" sx={{ fontWeight: 700, color: "#383838ff" }}>
+          <Typography variant="body2" sx={{ fontWeight: 600, color: "#303030ff" }}>
             {formatLogin(lastLogin || new Date().toISOString())}
           </Typography>
         </Box>

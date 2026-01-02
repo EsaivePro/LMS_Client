@@ -370,7 +370,7 @@ export default function SideBarWithHeader({ children }) {
                         })}
                     </List>
 
-                    <Divider sx={{ borderColor: "rgba(255,255,255,0.2)" }} />
+                    <Divider sx={{ borderColor: "rgba(0, 0, 0, 0.2)" }} />
 
                     {/* LOGOUT */}
                     <List>
@@ -383,11 +383,11 @@ export default function SideBarWithHeader({ children }) {
                                 <ListItemButton
                                     sx={{
                                         backgroundColor: false
-                                            ? "rgba(255,255,255,0.9)"
+                                            ? "var(--primaryLight)"
                                             : "transparent",
-                                        color: false ? "var(--textPrimary)" : "var(--onPrimary)",
+                                        color: false ? "var(--onPrimary)" : "var(--primary)",
                                         borderLeft: false
-                                            ? "4px solid var(--onPrimary)"
+                                            ? "4px solid var(--primary)"
                                             : "4px solid transparent",
                                         "&:hover": {
                                             backgroundColor: false
@@ -398,7 +398,7 @@ export default function SideBarWithHeader({ children }) {
                                 >
                                     <ListItemIcon
                                         sx={{
-                                            color: false ? "var(--textPrimary)" : "var(--onPrimary)",
+                                            color: false ? "var(--onPrimary)" : "var(--primary)",
                                             minWidth: 40,
                                         }}
                                     >
@@ -418,11 +418,11 @@ export default function SideBarWithHeader({ children }) {
                                 <ListItemButton
                                     sx={{
                                         backgroundColor: false
-                                            ? "rgba(255,255,255,0.9)"
+                                            ? "var(--primaryLight)"
                                             : "transparent",
-                                        color: false ? "var(--textPrimary)" : "var(--onPrimary)",
+                                        color: false ? "var(--onPrimary)" : "var(--primary)",
                                         borderLeft: false
-                                            ? "4px solid var(--onPrimary)"
+                                            ? "4px solid var(--primary)"
                                             : "4px solid transparent",
                                         "&:hover": {
                                             backgroundColor: false
@@ -433,7 +433,7 @@ export default function SideBarWithHeader({ children }) {
                                 >
                                     <ListItemIcon
                                         sx={{
-                                            color: false ? "var(--textPrimary)" : "var(--onPrimary)",
+                                            color: false ? "var(--onPrimary)" : "var(--primary)",
                                             minWidth: 40,
                                         }}
                                     >

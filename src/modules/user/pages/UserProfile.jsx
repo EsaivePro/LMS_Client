@@ -14,6 +14,8 @@ import {
     Tab,
     List,
     ListItemButton,
+    useTheme,
+    useMediaQuery,
 } from "@mui/material";
 
 import { useForm, Controller } from "react-hook-form";
@@ -25,6 +27,8 @@ import UserForm from "../../../components/user/UserForm";
 import useUser from "../../../hooks/useUser";
 
 export default function UserProfile() {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const sections = {
         general: useRef(null),
         security: useRef(null),
@@ -78,29 +82,27 @@ export default function UserProfile() {
     };
 
     return (
-        <Box sx={{ width: "100%" }}>
-            <Box sx={{ display: "flex", gap: 3, alignItems: "flex-start", px: 5 }}>
-                <Box sx={{ width: '350px', mr: 3 }}>
-                    <Paper sx={{ p: 2, position: "sticky", top: 24, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                            <ProfileAvatar
-                                value={watch("avatar")}
-                                onChange={(v) => (control._formValues.avatar = v)}
-                            />
-                        </Box>
+        <Box sx={{ mt: 3.5 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 2, md: 3 }, alignItems: 'flex-start', px: { xs: 2, sm: 5 } }}>
+                {false && <Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <ProfileAvatar
+                            value={watch("avatar")}
+                            onChange={(v) => (control._formValues.avatar = v)}
+                        />
+                    </Box>
 
-                        <Divider sx={{ my: 2, width: '100%' }} />
-                        <Box sx={{ alignSelf: 'stretch', borderBottom: 1, borderColor: "divider", pb: 1 }}>
-                            <Typography>General Settings</Typography>
-                        </Box>
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1, textAlign: 'left', width: '100%' }}>
-                            About: Manage your profile details, privacy preferences, and notification settings from here. Update your name, email, and avatar to keep your account information up to date.
-                        </Typography>
-                    </Paper>
-                </Box>
+                    <Divider sx={{ my: 2, width: '100%' }} />
+                    <Box sx={{ alignSelf: 'stretch', borderBottom: 1, borderColor: "divider", pb: 1 }}>
+                        <Typography>General Settings</Typography>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1, textAlign: { xs: 'left' }, width: '100%' }}>
+                        About: Manage your profile details, privacy preferences, and notification settings from here. Update your name, email, and avatar to keep your account information up to date.
+                    </Typography>
+                </Box>}
                 <Box sx={{ flexGrow: 1 }}>
                     {user && (
-                        <Box sx={{ width: '100%' }}>
+                        <Box sx={{ width: isMobile ? "83vw" : '100%' }}>
                             <UserForm mode="edit" user={user} onCancel={onCancelNavigation()} onSuccess={() => setDrawerOpen(false)} profileMode={true} />
                         </Box>
                     )}
