@@ -452,7 +452,7 @@ export default function SideBarWithHeader({ children }) {
                         {viewContainerCard && <ContentContainer>{children}</ContentContainer>}
                         {(!viewContainerCard && !viewCourseCard) && <Box>{children}</Box>}
                     </Box>
-                    <Box sx={{ mt: 10 }}>
+                    <Box sx={{ mt: isMobile ? 12 : 10 }}>
                         {viewCourseCard && <CourseContainer>{children}</CourseContainer>}
                     </Box>
                 </Main>

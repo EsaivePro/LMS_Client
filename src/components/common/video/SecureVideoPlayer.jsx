@@ -6,7 +6,10 @@ import {
     Snackbar,
     Fade,
     Slider,
-    Tooltip
+    Tooltip,
+    Select,
+    MenuItem,
+    useMediaQuery
 } from "@mui/material";
 
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
@@ -34,6 +37,7 @@ export default function SecureVideoPlayer({
     const videoRef = useRef(null);
     const containerRef = useRef(null);
     const overlayTimer = useRef(null);
+    const isMobile = useMediaQuery("(max-width:600px)");
 
     // MAIN STATES
     const [paused, setPaused] = useState(true);
@@ -374,9 +378,9 @@ export default function SecureVideoPlayer({
                         transform: "translate(-50%, -50%)",
                         width: "100%",
                         display: "flex",
-                        justifyContent: "space-between",
+                        justifyContent: isMobile ? "center" : "space-between",
                         alignItems: "center",
-                        px: 3,
+                        px: isMobile ? 1.5 : 3,
                         pointerEvents: "none",
                     }}
                 >
@@ -391,9 +395,10 @@ export default function SecureVideoPlayer({
                             sx={{
                                 pointerEvents: "auto",
                                 opacity: previousDisabled ? 1 : 0.3,
+                                display: isMobile ? "none" : "inline-flex",
                             }}
                         >
-                            <NavigateBeforeIcon sx={{ fontSize: 60, color: "white" }} />
+                            <NavigateBeforeIcon sx={{ fontSize: isMobile ? 36 : 60, color: "white" }} />
                         </IconButton>
                     </Tooltip>
 
@@ -401,14 +406,14 @@ export default function SecureVideoPlayer({
                         onClick={togglePlay}
                         sx={{
                             pointerEvents: "auto",
-                            width: 95,
-                            height: 95,
+                            width: isMobile ? 64 : 95,
+                            height: isMobile ? 64 : 95,
                         }}
                     >
                         {paused ? (
-                            <PlayArrowIcon sx={{ fontSize: 85, color: "white" }} />
+                            <PlayArrowIcon sx={{ fontSize: isMobile ? 44 : 85, color: "white" }} />
                         ) : (
-                            <PauseIcon sx={{ fontSize: 85, color: "white" }} />
+                            <PauseIcon sx={{ fontSize: isMobile ? 44 : 85, color: "white" }} />
                         )}
                     </IconButton>
 
@@ -423,9 +428,10 @@ export default function SecureVideoPlayer({
                             sx={{
                                 pointerEvents: "auto",
                                 opacity: nextDisabled ? 1 : 0.3,
+                                display: isMobile ? "none" : "inline-flex",
                             }}
                         >
-                            <NavigateNextIcon sx={{ fontSize: 60, color: "white" }} />
+                            <NavigateNextIcon sx={{ fontSize: isMobile ? 36 : 60, color: "white" }} />
                         </IconButton>
                     </Tooltip>
                 </Box>
@@ -441,10 +447,11 @@ export default function SecureVideoPlayer({
                         bottom: 0,
                         left: 0,
                         width: "100%",
-                        p: 2,
+                        p: isMobile ? 1 : 2,
+                        pb: isMobile ? 0 : 2,
                         background:
                             "linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0))",
-                        backdropFilter: "blur(2px)",
+                        backdropFilter: "blur(0px)",
                     }}
                 >
                     {/* PROGRESS BAR */}
@@ -455,10 +462,10 @@ export default function SecureVideoPlayer({
                         onChange={handleSeek}
                         sx={{
                             color: "var(--primary)",
-                            height: 4,
+                            height: isMobile ? 3 : 4,
                             "& .MuiSlider-thumb": {
-                                width: 12,
-                                height: 12,
+                                width: isMobile ? 10 : 12,
+                                height: isMobile ? 10 : 12,
                                 backgroundColor: "var(--surface)",
                                 border: "2px solid var(--primary)",
                             },
@@ -472,7 +479,7 @@ export default function SecureVideoPlayer({
                     {/* CONTROL ROW */}
                     <Box
                         sx={{
-                            mt: 1,
+                            marginTop: isMobile ? "-30px" : 1,
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "space-between",
@@ -483,7 +490,7 @@ export default function SecureVideoPlayer({
                             sx={{
                                 display: "flex",
                                 alignItems: "center",
-                                gap: 2,
+                                gap: isMobile ? 1 : 2,
                             }}
                         >
                             {/* PLAY/PAUSE FOOTER */}
@@ -493,15 +500,15 @@ export default function SecureVideoPlayer({
                                     sx={{ color: "white", p: 0.3 }}
                                 >
                                     {paused ? (
-                                        <PlayArrowIcon sx={{ fontSize: 32 }} />
+                                        <PlayArrowIcon sx={{ fontSize: isMobile ? 22 : 32 }} />
                                     ) : (
-                                        <PauseIcon sx={{ fontSize: 32 }} />
+                                        <PauseIcon sx={{ fontSize: isMobile ? 22 : 32 }} />
                                     )}
                                 </IconButton>
                             </Tooltip>
 
                             {/* TIME */}
-                            <Typography sx={{ color: "white", fontSize: 14 }}>
+                            <Typography sx={{ color: "white", fontSize: isMobile ? 12 : 14 }}>
                                 {formatTime(progress)} / {formatTime(duration)}
                             </Typography>
 
@@ -526,72 +533,94 @@ export default function SecureVideoPlayer({
                                 step={0.05}
                                 onChange={handleVolume}
                                 sx={{
-                                    width: 90,
+                                    width: isMobile ? 70 : 90,
                                     color: "var(--primary)",
                                     "& .MuiSlider-thumb": {
-                                        width: 10,
-                                        height: 10,
+                                        width: isMobile ? 8 : 10,
+                                        height: isMobile ? 8 : 10,
                                     },
                                 }}
                             />
 
-                            {/* INLINE SPEED BUTTONS */}
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 1,
-                                }}
-                            >
-                                {speeds.map((s) => (
-                                    <Tooltip key={s} title={`Speed: ${s}x`}>
-                                        <Box
-                                            onClick={() => changeSpeed(s)}
-                                            sx={{
-                                                px: 1.2,
-                                                py: 0.4,
-                                                borderRadius: "6px",
-                                                fontSize: "13px",
-                                                color:
-                                                    speed === s ? "var(--primary)" : "white",
-                                                border:
-                                                    speed === s
-                                                        ? "1px solid var(--primary)"
-                                                        : "1px solid rgba(255,255,255,0.4)",
-                                                cursor: "pointer",
-                                                transition: "0.25s",
-                                                "&:hover": {
-                                                    background:
-                                                        "rgba(255,255,255,0.15)",
-                                                },
-                                            }}
-                                        >
+                            {/* SPEED CONTROL: inline buttons on desktop, dropdown on mobile */}
+                            {isMobile ? (
+                                <Select
+                                    value={speed}
+                                    onChange={(e) => changeSpeed(Number(e.target.value))}
+                                    size="small"
+                                    sx={{
+                                        color: "white",
+                                        fontSize: "12px",
+                                        minWidth: 56,
+                                        background: "rgba(255,255,255,0.04)",
+                                        border: "1px solid rgba(255,255,255,0.12)",
+                                        "& .MuiSelect-icon": { color: "white" }
+                                    }}
+                                    MenuProps={{
+                                        PaperProps: {
+                                            sx: { bgcolor: "background.paper" },
+                                        },
+                                    }}
+                                >
+                                    {speeds.map((s) => (
+                                        <MenuItem key={s} value={s} sx={{ fontSize: "14px" }}>
                                             {s}x
-                                        </Box>
-                                    </Tooltip>
-                                ))}
-                            </Box>
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            ) : (
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1,
+                                    }}
+                                >
+                                    {speeds.map((s) => (
+                                        <Tooltip key={s} title={`Speed: ${s}x`}>
+                                            <Box
+                                                onClick={() => changeSpeed(s)}
+                                                sx={{
+                                                    px: 1.2,
+                                                    py: 0.4,
+                                                    borderRadius: "6px",
+                                                    fontSize: "13px",
+                                                    color: speed === s ? "var(--primary)" : "white",
+                                                    border:
+                                                        speed === s
+                                                            ? "1px solid var(--primary)"
+                                                            : "1px solid rgba(255,255,255,0.4)",
+                                                    cursor: "pointer",
+                                                    transition: "0.25s",
+                                                    "&:hover": { background: "rgba(255,255,255,0.15)" },
+                                                }}
+                                            >
+                                                {s}x
+                                            </Box>
+                                        </Tooltip>
+                                    ))}
+                                </Box>
+                            )}
                         </Box>
 
                         {/* RIGHT SIDE */}
-                        <Tooltip title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}>
-                            <IconButton
-                                onClick={toggleFullscreen}
-                                sx={{ color: "white", p: 0.5 }}
-                            >
-                                {isFullscreen ? (
-                                    <FullscreenExitIcon />
-                                ) : (
-                                    <FullscreenIcon />
-                                )}
-                            </IconButton>
-                        </Tooltip>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <Tooltip title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}>
+                                <IconButton
+                                    onClick={toggleFullscreen}
+                                    sx={{ color: "white", p: 0.5 }}
+                                >
+                                    {isFullscreen ? (
+                                        <FullscreenExitIcon />
+                                    ) : (
+                                        <FullscreenIcon />
+                                    )}
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
                     </Box>
                 </Box>
             </Fade>
-            {/* ============================
-                MOVING WATERMARK
-            ============================= */}
             <Typography
                 className="sv-watermark sv-watermark-move"
                 sx={{

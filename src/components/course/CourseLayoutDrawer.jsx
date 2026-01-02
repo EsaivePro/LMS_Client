@@ -48,8 +48,8 @@ export default function CourseLayoutDrawer({
     const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
     const drawerContent = (
-        <Box sx={{ height: "100%", overflowY: "auto", mt: 8 }}>
-            <CurriculumView {...curriculumProps} />
+        <Box sx={{ height: "100%", overflowY: "auto", mt: isMobile ? 0 : 8 }}>
+            <CurriculumView {...curriculumProps} courseProgress={courseProgress} />
         </Box>
     );
 
@@ -107,9 +107,9 @@ export default function CourseLayoutDrawer({
                         selectedLesson={selectedLesson}
                         darkMode={darkMode}
                     /> */}
-                    <Box sx={{ pt: 4 }}>
+                    {!isMobile && <Box sx={{ pt: 4 }}>
                         <Footer compView={true} />
-                    </Box>
+                    </Box>}
                 </Box>
 
                 {/* RIGHT DRAWER DESKTOP */}
@@ -129,26 +129,16 @@ export default function CourseLayoutDrawer({
                         {drawerContent}
                     </Drawer>
                 )}
-
-                {/* RIGHT DRAWER MOBILE */}
-                {isMobile && (
-                    <Drawer
-                        variant="temporary"
-                        anchor="right"
-                        open={mobileOpen}
-                        onClose={handleDrawerToggle}
-                        ModalProps={{ keepMounted: true }}
-                        sx={{
-                            "& .MuiDrawer-paper": {
-                                width: drawerWidth,
-                                boxSizing: "border-box",
-                            },
-                        }}
-                    >
-                        {drawerContent}
-                    </Drawer>
-                )}
             </Box>
+            {/* RIGHT DRAWER MOBILE */}
+            {isMobile && (
+                <Box sx={{ minHeight: "60vh" }}>
+                    {drawerContent}
+                </Box>
+            )}
+            {isMobile && <Box sx={{ pt: 4 }}>
+                <Footer compView={true} />
+            </Box>}
         </>
     );
 }
