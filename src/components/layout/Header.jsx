@@ -133,7 +133,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                     sx={{
                         justifyContent: "space-between",
                         px: { xs: 0.5, sm: 1, md: 0 }, // 🔥 MOBILE PX REDUCED
-                        minHeight: { xs: 80, sm: 64 },
+                        minHeight: { xs: 64, sm: 64 },
                     }}
                 >
 

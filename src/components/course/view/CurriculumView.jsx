@@ -68,7 +68,7 @@ const CurriculumView = ({
             }}
         >
             {/* SEARCH BAR */}
-            <Box sx={{ mb: 1.5 }}>
+            {/* <Box sx={{ mb: 1.5 }}>
                 <TextField
                     size="small"
                     fullWidth
@@ -83,7 +83,7 @@ const CurriculumView = ({
                         ),
                     }}
                 />
-            </Box>
+            </Box> */}
 
             {/* ===========================================
                 CURRICULUM SECTIONS

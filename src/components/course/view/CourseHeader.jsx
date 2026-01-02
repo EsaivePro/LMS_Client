@@ -31,7 +31,7 @@ const CourseHeader = ({
             position="static"
             sx={{
                 width: isMobile ? "100%" : `calc(100% - ${drawerWidth}px)`,
-                backgroundColor: "var(--textPrimary)",
+                backgroundColor: "#1b1b1bff",
                 boxShadow: "0",
                 zIndex: 1300,
             }}
@@ -42,7 +42,7 @@ const CourseHeader = ({
                     alignItems: "center",
                     justifyContent: "space-between",
                     minHeight: isMobile ? 60 : 64,
-                    px: isMobile ? 1 : 3,
+                    px: isMobile ? 2 : 3,
                     gap: isMobile ? 0 : 2,
                 }}
             >
@@ -68,7 +68,7 @@ const CourseHeader = ({
                     <Typography
                         sx={{
                             fontSize: isMobile ? 16 : 18,
-                            fontWeight: 500,
+                            fontWeight: 400,
                             color: "var(--onPrimary)",
                             whiteSpace: "nowrap",
                             overflow: "hidden",

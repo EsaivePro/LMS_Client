@@ -208,7 +208,7 @@ export default function SideBarWithHeader({ children }) {
                     }}
                 >
                     {/* CLOSE BUTTON */}
-                    <Box
+                    {/* <Box
                         sx={{
                             height: 56,
                             display: "flex",
@@ -222,7 +222,7 @@ export default function SideBarWithHeader({ children }) {
                         </IconButton>
                     </Box>
 
-                    <Divider sx={{ borderColor: "var(--primary)" }} />
+                    <Divider sx={{ borderColor: "var(--primary)" }} /> */}
 
                     {/* MENU LIST */}
                     <List>
@@ -252,9 +252,9 @@ export default function SideBarWithHeader({ children }) {
                                                 <ListItemButton
                                                     sx={{
                                                         backgroundColor: isActive
-                                                            ? "rgba(255,255,255,0.9)"
+                                                            ? "var(--primaryLight)"
                                                             : "transparent",
-                                                        color: isActive ? "var(--textPrimary)" : "var(--primary)",
+                                                        color: isActive ? "var(--onPrimary)" : "var(--primary)",
                                                         borderLeft: isActive
                                                             ? "4px solid var(--primary)"
                                                             : "4px solid transparent",
@@ -267,7 +267,7 @@ export default function SideBarWithHeader({ children }) {
                                                 >
                                                     <ListItemIcon
                                                         sx={{
-                                                            color: isActive ? "var(--textPrimary)" : "var(--primary)",
+                                                            color: isActive ? "var(--onPrimary)" : "var(--primary)",
                                                             minWidth: 40,
                                                         }}
                                                     >
@@ -448,11 +448,11 @@ export default function SideBarWithHeader({ children }) {
 
                 {/* MAIN CONTENT */}
                 <Main sx={{ m: 0, p: 0, maxWidth: '100%' }}>
-                    <Box sx={{ m: isMobile ? 1.8 : 4, mt: isMobile ? 4 : 10, mb: 0 }}>
+                    <Box sx={{ m: isMobile ? 1.8 : 4, mt: isMobile ? 10 : 10, mb: 0 }}>
                         {viewContainerCard && <ContentContainer>{children}</ContentContainer>}
                         {(!viewContainerCard && !viewCourseCard) && <Box>{children}</Box>}
                     </Box>
-                    <Box sx={{ mt: isMobile ? 12 : 10 }}>
+                    <Box sx={{ mt: isMobile ? 10 : 10 }}>
                         {viewCourseCard && <CourseContainer>{children}</CourseContainer>}
                     </Box>
                 </Main>

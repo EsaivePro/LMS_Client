@@ -41,11 +41,11 @@ export default function ContentContainer({ children }) {
   // 🔥 AUTO-DETECT HEADER ICON
   // -----------------------------------------------
   const getHeaderIcon = () => {
-    if (title.includes("dashboard")) return <DashboardIcon fontSize="medium" />;
-    if (title.includes("course")) return <SchoolIcon fontSize="medium" />;
-    if (title.includes("user management")) return <ManageAccountsIcon fontSize="medium" />;
-    if (title.includes("enrollment")) return <FolderSharedIcon fontSize="medium" />;
-    if (title.includes("profile")) return <AccountBoxIcon fontSize="medium" />;
+    if (title.includes("dashboard")) return <DashboardIcon fontSize="medium" sx={{ color: "var(--primary)" }} />;
+    if (title.includes("course")) return <SchoolIcon fontSize="medium" sx={{ color: "var(--primary)" }} />;
+    if (title.includes("user management")) return <ManageAccountsIcon fontSize="medium" sx={{ color: "var(--primary)" }} />;
+    if (title.includes("enrollment")) return <FolderSharedIcon fontSize="medium" sx={{ color: "var(--primary)" }} />;
+    if (title.includes("profile")) return <AccountBoxIcon fontSize="medium" sx={{ color: "var(--primary)" }} />;
     return <StarIcon fontSize="medium" />; // ⭐ fallback icon
   };
 
@@ -55,7 +55,7 @@ export default function ContentContainer({ children }) {
   `;
 
   const reduxLastLogin = useSelector((s) => s.auth?.user?.lastLogin || s.user?.lastLogin || null);
-  const [lastLogin, setLastLogin] = React.useState(reduxLastLogin || localStorage.getItem("lastLogin") || "12 Jan 2024, 10:00 AM");
+  const [lastLogin, setLastLogin] = React.useState(reduxLastLogin || localStorage.getItem("lastLogin") || null);
 
   React.useEffect(() => {
     if (reduxLastLogin) setLastLogin(reduxLastLogin);
@@ -82,48 +82,51 @@ export default function ContentContainer({ children }) {
       {/* HEADER/HERO SECTION */}
       <Box
         sx={{
-          background: "var(--surface)",
-          color: "var(--textPrimary)",
+          background: "linear-gradient(100deg, var(--primaryLight) 0%, var(--surface) 120%)",
+          color: "var(--onPrimary)",
           px: isMobile ? 2 : 2,
           py: isMobile ? 3 : 2,
           display: "flex",
-          alignItems: "center",
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: isMobile ? "flex-start" : "center",
           gap: 2,
           width: "100%",
           borderRadius: 1,
         }}
       >
-        {/* Icon */}
-        <Avatar
-          sx={{
-            bgcolor: "var(--primary)",
-            width: isMobile ? 46 : 50,
-            height: isMobile ? 46 : 50,
-          }}
-        >
-          {getHeaderIcon()}
-        </Avatar>
-
-        {/* Title text */}
-        <Box>
-          <Typography
-            variant={isMobile ? "h5" : "h5"}
-            sx={{ fontWeight: 700, letterSpacing: 0.3 }}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.7, width: isMobile ? "100%" : "auto" }}>
+          {/* Icon */}
+          <Avatar
+            sx={{
+              bgcolor: "var(--onPrimary)",
+              width: isMobile ? 46 : 50,
+              height: isMobile ? 46 : 50,
+            }}
           >
-            {containerTitle}
-          </Typography>
+            {getHeaderIcon()}
+          </Avatar>
 
-          <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5 }}>
-            {containerTitleDescription}
-          </Typography>
+          {/* Title text */}
+          <Box>
+            <Typography
+              variant={isMobile ? "h6" : "h5"}
+              sx={{ fontWeight: 700, letterSpacing: 0.3 }}
+            >
+              {containerTitle}
+            </Typography>
+
+            <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5 }}>
+              {containerTitleDescription}
+            </Typography>
+          </Box>
         </Box>
         {/* Right side: last login */}
-        <Box sx={{ ml: "auto", textAlign: "right", animation: `${loginAnim} 520ms ease both` }}>
+        <Box sx={{ ml: isMobile ? 0 : "auto", mt: isMobile ? 1 : 0, textAlign: isMobile ? "left" : "right", animation: `${loginAnim} 520ms ease both` }}>
           <Typography variant="caption" sx={{ color: "text.secondary", display: "block" }}>
             Last login
           </Typography>
-          <Typography variant="body2" sx={{ fontWeight: 700 }}>
-            {formatLogin(lastLogin)}
+          <Typography variant="body2" sx={{ fontWeight: 700, color: "#383838ff" }}>
+            {formatLogin(lastLogin || new Date().toISOString())}
           </Typography>
         </Box>
       </Box>

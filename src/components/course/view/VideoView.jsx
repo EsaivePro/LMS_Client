@@ -26,13 +26,13 @@ const VideoView = ({
                 boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
                 width: "100%",
                 overflow: "hidden",
-                background: darkMode ? "var(--textPrimary)" : "var(--surface)"
+                background: "var(--surface)"
             }}
         >
             <Box
                 sx={{
                     width: "100%",
-                    height: isSmall ? 160 : "83vh",
+                    height: isSmall ? "100%" : "83vh",
                     background: "var(--textPrimary)",
                     display: "flex",
                     justifyContent: "center",

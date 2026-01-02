@@ -30,9 +30,9 @@ export default function Footer({ compView = false }) {
         width: "100%",
       }}
     >
-      <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, justifyContent: "space-between", gap: 4 }}>
+      <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, justifyContent: "space-between", gap: 4, alignItems: { xs: 'center', md: 'flex-start' } }}>
 
-        <Box>
+        <Box sx={{ width: { xs: '100%', md: 'auto' } }}>
           <Typography
             variant="h6"
             sx={{
@@ -68,9 +68,10 @@ export default function Footer({ compView = false }) {
         <Box>
           <Box
             sx={{
-              textAlign: "left",
+              textAlign: { xs: 'center', md: 'left' },
               width: "100%",
               maxWidth: 360, // keeps it visually centered
+              mx: { xs: 'auto', md: 0 },
             }}
           >
             <Typography
@@ -95,8 +96,8 @@ export default function Footer({ compView = false }) {
             </Typography>
           </Box>
         </Box>
-        <Box >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, textAlign: { xs: 'center', md: 'left' } }}>
+        <Box sx={{ width: { xs: '100%', md: 'auto' }, textAlign: { xs: 'center', md: 'left' } }}>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center', gap: 1, justifyContent: { xs: 'center', md: 'flex-start' } }}>
             <img src={THEME?.manifest?.icons?.[0]?.src ? `/${THEME.manifest.icons[0].src}` : '/logo/EsaiLogo.png'} alt={THEME?.manifest?.name || 'LMS'} width={42} />
             <Typography variant="h6" sx={{ fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase' }}>
               {THEME?.manifest?.short_name ? THEME.manifest.short_name.toUpperCase() : 'LMS'}
