@@ -32,7 +32,7 @@ const VideoView = ({
             <Box
                 sx={{
                     width: "100%",
-                    height: isSmall ? "100%" : "83vh",
+                    height: isSmall ? "100%" : "69vh",
                     background: "var(--textPrimary)",
                     display: "flex",
                     justifyContent: "center",

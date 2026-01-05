@@ -13,21 +13,21 @@ const CourseTabView = ({ value, handleChange, selectedLesson, darkMode }) => {
                         "& .MuiTabs-indicator": { backgroundColor: "var(--textPrimary)", height: 2 }
                     }}
                 >
-                    <Tab label="Overview" sx={{ textTransform: "none", fontSize: "16px", fontWeight: 600 }} />
+                    {/* <Tab label="Overview" sx={{ textTransform: "none", fontSize: "16px", fontWeight: 600 }} />
                     <Tab label="Notes" sx={{ textTransform: "none", fontSize: "16px", fontWeight: 600 }} />
-                    <Tab label="Reviews" sx={{ textTransform: "none", fontSize: "16px", fontWeight: 600 }} />
+                    <Tab label="Reviews" sx={{ textTransform: "none", fontSize: "16px", fontWeight: 600 }} /> */}
                 </Tabs>
             </Box>
 
-            {value === 0 && selectedLesson?.description && (
+            {/* {value === 0 && selectedLesson?.description && (
                 <Card sx={{ p: 2.5 }}>
                     <Typography variant="body1" sx={{ lineHeight: 1.7, whiteSpace: "pre-line" }}>
                         {selectedLesson.description}
                     </Typography>
                 </Card>
-            )}
+            )} */}
 
-            {value === 1 && (
+            {/* {value === 1 && (
                 <Card sx={{ p: 3 }}>
                     <Typography variant="h6">Your Notes</Typography>
                     <TextField fullWidth multiline minRows={6} placeholder="Write your notes here..." sx={{ mt: 2 }} />
@@ -41,7 +41,7 @@ const CourseTabView = ({ value, handleChange, selectedLesson, darkMode }) => {
                     <TextField fullWidth multiline minRows={5} placeholder="Share your experience..." />
                     <Button variant="contained" sx={{ mt: 2 }}>Submit Review</Button>
                 </Card>
-            )}
+            )} */}
         </>
     );
 };

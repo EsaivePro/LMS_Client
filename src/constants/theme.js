@@ -1,8 +1,15 @@
 export const THEME = {
     colors: {
-        primary: "#aa2c44",
-        primaryDark: "#1565C0",
-        primaryLight: "#c33f57ff",
+        primary: "#8F00FF", //"#aa2c44",
+        primaryMedium: "#9b18ffff",
+        primaryLight: "#a27affff",
+
+        dark: "#212121",
+        darkMedium: "#434242ff", //"#c33f57ff",
+        darkLight: "#666666ff", //"#c33f57ff",
+
+        // primaryDark: "#1565C0",
+        // primaryLight: "#434242ff", //"#c33f57ff",
         secondary: "#9ACD32",
         background: "#ffffff",
         surface: "#fbfbfbff",

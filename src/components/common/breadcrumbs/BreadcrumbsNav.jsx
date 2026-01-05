@@ -23,13 +23,13 @@ export default function BreadcrumbsNav() {
                 bgcolor: "white",
                 // borderBottom: "1px solid #e0e0e0",
                 p: 1.5,
-                px: 3,
+                px: 7.5,
             }}
         >
             <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />}>
 
-                <Link underline="hover" color="inherit" onClick={() => navigate("/")}>
-                    Home
+                <Link underline="hover" color="var(--primary)" onClick={() => navigate("/")}>
+                    Dashboard
                 </Link>
 
                 {pathnames.map((value, index) => {

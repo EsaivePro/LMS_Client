@@ -40,7 +40,7 @@ export default function AppLayout({
         <div className="app-root">
             <SideBarWithHeader>
                 {/* FIXED BREADCRUMB NAV */}
-                {/* <BreadcrumbsNav /> */}
+                <BreadcrumbsNav />
                 <GlobalAlert />
                 {/* PAGE CONTENT */}
                 <LoadingScreen />

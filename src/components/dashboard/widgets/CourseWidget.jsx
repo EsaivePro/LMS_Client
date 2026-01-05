@@ -191,13 +191,13 @@ function CourseCard({ course, index, width = 300 }) {
                 <Box sx={{ px: 2 }}>
                     <LinearProgress
                         variant="determinate"
-                        value={progress}
+                        value={progress || 2}
                         sx={{
                             height: 6,
                             borderRadius: 3,
-                            backgroundColor: "var(--lightgrey)",
+                            backgroundColor: "var(--darkLight)",
                             "& .MuiLinearProgress-bar": {
-                                backgroundColor: accent,
+                                backgroundColor: "var(--primaryMedium)",
                             },
                         }}
                     />
@@ -224,11 +224,11 @@ function CourseCard({ course, index, width = 300 }) {
                     variant="contained"
                     endIcon={<PlayArrowIcon />}
                     sx={{
-                        backgroundColor: "var(--primaryLight)",
+                        backgroundColor: "var(--darkMedium)",
                         borderRadius: 1,
                         textTransform: "none",
                         px: 3,
-                        "&:hover": { backgroundColor: "var(--primary)" },
+                        "&:hover": { backgroundColor: "var(--primaryMedium)" },
                     }}
                     onClick={() => navigate(`/course/view/${course.id}`)}
                 >

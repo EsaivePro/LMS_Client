@@ -155,7 +155,7 @@ const CourseView = () => {
     const { fetchEnrollCoursesByUser, enrollmentCoursesByUser } = useEnrollment();
 
     useEffect(() => {
-        if (user && enrollmentCoursesByUser && enrollmentCoursesByUser[user.id]?.length == 0) {
+        if (user && enrollmentCoursesByUser) {
             fetchEnrollCoursesByUser(user.id);
         }
     }, [user, fetchEnrollCoursesByUser]);

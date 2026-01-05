@@ -25,6 +25,7 @@ import useCommon from "../../hooks/useCommon";
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import BreadcrumbsNav from "../common/breadcrumbs/BreadcrumbsNav";
 
 export default function ContentContainer({ children }) {
   const { containerTitle, containerTitleDescription } = useCommon();
@@ -41,12 +42,12 @@ export default function ContentContainer({ children }) {
   // 🔥 AUTO-DETECT HEADER ICON
   // -----------------------------------------------
   const getHeaderIcon = () => {
-    if (title.includes("dashboard")) return <DashboardIcon fontSize="medium" sx={{ color: "var(--primary)" }} />;
-    if (title.includes("course")) return <SchoolIcon fontSize="medium" sx={{ color: "var(--primary)" }} />;
-    if (title.includes("user management")) return <ManageAccountsIcon fontSize="medium" sx={{ color: "var(--primary)" }} />;
-    if (title.includes("enrollment")) return <FolderSharedIcon fontSize="medium" sx={{ color: "var(--primary)" }} />;
-    if (title.includes("profile")) return <AccountBoxIcon fontSize="medium" sx={{ color: "var(--primary)" }} />;
-    return <StarIcon fontSize="medium" />; // ⭐ fallback icon
+    if (title.includes("dashboard")) return <DashboardIcon fontSize="small" sx={{ color: "var(--primary)" }} />;
+    if (title.includes("course")) return <SchoolIcon fontSize="small" sx={{ color: "var(--primary)" }} />;
+    if (title.includes("user management")) return <ManageAccountsIcon fontSize="small" sx={{ color: "var(--primary)" }} />;
+    if (title.includes("enrollment")) return <FolderSharedIcon fontSize="small" sx={{ color: "var(--primary)" }} />;
+    if (title.includes("profile")) return <AccountBoxIcon fontSize="small" sx={{ color: "var(--primary)" }} />;
+    return <StarIcon fontSize="small" />; // ⭐ fallback icon
   };
 
   const loginAnim = keyframes`
@@ -80,10 +81,11 @@ export default function ContentContainer({ children }) {
     <Box sx={{ m: 0 }}>
       <Box height={isMobile ? 27 : 30} />
       {/* HEADER/HERO SECTION */}
-      <Box
+      {/* <BreadcrumbsNav /> */}
+      {/* <Box
         sx={{
-          background: "linear-gradient(100deg, var(--primaryLight) 0%, var(--surface) 120%)",
-          color: "var(--onPrimary)",
+          background: "var(--surface)",
+          color: "var(--primary)",
           px: isMobile ? 2 : 2,
           py: isMobile ? 3 : 2,
           display: "flex",
@@ -95,18 +97,17 @@ export default function ContentContainer({ children }) {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.7, width: isMobile ? "100%" : "auto" }}>
-          {/* Icon */}
+         
           <Avatar
             sx={{
               bgcolor: "var(--onPrimary)",
-              width: isMobile ? 46 : 50,
-              height: isMobile ? 46 : 50,
+              width: isMobile ? 46 : 30,
+              height: isMobile ? 46 : 30,
             }}
           >
             {getHeaderIcon()}
           </Avatar>
 
-          {/* Title text */}
           <Box>
             <Typography
               variant={isMobile ? "h6" : "h5"}
@@ -116,11 +117,9 @@ export default function ContentContainer({ children }) {
             </Typography>
 
             <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5 }}>
-              {containerTitleDescription}
             </Typography>
           </Box>
         </Box>
-        {/* Right side: last login */}
         <Box sx={{ ml: isMobile ? 0 : "auto", mt: isMobile ? 1 : 0, textAlign: isMobile ? "left" : "right", animation: `${loginAnim} 520ms ease both` }}>
           <Typography variant="caption" sx={{ color: "var(--onPrimary)", display: "block" }}>
             Last login
@@ -129,7 +128,7 @@ export default function ContentContainer({ children }) {
             {formatLogin(lastLogin || new Date().toISOString())}
           </Typography>
         </Box>
-      </Box>
+      </Box> */}
 
       {/* PAGE CONTENT */}
       <Box
@@ -137,6 +136,7 @@ export default function ContentContainer({ children }) {
           display: "flex",
           flexDirection: "column",
           gap: 2,
+          minHeight: "calc(100vh - 200px)",
           // mb: 3,
           mt: isMobile ? 2 : 2,
           pt: isMobile ? 0 : 0,

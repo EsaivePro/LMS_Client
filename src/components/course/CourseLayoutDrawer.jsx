@@ -101,12 +101,12 @@ export default function CourseLayoutDrawer({
                         darkMode={darkMode}
                     />
 
-                    {/* <CourseTabView
+                    <CourseTabView
                         value={value}
                         handleChange={handleChange}
                         selectedLesson={selectedLesson}
                         darkMode={darkMode}
-                    /> */}
+                    />
                     {!isMobile && <Box sx={{ pt: 4 }}>
                         <Footer compView={true} />
                     </Box>}

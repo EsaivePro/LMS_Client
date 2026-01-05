@@ -93,14 +93,14 @@ export default function WelcomeWidget() {
                     >
                         {name}!
                     </Typography>
-                    <WavingHandIcon
+                    {/* <WavingHandIcon
                         sx={{
                             fontSize: 18,
-                            color: "var(--primaryLight)",
+                            color: "var(--textPrimary)",
                             animation: `${wave} 2s infinite`,
                             transformOrigin: "70% 70%",
                         }}
-                    />
+                    /> */}
                 </Box>
 
                 {/* Quote */}
