@@ -22,8 +22,9 @@ export default function Footer({ compView = false }) {
     <Box
       component="footer"
       sx={{
-        background: "var(--surface)",
-        marginTop: { xs: "-48px", md: "-48px" },
+        background: "var(--dark)",
+        color: "var(--onPrimary)",
+        marginTop: { xs: "-100px", md: "-100px" },
         pt: { xs: 4, md: 6 },
         pb: 3,
         px: { xs: 3, md: 10 },
@@ -103,7 +104,7 @@ export default function Footer({ compView = false }) {
               {THEME?.manifest?.short_name ? THEME.manifest.short_name.toUpperCase() : 'LMS'}
             </Typography>
           </Box>
-          <Typography variant="h7" sx={{ fontWeight: 400, color: 'var(--primaryLight)' }}>
+          <Typography variant="h7" sx={{ fontWeight: 400, color: 'var(--primaryMedium)' }}>
             {THEME?.manifest?.description ? THEME.manifest.description : 'LMS'}
           </Typography>
           {/* SOCIAL ICONS */}
@@ -141,7 +142,7 @@ export default function Footer({ compView = false }) {
       {/* ================= COPYRIGHT ================= */}
       <Box
         sx={{
-          borderTop: "1px solid rgba(0,0,0,0.2)",
+          borderTop: "1px solid rgba(255, 255, 255, 0.2)",
           mt: 4,
           pt: 2,
           textAlign: "center",

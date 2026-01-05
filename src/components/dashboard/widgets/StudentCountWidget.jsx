@@ -14,9 +14,9 @@ import { useMemo } from "react";
 /* ---------- Dummy Data ---------- */
 // Default/dummy summary configuration (values will be replaced dynamically)
 const baseSummary = [
-    { title: "Total Courses", icon: LibraryBooksIcon, color: "var(--primary)" },
-    { title: "Completed Courses", icon: ChecklistIcon, color: "var(--primary)" },
-    { title: "Not Started", icon: DoNotTouchIcon, color: "var(--primary)" },
+    { title: "Total Courses", icon: LibraryBooksIcon, color: "var(--dark)" },
+    { title: "Completed Courses", icon: ChecklistIcon, color: "var(--dark)" },
+    { title: "Not Started", icon: DoNotTouchIcon, color: "var(--dark)" },
 ];
 
 export default function StudentCountWidget() {
@@ -79,6 +79,7 @@ export default function StudentCountWidget() {
                                     variant={isMobile ? "h5" : "h4"}
                                     fontWeight={700}
                                     lineHeight={1.2}
+                                    color="var(--darkMedium)"
                                 >
                                     {item.value}
                                 </Typography>

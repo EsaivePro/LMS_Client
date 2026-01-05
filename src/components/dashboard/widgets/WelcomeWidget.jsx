@@ -7,11 +7,13 @@ import { red } from "@mui/material/colors";
 
 /* ---------- Quotes ---------- */
 const QUOTES = [
-    "The secret of getting ahead is getting started.",
+    // "The secret of getting ahead is getting started and the future depends on what you do today.",
     "Don't watch the clock; do what it does. Keep going.",
     "Start where you are. Use what you have. Do what you can.",
     "Success usually comes to those who are too busy to be looking for it.",
-    "The future depends on what you do today."
+    "The way to get started is to quit talking and begin doing.",
+    "The future belongs to those who believe in the beauty of their dreams.",
+    "It's not whether you get knocked down, it's whether you get up.",
 ];
 
 /* ---------- Greeting ---------- */

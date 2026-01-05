@@ -236,7 +236,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                                 {userInitial}
                             </Avatar>
 
-                            <Box sx={{ lineHeight: 1, ml: isMobile ? 0.2 : .5, textAlign: { xs: "left", sm: "right" } }}>
+                            {!isMobile && <Box sx={{ lineHeight: 1, ml: isMobile ? 0.2 : .5, textAlign: { xs: "left", sm: "right" } }}>
                                 <Typography
                                     variant={isMobile ? "body3" : "body2"}
                                     sx={{
@@ -275,7 +275,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                                 >
                                     {roleName}
                                 </Typography>
-                            </Box>
+                            </Box>}
 
                             <IconButton
                                 size="small"
@@ -292,8 +292,48 @@ function Header({ toggleSidebar, profile, logout, open }) {
                             onClose={() => setAnchorElUser(null)}
                             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                             transformOrigin={{ vertical: "top", horizontal: "right" }}
-                            sx={{ mt: isMobile ? 2.7 : 2 }}
+                            sx={{ mt: isMobile ? 2 : 2 }}
                         >
+                            {isMobile && <Box sx={{ lineHeight: 1, m: 1, textAlign: { xs: "left", sm: "right" } }}>
+                                <Typography
+                                    variant={isMobile ? "body3" : "body2"}
+                                    sx={{
+                                        fontWeight: 700,
+                                        lineHeight: 1.3,
+
+                                        /* no wrap + ellipsis */
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+
+                                        /* limit width so ellipsis can happen */
+                                        maxWidth: { xs: 160, sm: 220, md: "none" },
+
+                                        display: "block",
+                                    }}
+                                >
+                                    {username}
+                                </Typography>
+                                <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                    sx={{
+                                        lineHeight: 1,
+
+                                        /* no wrap + ellipsis */
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+
+                                        /* limit width so ellipsis can happen */
+                                        maxWidth: { xs: 160, sm: 220, md: "none" },
+
+                                        display: "block",
+                                    }}
+                                >
+                                    {roleName}
+                                </Typography>
+                            </Box>}
                             {settings.map((s, i) => (
                                 <MenuItem
                                     key={i}

@@ -44,7 +44,7 @@ export const THEME = {
     manifest: {
         name: "Impulse",
         short_name: "impulse",
-        description: "Impulse Learning Management System",
+        description: "Build yourself learning platform with Impulse.",
         theme_color: "#aa2c44",
         background_color: "#ffffff",
         icons: [

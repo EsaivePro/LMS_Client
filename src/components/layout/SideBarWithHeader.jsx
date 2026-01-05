@@ -199,7 +199,7 @@ export default function SideBarWithHeader({ children }) {
                         left: open ? 0 : -drawerWidth,
                         width: drawerWidth,
                         height: "calc(100vh - 64px)",
-                        background: "var(--surface)",
+                        background: "var(--dark)",
                         color: "var(--primary)",
                         transition: "left 0.3s ease",
                         zIndex: 2000,
@@ -252,16 +252,16 @@ export default function SideBarWithHeader({ children }) {
                                                 <ListItemButton
                                                     sx={{
                                                         backgroundColor: isActive
-                                                            ? "var(--primaryLight)"
+                                                            ? "var(--primary)"
                                                             : "transparent",
                                                         color: isActive ? "var(--onPrimary)" : "var(--primary)",
                                                         borderLeft: isActive
-                                                            ? "4px solid var(--primary)"
+                                                            ? "4px solid var(--primaryMedium)"
                                                             : "4px solid transparent",
                                                         "&:hover": {
                                                             backgroundColor: isActive
-                                                                ? "rgba(255,255,255,0.9)"
-                                                                : "rgba(255,255,255,0.12)",
+                                                                ? "var(--primary)"
+                                                                : "rgba(255, 255, 255, 0.15)",
                                                         },
                                                     }}
                                                 >
@@ -370,7 +370,7 @@ export default function SideBarWithHeader({ children }) {
                         })}
                     </List>
 
-                    <Divider sx={{ borderColor: "rgba(0, 0, 0, 0.2)" }} />
+                    <Divider sx={{ borderColor: "rgba(255, 255, 255, 0.2)" }} />
 
                     {/* LOGOUT */}
                     <List>
@@ -448,11 +448,11 @@ export default function SideBarWithHeader({ children }) {
 
                 {/* MAIN CONTENT */}
                 <Main sx={{ m: 0, p: 0, maxWidth: '100%' }}>
-                    <Box sx={{ m: isMobile ? 1.8 : 4, mt: isMobile ? 10 : 7, mb: 0 }}>
+                    <Box sx={{ m: isMobile ? 1.8 : 4, mt: isMobile ? 9 : 9, mb: 0 }}>
                         {viewContainerCard && <ContentContainer>{children}</ContentContainer>}
                         {(!viewContainerCard && !viewCourseCard) && <Box>{children}</Box>}
                     </Box>
-                    <Box sx={{ mt: isMobile ? 10 : 16 }}>
+                    <Box sx={{ mt: isMobile ? 16 : 16 }}>
                         {viewCourseCard && <CourseContainer>{children}</CourseContainer>}
                     </Box>
                 </Main>
