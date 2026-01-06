@@ -174,11 +174,11 @@ export default function SecureVideoPlayer({
         clearTimeout(overlayTimer.current);
 
         // In PAUSE MODE → overlay stays hidden until mouse/keyboard moves
-        // if (paused) return;
+        if (paused) return;
 
         overlayTimer.current = setTimeout(() => {
             setShowOverlay(false);
-        }, 2000);
+        }, 3000);
     };
 
     // SHOW OVERLAY ON MOUSE MOVE
@@ -426,11 +426,13 @@ export default function SecureVideoPlayer({
                         left: "50%",
                         transform: "translate(-50%, -50%)",
                         width: "100%",
+                        height: "100%",
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
                         px: isMobile ? 1.5 : 3,
                         pointerEvents: "none",
+                        backgroundColor: "rgba(0, 0, 0, 0.21)"
                     }}
                 >
                     {/* PREVIOUS */}
