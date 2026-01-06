@@ -101,12 +101,12 @@ export default function CourseLayoutDrawer({
                         darkMode={darkMode}
                     />
 
-                    <CourseTabView
+                    {/* <CourseTabView
                         value={value}
                         handleChange={handleChange}
                         selectedLesson={selectedLesson}
                         darkMode={darkMode}
-                    />
+                    /> */}
                     {!isMobile && <Box sx={{ pt: 4 }}>
                         <Footer compView={true} />
                     </Box>}
@@ -132,11 +132,11 @@ export default function CourseLayoutDrawer({
             </Box>
             {/* RIGHT DRAWER MOBILE */}
             {isMobile && (
-                <Box sx={{ minHeight: "60vh" }}>
+                <Box sx={{ height: "70vh", minHeight: "20vh" }}>
                     {drawerContent}
                 </Box>
             )}
-            {isMobile && <Box sx={{ pt: 4 }}>
+            {isMobile && <Box sx={{ mt: 20 }}>
                 <Footer compView={true} />
             </Box>}
         </>

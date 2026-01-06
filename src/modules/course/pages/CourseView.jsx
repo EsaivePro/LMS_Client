@@ -678,7 +678,7 @@ const CourseView = () => {
                 </Box>}
 
             {/* AUTOPLAY OVERLAY */}
-            {autoplayOverlay.show && (
+            {/* {autoplayOverlay.show && (
                 <Dialog
                     open={autoplayOverlay.show}
                     onClose={() => {
@@ -735,7 +735,7 @@ const CourseView = () => {
                         </Stack>
                     </DialogContent>
                 </Dialog>
-            )}
+            )} */}
 
         </Box>
     );

@@ -110,7 +110,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
 
     const settings = [
         { label: "Profile", to: profile },
-        { label: "Logout", to: logout },
+        { label: "Sign out", to: logout },
     ];
 
     return (
@@ -333,7 +333,16 @@ function Header({ toggleSidebar, profile, logout, open }) {
                                 >
                                     {roleName}
                                 </Typography>
+                                <Divider sx={{ my: 1 }} />
                             </Box>}
+                            {isMobile && (
+                                <MenuItem
+                                    sx={{ px: { xs: 1, sm: 1.5 }, py: 0.5, minHeight: 36 }}
+                                    onClick={handleOpenSettings}
+                                >
+                                    Settings
+                                </MenuItem>
+                            )}
                             {settings.map((s, i) => (
                                 <MenuItem
                                     key={i}
@@ -352,14 +361,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                                     {s.label}
                                 </MenuItem>
                             ))}
-                            {isMobile && (
-                                <MenuItem
-                                    sx={{ px: { xs: 1, sm: 1.5 }, py: 0.5, minHeight: 36 }}
-                                    onClick={handleOpenSettings}
-                                >
-                                    Settings
-                                </MenuItem>
-                            )}
+
                         </Menu>
 
                         {/* ---------- SETTINGS MODAL ---------- */}
