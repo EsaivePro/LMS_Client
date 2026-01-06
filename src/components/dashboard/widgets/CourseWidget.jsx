@@ -405,7 +405,7 @@ export default function CourseWidget({ title }) {
     return (
         <Box sx={{ width: "100%" }}>
 
-            {title == "My Courses" && <Box sx={{ mt: 1 }}><CourseCarousel title="My Courses" courses={courses || []} /></Box>}
+            {title == "Your Learning" && <Box sx={{ mt: 1 }}><CourseCarousel title="Your Learning" courses={courses || []} /></Box>}
             {title == "Available Courses" && <Box sx={{ mt: 1 }}>
                 <CourseGrid title={title} courses={courses || []} />
             </Box>}

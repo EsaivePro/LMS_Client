@@ -104,7 +104,7 @@ export default function Footer({ compView = false }) {
               {THEME?.manifest?.short_name ? THEME.manifest.short_name.toUpperCase() : 'LMS'}
             </Typography>
           </Box>
-          <Typography variant="h7" sx={{ fontWeight: 400, color: 'var(--primaryMedium)' }}>
+          <Typography variant="h7" sx={{ fontWeight: 400, color: 'var(--onPrimary)' }}>
             {THEME?.manifest?.description ? THEME.manifest.description : 'LMS'}
           </Typography>
           {/* SOCIAL ICONS */}

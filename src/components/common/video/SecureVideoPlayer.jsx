@@ -69,10 +69,35 @@ export default function SecureVideoPlayer({
     };
 
     // FULLSCREEN HANDLER
-    const toggleFullscreen = () => {
+    const toggleFullscreen = async () => {
         const container = containerRef.current;
-        if (!document.fullscreenElement) container.requestFullscreen?.();
-        else document.exitFullscreen?.();
+        const v = videoRef.current;
+
+        try {
+            if (!document.fullscreenElement) {
+                // Try multiple requestFullscreen fallbacks (container first, then video)
+                if (container?.requestFullscreen) {
+                    await container.requestFullscreen();
+                } else if (v?.requestFullscreen) {
+                    await v.requestFullscreen();
+                } else if (container?.webkitEnterFullscreen) {
+                    try { container.webkitEnterFullscreen(); } catch (e) { }
+                } else if (v?.webkitEnterFullscreen) {
+                    try { v.webkitEnterFullscreen(); } catch (e) { }
+                }
+
+                // Try to lock orientation to portrait when entering fullscreen
+                try {
+                    await screen.orientation?.lock?.("portrait-primary");
+                } catch (e) { }
+            } else {
+                if (document.exitFullscreen) await document.exitFullscreen();
+
+                try { screen.orientation?.unlock?.(); } catch (e) { }
+            }
+        } catch (e) {
+            // swallowing errors - fullscreen/orientation may be blocked on some platforms
+        }
     };
 
     useEffect(() => {
@@ -92,6 +117,9 @@ export default function SecureVideoPlayer({
         const v = videoRef.current;
         if (!v) return;
 
+        // (auto-mute removed) leave volume/state as-is; autoplay with sound
+        // may be blocked by browsers if not user-initiated.
+
         v.onloadedmetadata = () => {
             setDuration(v.duration);
             if (initialPositionRef.current) {
@@ -106,10 +134,15 @@ export default function SecureVideoPlayer({
                 } catch (e) { }
             }
 
+            // If navigation explicitly requested play, honor it
             if (playAfterNavigationRef.current) {
                 v.play().then(() => setPaused(false)).catch(() => { /* autoplay blocked */ });
                 playAfterNavigationRef.current = false;
+                return;
             }
+
+            // Attempt autoplay (muted) on metadata load — modern browsers allow muted autoplay
+            v.play().then(() => setPaused(false)).catch(() => { /* autoplay blocked */ });
         };
 
         v.ontimeupdate = () => setProgress(v.currentTime);
@@ -239,8 +272,23 @@ export default function SecureVideoPlayer({
 
     const toggleMute = () => {
         const v = videoRef.current;
+        // remember previous volume before muting
+        if (!v.muted) prevVolumeRef.current = v.volume ?? prevVolumeRef.current;
         v.muted = !v.muted;
-        setVolume(v.muted ? 0 : v.volume);
+        setVolume(v.muted ? 0 : (v.volume || prevVolumeRef.current || 1));
+        setShowOverlay(true);
+        startOverlayTimer();
+    };
+
+    // remember previous volume to restore after unmute
+    const prevVolumeRef = useRef(1);
+
+    const handleUnmuteTap = () => {
+        const v = videoRef.current;
+        if (!v) return;
+        v.muted = false;
+        v.volume = prevVolumeRef.current || 1;
+        setVolume(v.volume);
         setShowOverlay(true);
         startOverlayTimer();
     };
@@ -359,6 +407,7 @@ export default function SecureVideoPlayer({
                 playsInline
                 disablePictureInPicture
                 controls={false}
+                autoPlay
                 style={{
                     width: "100%",
                     height: "100%",
@@ -378,7 +427,7 @@ export default function SecureVideoPlayer({
                         transform: "translate(-50%, -50%)",
                         width: "100%",
                         display: "flex",
-                        justifyContent: isMobile ? "center" : "space-between",
+                        justifyContent: "space-between",
                         alignItems: "center",
                         px: isMobile ? 1.5 : 3,
                         pointerEvents: "none",
@@ -395,7 +444,7 @@ export default function SecureVideoPlayer({
                             sx={{
                                 pointerEvents: "auto",
                                 opacity: previousDisabled ? 1 : 0.3,
-                                display: isMobile ? "none" : "inline-flex",
+                                display: "inline-flex",
                             }}
                         >
                             <NavigateBeforeIcon sx={{ fontSize: isMobile ? 36 : 60, color: "white" }} />
@@ -428,7 +477,7 @@ export default function SecureVideoPlayer({
                             sx={{
                                 pointerEvents: "auto",
                                 opacity: nextDisabled ? 1 : 0.3,
-                                display: isMobile ? "none" : "inline-flex",
+                                display: "inline-flex",
                             }}
                         >
                             <NavigateNextIcon sx={{ fontSize: isMobile ? 36 : 60, color: "white" }} />
@@ -605,6 +654,18 @@ export default function SecureVideoPlayer({
 
                         {/* RIGHT SIDE */}
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            {/* Small unmute button for mobile after muted autoplay */}
+                            {isMobile && (
+                                <Tooltip title={volume === 0 ? "Unmute" : ""}>
+                                    <IconButton
+                                        onClick={handleUnmuteTap}
+                                        sx={{ color: "white", p: 0.5, display: volume === 0 ? 'inline-flex' : 'none' }}
+                                    >
+                                        <VolumeUpIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            )}
+
                             <Tooltip title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}>
                                 <IconButton
                                     onClick={toggleFullscreen}

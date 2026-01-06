@@ -1,7 +1,7 @@
 export const WIDGETS = {
     welcome: { type: "welcome", title: "Welcome" },
     counts: { type: "count", title: "Counts" },
-    myCourses: { type: "course", title: "My Courses" },
+    myCourses: { type: "course", title: "Your Learning" },
     courses: { type: "course", title: "Available Courses" },
     scheduledCourses: { type: "scheduledCourses", title: "Schedule Courses" },
     studentCounts: { type: "studentCounts", title: "Student Counts" },

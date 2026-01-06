@@ -254,7 +254,7 @@ export default function SideBarWithHeader({ children }) {
                                                         backgroundColor: isActive
                                                             ? "var(--primary)"
                                                             : "transparent",
-                                                        color: isActive ? "var(--onPrimary)" : "var(--primary)",
+                                                        color: isActive ? "var(--onPrimary)" : "var(--onPrimary)",
                                                         borderLeft: isActive
                                                             ? "4px solid var(--primaryMedium)"
                                                             : "4px solid transparent",
@@ -385,7 +385,7 @@ export default function SideBarWithHeader({ children }) {
                                         backgroundColor: false
                                             ? "var(--primaryLight)"
                                             : "transparent",
-                                        color: false ? "var(--onPrimary)" : "var(--primary)",
+                                        color: false ? "var(--onPrimary)" : "var(--onPrimary)",
                                         borderLeft: false
                                             ? "4px solid var(--primary)"
                                             : "4px solid transparent",
@@ -420,7 +420,7 @@ export default function SideBarWithHeader({ children }) {
                                         backgroundColor: false
                                             ? "var(--primaryLight)"
                                             : "transparent",
-                                        color: false ? "var(--onPrimary)" : "var(--primary)",
+                                        color: false ? "var(--onPrimary)" : "var(--onPrimary)",
                                         borderLeft: false
                                             ? "4px solid var(--primary)"
                                             : "4px solid transparent",
@@ -439,7 +439,7 @@ export default function SideBarWithHeader({ children }) {
                                     >
                                         < LogoutIcon />
                                     </ListItemIcon>
-                                    <ListItemText primary="Logout" />
+                                    <ListItemText primary="Sign out" />
                                 </ListItemButton>
                             </ListItem>
                         </Link>

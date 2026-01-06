@@ -4,15 +4,19 @@
 
 s html,
 body,
-#root {
-    /* height:100%; */
-    min-height: 100%;
 
+html,
+body {
+    margin: 0;
+    padding: 0;
 }
 
-html {
-    zoom: 1.05;
-    /* 110% */
+#root {
+    transform: scale(1.05);
+    transform-origin: top left;
+    width: calc(100% / 1.05);
+    height: calc(100% / 1.05);
+    min-height: 100vh;
 }
 
 body {
