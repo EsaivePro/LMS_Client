@@ -330,7 +330,7 @@ const courseSlice = createSlice({
           const courseProgress = action?.payload?.data?.response?.courseProgress;
           // Update course progress in allCourses
           if (courseProgress != null) {
-            const courseId = courseProgress?.id || courseProgress?.courseId || courseProgress?.course_id;
+            const courseId = courseProgress?.course_id;
             const dIdx = state.courseDetails.findIndex(c => c.id == courseId || c.courseId == courseId || c.course_id == courseId);
             if (dIdx !== -1) {
               state.courseDetails[dIdx].courseProgress = { ...state.courseDetails[dIdx].courseProgress, ...courseProgress };

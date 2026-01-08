@@ -6,7 +6,6 @@ export default function LoadingScreen() {
     const { loadingOverlay, loadingMessage } = useCommon();
     const [dots, setDots] = useState("");
 
-    // Animate dots
     useEffect(() => {
         if (!loadingOverlay) return;
 
@@ -19,16 +18,18 @@ export default function LoadingScreen() {
 
     return (
         <Backdrop
-            sx={{
-                color: "var(--onPrimary)",
-                zIndex: (theme) => theme.zIndex.drawer + 1000,
-            }}
             open={loadingOverlay}
+            disablePortal
+            sx={{
+                position: "fixed",   // ⬅️ important
+                inset: 0,
+                zIndex: (theme) => theme.zIndex.modal + 100, // ⬅️ ABOVE dialog
+                color: "#fff",
+            }}
         >
             <Stack alignItems="center" spacing={2}>
                 <CircularProgress size={60} color="inherit" />
-
-                <Typography variant="body1" sx={{ letterSpacing: 0.5 }}>
+                <Typography variant="body1">
                     {loadingMessage || "Please wait"}
                     {dots}
                 </Typography>

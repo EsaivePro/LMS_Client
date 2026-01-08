@@ -58,6 +58,13 @@ const CourseView = () => {
     const playerCardRef = useRef(null);
     const curriculumRef = useRef(null);
     const miniPlayerTimerRef = useRef(null);
+    const lastSaveRef = useRef(0);
+    const lastAnalyticsRef = useRef(0);
+    const userIdRef = useRef(null);
+    const courseIdRef = useRef(null);
+    const curriculumLenRef = useRef(0);
+    const totalRef = useRef(0);
+    const completedRef = useRef(0);
 
     // States
     const [curriculum, setCurriculum] = useState([]);
@@ -177,6 +184,9 @@ const CourseView = () => {
                     id: found.courseId || found.id,
                     title: found.courseTitle || found.title || "",
                     description: found.courseDescription || found.description || "",
+                    image_url: found.courseImageUrl,
+                    total_lessons: found.courseTotalLessons,
+                    total_topics: found.courseTotalTopics
                 });
 
                 const topics = found.topics || [];
@@ -429,7 +439,7 @@ const CourseView = () => {
     };
 
     // ================================================
-    // SAVE WATCH PROGRESS
+    // SAVE WATCH PROGRESS (improved onTime)
     // ================================================
     useEffect(() => {
         if (!playerCardRef.current) return;
@@ -437,82 +447,78 @@ const CourseView = () => {
         const video = playerCardRef.current.querySelector("video");
         if (!video) return;
 
-        let lastSave = 0;
+        // reset tracking refs for this lesson
         lessonStartedRef.current = true;
+        lastSaveRef.current = 0;
+        lastAnalyticsRef.current = Math.floor(video.currentTime || 0);
 
-        const pos = locateLesson(selectedLesson.id);
+        // keep stable refs updated for the effect to avoid re-subscribing
+        userIdRef.current = user?.id || null;
+        courseIdRef.current = courseDetail?.id || null;
+        curriculumLenRef.current = curriculum.length || 0;
+        totalRef.current = total || 0;
+        completedRef.current = completed || 0;
+
+        const pos = selectedLesson ? locateLesson(selectedLesson.id) : null;
         const topicId = pos ? (curriculum[pos.topicIndex]?.id || 0) : 0;
+
+        const safeUpdateProgress = async (watched_seconds, total_seconds) => {
+            try {
+                const uid = userIdRef.current;
+                const cid = courseIdRef.current;
+                if (!uid || !cid) return;
+                await updateLessonProgress({
+                    user_id: uid,
+                    course_id: cid,
+                    topic_id: topicId,
+                    lesson_id: selectedLesson.id,
+                    watched_seconds,
+                    total_seconds,
+                    total_topics: curriculumLenRef.current,
+                    total_lessons: totalRef.current,
+                    completed_lessons: completedRef.current,
+                });
+            } catch (e) { /* ignore errors for now */ }
+        };
 
         const onTime = () => {
             if (!selectedLesson) return;
 
             const current = Math.floor(video.currentTime || 0);
-            const duration = Math.floor(video.duration || 0);
-            const comDuration = Math.floor(duration * 0.95);
-            lastSave = current <= 5 ? 0 : lastSave;
-            if (lessonStartedRef?.current === true && user && user?.id && courseDetail?.id && current > (selectedLesson?.watched_seconds || 0) && selectedLesson?.is_completed === false) {
+            const duration = Math.floor(video.duration || 0) || 0;
+
+            const prevWatched = Number(selectedLesson?.watched_seconds || 0);
+
+            // Send an immediate save once when playback moves beyond previously saved position
+            if (lessonStartedRef.current && current > prevWatched && !selectedLesson?.is_completed) {
                 lessonStartedRef.current = false;
-                (async () => {
-                    try {
-                        await updateLessonProgress({
-                            user_id: user.id,
-                            course_id: courseDetail.id,
-                            topic_id: topicId,
-                            lesson_id: selectedLesson.id,
-                            watched_seconds: current,
-                            total_seconds: duration,
-                            total_topics: curriculum.length,
-                            total_lessons: total,
-                            completed_lessons: completed,
-                        });
-                    } catch (e) { /* ignore errors for now */ }
-                })();
-            }
-            else if ((current - lastSave > 60) && current > selectedLesson?.watched_seconds && selectedLesson?.is_completed === false) {
-                lastSave = current;
-                try {
-                    if (user && user.id && courseDetail?.id) {
-                        (async () => {
-                            try {
-                                await updateLessonProgress({
-                                    user_id: user.id,
-                                    course_id: courseDetail.id,
-                                    topic_id: topicId,
-                                    lesson_id: selectedLesson.id,
-                                    watched_seconds: current,
-                                    total_seconds: duration,
-                                    total_topics: curriculum.length,
-                                    total_lessons: total,
-                                    completed_lessons: completed,
-                                });
-                            } catch (e) { /* ignore errors for now */ }
-                        })();
-                    }
-                } catch (e) { }
+                lastSaveRef.current = current;
+                void safeUpdateProgress(current, duration);
             }
 
-            // Update local progress
-            persistAnalytics((prev) => ({
-                ...prev,
-                totalWatchSec: prev.totalWatchSec + 5,
-            }));
+            // Periodic server save every 60s of progress (only when progress advanced)
+            else if (current - lastSaveRef.current >= 60 && current > prevWatched && !selectedLesson?.is_completed) {
+                lastSaveRef.current = current;
+                void safeUpdateProgress(current, duration);
+            }
+
+            // Analytics: increment by delta since last analytics update (more accurate than constant +5)
+            const delta = current - (lastAnalyticsRef.current || 0);
+            if (delta > 0) {
+                persistAnalytics((prev) => ({ ...prev, totalWatchSec: (prev.totalWatchSec || 0) + delta }));
+                lastAnalyticsRef.current = current;
+            }
+
+            // Update local progress and mark completion when >=90%
             if (duration > 0 && current / duration >= 0.9) {
                 persistProgress((prev) => {
                     const updated = { ...prev };
-                    const p = updated[selectedLesson.id] || {
-                        watchedSeconds: 0,
-                        completed: false,
-                        lastPosition: 0,
-                    };
+                    const p = updated[selectedLesson.id] || { watchedSeconds: 0, completed: false, lastPosition: 0 };
                     if (!p.completed) {
                         p.completed = true;
                         p.watchedSeconds = duration;
                         p.lastPosition = duration;
-
-                        persistAnalytics((a) => ({
-                            ...a,
-                            lessonsCompleted: a.lessonsCompleted + 1,
-                        }));
+                        persistAnalytics((a) => ({ ...a, lessonsCompleted: (a.lessonsCompleted || 0) + 1 }));
                     }
                     updated[selectedLesson.id] = p;
                     return updated;
@@ -520,13 +526,8 @@ const CourseView = () => {
             } else {
                 persistProgress((prev) => {
                     const updated = { ...prev };
-                    const p = updated[selectedLesson.id] || {
-                        watchedSeconds: 0,
-                        completed: false,
-                        lastPosition: 0,
-                    };
-
-                    p.watchedSeconds = Math.max(p.watchedSeconds, current);
+                    const p = updated[selectedLesson.id] || { watchedSeconds: 0, completed: false, lastPosition: 0 };
+                    p.watchedSeconds = Math.max(p.watchedSeconds || 0, current);
                     p.lastPosition = current;
                     updated[selectedLesson.id] = p;
                     return updated;
@@ -540,22 +541,8 @@ const CourseView = () => {
             if (!selectedLesson) return;
             if (selectedLesson?.is_completed === false) {
                 const current = Math.floor(video.currentTime || 0);
-                const duration = Math.floor(video.duration || 0);
-                (async () => {
-                    try {
-                        await updateLessonProgress({
-                            user_id: user.id,
-                            course_id: courseDetail.id,
-                            topic_id: topicId,
-                            lesson_id: selectedLesson.id,
-                            watched_seconds: current,
-                            total_seconds: duration,
-                            total_topics: curriculum.length,
-                            total_lessons: total,
-                            completed_lessons: completed,
-                        });
-                    } catch (e) { /* ignore errors for now */ }
-                })();
+                const duration = Math.floor(video.duration || 0) || 0;
+                void safeUpdateProgress(current, duration);
             }
         };
 
@@ -566,7 +553,8 @@ const CourseView = () => {
             video.removeEventListener("timeupdate", onTime);
             video.removeEventListener("ended", onEnded);
         };
-    }, [selectedLesson]);
+        // depend only on lesson id and the updater to avoid frequent re-subscribes
+    }, [selectedLesson?.id, updateLessonProgress]);
 
     // ================================================
     // AUTOPLAY Countdown

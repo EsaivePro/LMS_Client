@@ -147,7 +147,7 @@ const CourseHeader = ({
                                 }}
                             >
                                 {courseProgress?.completed_lessons || 0} of{" "}
-                                {courseProgress?.total_lessons || 0} complete
+                                {courseDetail?.total_lessons || 0} complete
                             </Typography>
                         </Box>
                     </Stack>}
@@ -187,7 +187,7 @@ const CourseHeader = ({
                                 }}
                             >
                                 {courseProgress?.completed_lessons || 0} of{" "}
-                                {courseProgress?.total_lessons || 0}
+                                {courseDetail?.total_lessons || 0}
                             </Typography>
                         </Box>
                     </Stack>}
