@@ -55,6 +55,30 @@ body {
     }
 }
 
+/* iOS Safari: `zoom` is unreliable on Mobile Safari — force transform fallback
+   for WebKit-based mobile browsers so `--app-scale` takes effect. This targets
+   mobile WebKit via a feature query that succeeds in Mobile Safari. */
+@supports (-webkit-overflow-scrolling: touch) {
+    .app-scale {
+        -webkit-transform-origin: top left;
+        transform-origin: top left;
+        -webkit-transform: scale(var(--app-scale));
+        transform: scale(var(--app-scale));
+        width: calc(100% / var(--app-scale));
+    }
+
+    /* Ensure poppers/overlays are inverse-scaled when using transform fallback */
+    body .MuiPopper-root>*,
+    body .MuiPopover-root .MuiPaper-root,
+    body .MuiAutocomplete-popper>*,
+    body .MuiMenu-root .MuiPaper-root,
+    body .MuiTooltip-popper>* {
+        transform-origin: top left !important;
+        -webkit-transform: scale(var(--app-scale-inv)) !important;
+        transform: scale(var(--app-scale-inv)) !important;
+    }
+}
+
 /* Counter-scale poppers/overlays that are rendered into the document
    root (portal). When the content is scaled, poppers appended to body
    need inverse scaling so they visually match anchors inside the
