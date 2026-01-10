@@ -292,7 +292,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                             onClose={() => setAnchorElUser(null)}
                             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                             transformOrigin={{ vertical: "top", horizontal: "right" }}
-                            sx={{ mt: isMobile ? 2 : 2 }}
+                            sx={{ mt: isMobile ? 2.1 : 2, ml: isMobile ? 1.5 : 0 }}
                         >
                             {isMobile && <Box sx={{ lineHeight: 1, m: 1, textAlign: { xs: "left", sm: "right" } }}>
                                 <Typography

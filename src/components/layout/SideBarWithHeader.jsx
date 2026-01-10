@@ -404,7 +404,7 @@ export default function SideBarWithHeader({ children }) {
                                     >
                                         < Person2Icon />
                                     </ListItemIcon>
-                                    <ListItemText primary="User Profile" />
+                                    <ListItemText primary="Profile" />
                                 </ListItemButton>
                             </ListItem>
                         </Link>
