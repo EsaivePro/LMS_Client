@@ -31,6 +31,9 @@ export const httpClient = {
     updateLessonProgress: async (data) => axiosInstance.patch(API_ENDPOINTS.UPDATE_LESSON_PROGRESS, data),
     updateCourseProgress: async (data) => axiosInstance.patch(API_ENDPOINTS.UPDATE_COURSE_PROGRESS, data),
 
+    updateCourseFavourite: async (data) => axiosInstance.put(API_ENDPOINTS.UPDATE_COURSE_FAVOURITE, data),
+
+
     // Topic APIs
     createTopic: async (data) => axiosInstance.post(API_ENDPOINTS.CREATE_TOPIC, data),
     updateTopic: async (id, data) => axiosInstance.put(API_ENDPOINTS.UPDATE_TOPIC + "/" + id, data),
@@ -52,5 +55,11 @@ export const httpClient = {
     getEnrollmentCourses: async () => axiosInstance.get(API_ENDPOINTS.GET_ENROLLMENT_COURSES),
     courseManualEnrollment: async (data) => axiosInstance.post(API_ENDPOINTS.COURSE_MANUAL_ENROLLMENT, data),
     getEnrollmentCoursesByUserId: async (userId) => axiosInstance.get(API_ENDPOINTS.GET_ENROLLMENT_COURSES_BY_USER_ID + "/" + userId),
+
+    // User notes APIs
+    getUserNotes: async (userId, courseId) => axiosInstance.get(`${API_ENDPOINTS.GET_USER_NOTES}/${userId}/courseid/${courseId}`),
+    addUserNotes: async (data) => axiosInstance.post(API_ENDPOINTS.ADD_USER_NOTES, data),
+    updateUserNotes: async (id, data) => axiosInstance.put(`${API_ENDPOINTS.UPDATE_USER_NOTES}/${id}`, data),
+    deleteUserNotes: async (id) => axiosInstance.delete(`${API_ENDPOINTS.DELETE_USER_NOTES}/${id}`),
 
 };

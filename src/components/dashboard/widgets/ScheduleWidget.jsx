@@ -60,7 +60,7 @@ function CourseCard({ course, index, width = 300 }) {
             )}
 
             <Box sx={{ px: 2.5, py: 1, display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" endIcon={<PlayArrowIcon />} sx={{ backgroundColor: accent, borderRadius: 1, textTransform: "none", px: 3, "&:hover": { backgroundColor: accent } }} onClick={() => navigate(`/course/view/${course.id}`)}>{progress ? "Continue" : "Start"}</Button>
+                <Button variant="contained" endIcon={<PlayArrowIcon />} sx={{ backgroundColor: accent, borderRadius: 1, textTransform: "none", px: 3, "&:hover": { backgroundColor: accent } }} onClick={() => navigate(`/course/view/${course.id}`)}>{progress ? "Resume" : "Start"}</Button>
             </Box>
         </Box>
     );

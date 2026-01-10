@@ -9,6 +9,8 @@ import {
     TextField,
     InputAdornment,
     Divider,
+    useTheme,
+    useMediaQuery
 } from "@mui/material";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -30,7 +32,8 @@ const CurriculumView = ({
     searchQuery,
     setSearchQuery,
 }) => {
-
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const selectedLessonRef = React.useRef(null);
 
     // -----------------------------------------------------------
@@ -64,7 +67,7 @@ const CurriculumView = ({
             sx={{
                 height: "100%",
                 bgcolor: "#fff",
-                p: 1,
+                p: isMobile ? 0.2 : 1,
             }}
         >
             {/* SEARCH BAR */}

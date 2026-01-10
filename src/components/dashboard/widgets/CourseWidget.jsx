@@ -232,7 +232,7 @@ function CourseCard({ course, index, width = 300 }) {
                     }}
                     onClick={() => navigate(`/course/view/${course.id}`)}
                 >
-                    {progress ? "Continue" : "Start"}
+                    {progress ? "Resume" : "Start"}
                 </Button>
             </Box>
         </Box>

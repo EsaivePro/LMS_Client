@@ -21,6 +21,8 @@ export const API_ENDPOINTS = {
     UPDATE_LESSON_PROGRESS: "/courses/topic/lesson/progress",
     UPDATE_COURSE_PROGRESS: "/courses/course/progress",
 
+    UPDATE_COURSE_FAVOURITE: "/courses/user/course/favourite",
+
     CREATE_TOPIC: "/courses/topic/create",
     UPDATE_TOPIC: "/courses/topic/update",
     DELETE_TOPIC: "/courses/topic/delete",
@@ -41,5 +43,10 @@ export const API_ENDPOINTS = {
     COURSE_MANUAL_ENROLLMENT: "/enrollment/course/manual",
 
     GET_ENROLLMENT_COURSES_BY_USER_ID: "/user/course/enrollments",
+    // User notes APIs
+    GET_USER_NOTES: "/courses/user/notes/userid",
+    ADD_USER_NOTES: "/courses/user/notes/add",
+    UPDATE_USER_NOTES: "/courses/user/notes/update",
+    DELETE_USER_NOTES: "/courses/user/notes/delete",
 
 };

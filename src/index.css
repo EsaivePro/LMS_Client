@@ -11,12 +11,16 @@ body {
     padding: 0;
 }
 
+:root {
+    --app-scale: 1.1;
+    /* global scale variable; update at runtime to zoom */
+}
+
 #root {
-    position: relative;
-    transform: scale(1.05);
-    transform-origin: top left;
-    width: calc(100% / 1.05);
-    height: calc(100% / 1.05);
+    /* Removed transform/scale which creates a new containing block
+       and breaks `position: fixed` for elements like AppBar/Backdrop.
+       If scaling is required, apply it to an inner container that
+       does not contain fixed-positioned elements. */
 }
 
 body {
@@ -32,6 +36,56 @@ body {
 
 .app-content {
     flex: 1
+}
+
+/* Scalable content area: change --app-scale to zoom in/out the page content
+   without affecting fixed-positioned header/sidebar/backdrop. */
+.app-scale {
+    /* Prefer `zoom` (works in Chromium / WebKit). Fallback to transform
+       when `zoom` is unsupported (e.g., Firefox). Keep transform-origin
+       and width compensation so layout matches visually. */
+    transform-origin: top left;
+    zoom: var(--app-scale);
+}
+
+@supports not (zoom: 1) {
+    .app-scale {
+        transform: scale(var(--app-scale));
+        width: calc(100% / var(--app-scale));
+    }
+}
+
+/* Counter-scale poppers/overlays that are rendered into the document
+   root (portal). When the content is scaled, poppers appended to body
+   need inverse scaling so they visually match anchors inside the
+   scaled area. This rule expects `--app-scale` to be set on `:root`.
+*/
+/* Counter-scale the popper *content* (paper/inner node) instead of
+   the popper root. Popper applies inline `transform: translate(...)`
+   on the root for positioning; overriding that breaks placement. By
+   scaling the inner child we keep Popper translations intact while
+   visually scaling menu/content to match the page scale. */
+body .MuiPopper-root>*,
+body .MuiPopover-root .MuiPaper-root,
+body .MuiAutocomplete-popper>*,
+body .MuiMenu-root .MuiPaper-root,
+body .MuiTooltip-popper>* {
+    /* Prefer zoom for the inverse scaling (keeps layout math intact
+       in Chromium/WebKit). If zoom is unsupported, fall back to
+       transform using the precomputed --app-scale-inv variable. */
+    zoom: var(--app-scale-inv);
+}
+
+@supports not (zoom: 1) {
+
+    body .MuiPopper-root>*,
+    body .MuiPopover-root .MuiPaper-root,
+    body .MuiAutocomplete-popper>*,
+    body .MuiMenu-root .MuiPaper-root,
+    body .MuiTooltip-popper>* {
+        transform-origin: top left !important;
+        transform: scale(var(--app-scale-inv)) !important;
+    }
 }
 
 .ql-editor {

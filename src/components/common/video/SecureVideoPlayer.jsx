@@ -317,6 +317,16 @@ export default function SecureVideoPlayer({
             const v = videoRef.current;
             if (!v) return;
 
+            // Ignore keyboard shortcuts when user is typing in an input/textarea/contenteditable
+            try {
+                const active = document.activeElement;
+                const tag = active && active.tagName && active.tagName.toLowerCase();
+                const isEditable = active && (tag === "input" || tag === "textarea" || active.isContentEditable);
+                if (isEditable) return; // allow typing (including space) when focus is in a form field
+            } catch (err) {
+                // ignore DOM access errors and continue
+            }
+
             setShowOverlay(true);
             startOverlayTimer();
 

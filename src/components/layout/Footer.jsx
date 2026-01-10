@@ -24,7 +24,7 @@ export default function Footer({ compView = false }) {
       sx={{
         background: "var(--dark)",
         color: "var(--onPrimary)",
-        marginTop: { xs: "-100px", md: "-100px" },
+        marginTop: { xs: compView ? "10px" : "-100px", md: compView ? "10px" : "-100px" },
         pt: { xs: 4, md: 6 },
         pb: 3,
         px: { xs: 3, md: 10 },

@@ -115,6 +115,9 @@ export async function updateCourseProgress(dispatch, data) {
     return await apiHandler(dispatch, httpClient.updateCourseProgress, data);
 }
 
+export async function updateCourseFavourite(dispatch, data) {
+    return await apiHandler(dispatch, httpClient.updateCourseFavourite, data);
+}
 export async function getEnrollmentCourses(dispatch) {
     return await apiHandler(dispatch, httpClient.getEnrollmentCourses);
 }
@@ -125,4 +128,20 @@ export async function courseManualEnrollment(dispatch, data) {
 
 export async function getEnrollmentCoursesByUserId(dispatch, userId) {
     return await apiHandler(dispatch, httpClient.getEnrollmentCoursesByUserId, userId);
+}
+
+export async function getUserNotes(dispatch, userId, courseId) {
+    return await apiHandler(dispatch, httpClient.getUserNotes, userId, courseId);
+}
+
+export async function addUserNotes(dispatch, data) {
+    return await apiHandler(dispatch, httpClient.addUserNotes, data);
+}
+
+export async function updateUserNotes(dispatch, id, data) {
+    return await apiHandler(dispatch, httpClient.updateUserNotes, id, data);
+}
+
+export async function deleteUserNotes(dispatch, id) {
+    return await apiHandler(dispatch, httpClient.deleteUserNotes, id);
 }

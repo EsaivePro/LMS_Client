@@ -34,6 +34,7 @@ import { errorValidation, hasPermission } from "../../../utils/resolver.utils";
 import { useAdmin } from "../../../hooks/useAdmin";
 import useEnrollment from "../../../hooks/useEnrollment";
 import { set } from "react-hook-form";
+import { httpClient } from "../../../apiClient/httpClient";
 
 // constants
 const LOCAL_PROGRESS_KEY = "lms_progress_v1";
@@ -101,7 +102,15 @@ const CourseView = () => {
     const toggleFavorite = () => {
         const s = !isFav;
         setIsFav(s);
-        localStorage.setItem(storageKey, s ? "true" : "false");
+        (async () => {
+            try {
+                if (courseDetail && courseDetail.id) {
+                    await httpClient.updateCourseFavourite({ user_id: user?.id, course_id: courseDetail.id, is_favorite: s });
+                }
+            } catch (e) {
+                setIsFav(!s);
+            }
+        })();
     };
 
     // ================================================

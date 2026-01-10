@@ -19,11 +19,9 @@ export default function LoadingScreen() {
     return (
         <Backdrop
             open={loadingOverlay}
-            disablePortal
             sx={{
-                position: "fixed",   // ⬅️ important
                 inset: 0,
-                zIndex: (theme) => theme.zIndex.modal + 100, // ⬅️ ABOVE dialog
+                zIndex: (theme) => theme.zIndex.modal + 100,
                 color: "#fff",
             }}
         >

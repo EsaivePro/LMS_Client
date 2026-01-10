@@ -11,6 +11,7 @@ import {
   updateLessonProgress as updateLessonProgressAPI,
   updateCourseProgress as updateCourseProgressAPI
 } from "../../services/LMSGateway";
+import { getUserNotes, addUserNotes, updateUserNotes, deleteUserNotes } from "../../services/LMSGateway";
 import { addTopic, updateTopic as topicUpdateThunk, deleteTopic as topicDeleteThunk } from "./topicsSlice";
 import { addLesson, updateLesson as lessonUpdateThunk, deleteLesson as lessonDeleteThunk } from "./lessonsSlice";
 
@@ -58,6 +59,38 @@ export const updateLessonProgress = createAsyncThunk(
   "courses/updateLessonProgress",
   async (data, { dispatch }) => {
     const res = updateLessonProgressAPI(dispatch, data);
+    return res;
+  }
+);
+
+export const fetchUserNotes = createAsyncThunk(
+  "courses/fetchUserNotes",
+  async ({ user_id, course_id }, { dispatch }) => {
+    const res = await getUserNotes(dispatch, user_id, course_id);
+    return res;
+  }
+);
+
+export const addUserNote = createAsyncThunk(
+  "courses/addUserNote",
+  async (payload, { dispatch }) => {
+    const res = await addUserNotes(dispatch, payload);
+    return res;
+  }
+);
+
+export const updateUserNote = createAsyncThunk(
+  "courses/updateUserNote",
+  async ({ id, data }, { dispatch }) => {
+    const res = await updateUserNotes(dispatch, id, data);
+    return res;
+  }
+);
+
+export const deleteUserNote = createAsyncThunk(
+  "courses/deleteUserNote",
+  async (id, { dispatch }) => {
+    const res = await deleteUserNotes(dispatch, id);
     return res;
   }
 );
@@ -388,6 +421,57 @@ const courseSlice = createSlice({
       })
       .addCase(updateCourseProgress.rejected, (state) => {
         state.loading = false;
+      });
+
+    /* USER NOTES */
+    builder
+      .addCase(fetchUserNotes.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = action?.payload?.data?.error || action?.payload?.isError;
+        state.message = action?.payload?.data?.message;
+        const note = action?.payload?.data?.response;
+        const courseId = action?.meta?.arg?.course_id;
+        if (!state.error && note) {
+          const idx = state.courseDetails.findIndex(c => c.id == courseId || c.courseId == courseId || c.course_id == courseId);
+          if (idx !== -1) {
+            state.courseDetails[idx].userNote = note;
+          }
+        }
+      })
+      .addCase(addUserNote.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = action?.payload?.data?.error;
+        state.message = action?.payload?.data?.message;
+        const note = action?.payload?.data?.response;
+        if (!state.error && note) {
+          const courseId = note.course_id || note.courseId || note.courseId;
+          const idx = state.courseDetails.findIndex(c => c.id == courseId || c.courseId == courseId || c.course_id == courseId);
+          if (idx !== -1) state.courseDetails[idx].userNote = note;
+        }
+      })
+      .addCase(updateUserNote.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = action?.payload?.data?.error;
+        state.message = action?.payload?.data?.message;
+        const note = action?.payload?.data?.response;
+        if (!state.error && note) {
+          const courseId = note.course_id || note.courseId || note.courseId;
+          const idx = state.courseDetails.findIndex(c => c.id == courseId || c.courseId == courseId || c.course_id == courseId);
+          if (idx !== -1) state.courseDetails[idx].userNote = { ...state.courseDetails[idx].userNote, ...note };
+        }
+      })
+      .addCase(deleteUserNote.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = action?.payload?.data?.error;
+        state.message = action?.payload?.data?.message;
+        const deleted = action?.payload?.data?.response;
+        if (!state.error && deleted) {
+          const deletedId = deleted.id || action?.meta?.arg;
+          // Find course containing this note and clear it
+          state.courseDetails.forEach(c => {
+            if (c.userNote && (c.userNote.id === deletedId || c.userNote.id == deletedId)) c.userNote = null;
+          })
+        }
       });
   },
 });

@@ -12,6 +12,7 @@ import {
     MenuItem,
     useMediaQuery,
 } from "@mui/material";
+import THEME from '../../../constants/theme';
 import { useNavigate, useLocation } from "react-router-dom";
 
 import UserList from "./UsersList";
@@ -78,8 +79,8 @@ export default function UserManagement() {
                     position: "sticky",
                     top: 64,
                     zIndex: 10,
-                    borderBottom: "1px solid var(--lightgrey)",
-                    backgroundColor: "var(--surface)",
+                    borderBottom: `1px solid ${THEME.colors.darkMedium}`,
+                    backgroundColor: THEME.colors.surface,
                 }}
             >
                 <Box sx={{ px: { xs: 2, md: 3 }, py: 1.5 }}>
@@ -106,7 +107,7 @@ export default function UserManagement() {
                             value={currentTab}
                             onChange={handleChange}
                             sx={{
-                                backgroundColor: "var(--surface)",
+                                backgroundColor: THEME.colors.surface,
                                 borderRadius: 0,
                                 minHeight: 0,
                                 "& .MuiTab-root": {
@@ -116,11 +117,12 @@ export default function UserManagement() {
                                     py: 1,
                                     minHeight: 0,
                                     border: 0,
+                                    color: THEME.colors.darkMedium,
                                 },
                                 "& .Mui-selected": {
-                                    backgroundColor: "var(--lightgrey) !important",
-                                    color: "var(--textPrimary)",
+                                    color: THEME.colors.dark,
                                 },
+                                "& .MuiTabs-indicator": { backgroundColor: THEME.colors.dark, height: 2 }
                             }}
                             aria-label="User management tabs"
                         >

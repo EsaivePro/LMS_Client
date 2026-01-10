@@ -151,8 +151,8 @@ const CourseHeader = ({
                             </Typography>
                         </Box>
                     </Stack>}
-                    {isMobile && <Stack direction="column" spacing={0} alignItems="center">
-                        <Box sx={{ position: "relative" }}>
+                    {isMobile && <Stack direction="column" spacing={0} alignItems="center" >
+                        <Box sx={{ position: "relative", marginTop: "1px" }}>
                             <CircularProgress
                                 variant="determinate"
                                 value={courseProgress?.progress_percent || 0}

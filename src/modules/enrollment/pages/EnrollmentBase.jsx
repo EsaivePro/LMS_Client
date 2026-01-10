@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Box, Tabs, Tab, Typography, Stack, Button } from "@mui/material";
+import THEME from '../../../constants/theme';
 import IndividualEnrollment from "../../../components/enrollment/IndividualEnrollment";
 import BulkUserEnrollment from "../../../components/enrollment/BulkUserEnrollment";
 import useCourseCategory from "../../../hooks/useCourseCategory";
@@ -34,7 +35,16 @@ export default function EnrollmentBase({ defaultTab = 0, onEnroll }) {
 
     return (
         <Box>
-            <Tabs value={tab} onChange={handleTab} aria-label="enrollment-tabs">
+            <Tabs
+                value={tab}
+                onChange={handleTab}
+                aria-label="enrollment-tabs"
+                sx={{
+                    "& .MuiTabs-indicator": { backgroundColor: THEME.colors.dark, height: 2 },
+                    "& .MuiTab-root": { color: THEME.colors.darkMedium },
+                    "& .Mui-selected": { color: THEME.colors.dark }
+                }}
+            >
                 <Tab label="Manual Enrollment" />
                 <Tab label="Bulk Upload" />
             </Tabs>
