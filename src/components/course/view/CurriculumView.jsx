@@ -152,10 +152,10 @@ const CurriculumView = ({
                                                 justifyContent: "space-between",
                                                 transition: "0.2s",
                                                 bgcolor: isSelected
-                                                    ? "rgba(0,0,0,0.04)"
+                                                    ? "var(--surface)"
                                                     : "transparent",
                                                 border: isSelected
-                                                    ? "1px solid var(--primaryColor)"
+                                                    ? "1px solid var(--darkMedium)"
                                                     : "1px solid transparent",
                                                 "&:hover": {
                                                     bgcolor: "#f5f5f5",

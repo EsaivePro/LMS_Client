@@ -216,19 +216,19 @@ const CourseView = () => {
                     let chosenTopic = null;
                     let chosenLesson = null;
 
-                    for (let t = 0; t < topics.length; t++) {
-                        const topic = topics[t];
-                        const lessons = topic?.lessons || [];
-                        for (let l = 0; l < lessons.length; l++) {
-                            const lesson = lessons[l];
-                            if (lesson && lesson.is_completed === false) {
-                                chosenTopic = topic;
-                                chosenLesson = lesson;
-                                break;
-                            }
-                        }
-                        if (chosenLesson) break;
-                    }
+                    // for (let t = 0; t < topics.length; t++) {
+                    //     const topic = topics[t];
+                    //     const lessons = topic?.lessons || [];
+                    //     for (let l = 0; l < lessons.length; l++) {
+                    //         const lesson = lessons[l];
+                    //         if (lesson && lesson.is_completed === false) {
+                    //             chosenTopic = topic;
+                    //             chosenLesson = lesson;
+                    //             break;
+                    //         }
+                    //     }
+                    //     if (chosenLesson) break;
+                    // }
 
                     // Fallback to the very first lesson if no uncompleted lesson found
                     if (!chosenLesson) {
@@ -545,7 +545,7 @@ const CourseView = () => {
         };
 
         const onEnded = () => {
-            setAutoplayOverlay({ show: true, seconds: 5 });
+            // setAutoplayOverlay({ show: true, seconds: 5 });
             setAutoplayCountdown(5);
             if (!selectedLesson) return;
             if (selectedLesson?.is_completed === false) {

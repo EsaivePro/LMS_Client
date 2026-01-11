@@ -425,6 +425,29 @@ export default function SecureVideoPlayer({
                 }}
             />
 
+            {/* Selected lesson title (top-left) */}
+            {selectedLesson?.title && (
+                <Typography
+                    sx={{
+                        position: "absolute",
+                        top: isMobile ? 8 : 12,
+                        left: isMobile ? 10 : 16,
+                        color: "white",
+                        fontWeight: 700,
+                        fontSize: isMobile ? 14 : 16,
+                        pointerEvents: "none",
+                        textShadow: "0 1px 3px rgba(0,0,0,0.7)",
+                        maxWidth: isMobile ? '70%' : '50%',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                    }}
+                    title={selectedLesson.title}
+                >
+                    {selectedLesson.title}
+                </Typography>
+            )}
+
             {/* ============================
                 CENTER OVERLAY CONTROLS
             ============================= */}

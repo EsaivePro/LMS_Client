@@ -76,7 +76,7 @@ const CourseHeader = ({
                             flex: 1,
                         }}
                     >
-                        {courseDetail?.title || "Searching Course..."}
+                        {courseDetail?.title || ""}
                     </Typography>
                 </Stack>
 
