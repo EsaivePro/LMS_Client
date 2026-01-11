@@ -5,6 +5,7 @@ import {
     CssBaseline,
     Toolbar,
     useMediaQuery,
+    Alert,
 } from "@mui/material";
 
 import CourseHeader from "./view/CourseHeader";
@@ -19,6 +20,7 @@ export default function CourseLayoutDrawer({
     selectedLesson,
     courseProgress,
     selectedLessonProgress,
+    urlLessonNotFound,
     signedUrl,
     loadingSignedUrl,
     user,
@@ -84,6 +86,11 @@ export default function CourseLayoutDrawer({
                         p: 0,
                     }}
                 >
+                    {urlLessonNotFound && (
+                        <Box sx={{ p: 2 }}>
+                            <Alert severity="warning" variant="outlined">No lesson found in this course.</Alert>
+                        </Box>
+                    )}
 
                     <VideoView
                         selectedLesson={selectedLesson}

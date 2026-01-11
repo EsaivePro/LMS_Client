@@ -151,7 +151,7 @@ export default function SecureVideoPlayer({
         v.onplay = () => setPaused(false);
 
         v.onended = () => {
-            if (nextDisabled) onNext?.();
+            if (!nextDisabled) onNext?.();
         };
     }, [onNext, nextDisabled, signedUrl, selectedLesson]);
 

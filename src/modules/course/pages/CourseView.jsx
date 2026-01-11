@@ -22,7 +22,7 @@ import {
     Alert,
 } from "@mui/material";
 
-import { useParams } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchCourseDeatils } from "../../../redux/slices/coursesSlice";
 import { useAuth } from "../../../hooks/useAuth";
@@ -40,7 +40,7 @@ import { httpClient } from "../../../apiClient/httpClient";
 const LOCAL_PROGRESS_KEY = "lms_progress_v1";
 const LOCAL_ANALYTICS_KEY = "lms_analytics_v1";
 const LOCAL_UI_KEY = "lms_ui_v1";
-const HEADER_HEIGHT = 112;
+const HEADER_HEIGHT = 185;
 
 const percent = Math.round((400 / 99) * 100);
 
@@ -89,6 +89,9 @@ const CourseView = () => {
     const [autoplayCountdown, setAutoplayCountdown] = useState(5);
 
     const [isFav, setIsFav] = useState(false);
+    const location = useLocation();
+    const navigate = useNavigate();
+    const [urlLessonNotFound, setUrlLessonNotFound] = useState(false);
 
     const storageKey = `favorite_${courseDetail.id}`;
     // ================================================
@@ -210,40 +213,6 @@ const CourseView = () => {
                     const lessons = topic?.lessons || [];
                     return acc + lessons.length;
                 }, 0));
-
-                if (!selectedLesson && topics.length > 0) {
-                    // Find first lesson that is not completed (is_completed === false)
-                    let chosenTopic = null;
-                    let chosenLesson = null;
-
-                    // for (let t = 0; t < topics.length; t++) {
-                    //     const topic = topics[t];
-                    //     const lessons = topic?.lessons || [];
-                    //     for (let l = 0; l < lessons.length; l++) {
-                    //         const lesson = lessons[l];
-                    //         if (lesson && lesson.is_completed === false) {
-                    //             chosenTopic = topic;
-                    //             chosenLesson = lesson;
-                    //             break;
-                    //         }
-                    //     }
-                    //     if (chosenLesson) break;
-                    // }
-
-                    // Fallback to the very first lesson if no uncompleted lesson found
-                    if (!chosenLesson) {
-                        const firstTopic = topics[0];
-                        chosenTopic = firstTopic;
-                        chosenLesson = firstTopic?.lessons?.[0] || null;
-                    }
-
-                    if (chosenTopic && chosenLesson) {
-                        setTopicName(chosenTopic.title || "");
-                        setSelectedLesson(chosenLesson);
-                        setSignedUrl(chosenLesson.video_url || null);
-                        setExpandedPanels(new Set([chosenTopic.id]));
-                    }
-                }
             } else if (!hasFetched.current) {
                 hasFetched.current = true;
                 (async () => {
@@ -258,6 +227,61 @@ const CourseView = () => {
             }
         }
     }, [id, courseDetails, dispatch, getCourseById, enrollmentCoursesByUser]);
+
+    // Sync `lid` query param -> selected lesson after curriculum is loaded
+    useEffect(() => {
+        if (!curriculum || curriculum.length === 0) return;
+
+        const params = new URLSearchParams(location.search || "");
+        const lidStr = params.get("lid");
+        if (!lidStr) {
+            setUrlLessonNotFound(false);
+            if (!selectedLesson) {
+                const firstTopic = curriculum[0];
+                const firstLesson = firstTopic?.lessons?.[0] || null;
+                if (firstLesson) {
+                    openLesson(firstLesson, firstTopic.id, firstTopic.title);
+                    // update URL to include default lid
+                    const p = new URLSearchParams(location.search || "");
+                    p.set("lid", String(firstLesson.id));
+                    navigate(`${location.pathname}?${p.toString()}`, { replace: true });
+                }
+            }
+            return;
+        }
+
+        const lid = Number(lidStr);
+        if (!lid || Number.isNaN(lid)) {
+            setUrlLessonNotFound(true);
+            return;
+        }
+
+        const pos = locateLesson(lid);
+        if (pos) {
+            const lesson = lessonAt(pos.topicIndex, pos.lessonIndex);
+            if (lesson) {
+                openLesson(lesson, curriculum[pos.topicIndex].id, curriculum[pos.topicIndex].title);
+                setUrlLessonNotFound(false);
+            } else {
+                setUrlLessonNotFound(true);
+            }
+        } else {
+            setUrlLessonNotFound(true);
+        }
+    }, [location.search, curriculum]);
+
+    // Update URL `lid` when selectedLesson changes
+    useEffect(() => {
+        if (!selectedLesson) return;
+
+        const params = new URLSearchParams(location.search || "");
+        const current = params.get("lid");
+        if (String(current) !== String(selectedLesson.id)) {
+            params.set("lid", String(selectedLesson.id));
+            const search = params.toString();
+            navigate(`${location.pathname}${search ? `?${search}` : ""}`, { replace: true });
+        }
+    }, [selectedLesson?.id, location.pathname, navigate]);
 
     // helper
     const parseDurationToSeconds = (str) => {
@@ -578,7 +602,7 @@ const CourseView = () => {
                 if (s <= 1) {
                     clearInterval(miniPlayerTimerRef.current);
                     setAutoplayOverlay({ show: false, seconds: 0 });
-                    goToNext();
+                    // goToNext();
                     return 0;
                 }
                 return s - 1;
@@ -629,45 +653,50 @@ const CourseView = () => {
             m: 0,
         }}>
 
-            {enrolledCourse ? <CourseLayoutDrawer
-                selectedLesson={selectedLesson}
-                courseProgress={courseProgress}
-                signedUrl={signedUrl}
-                // loadingSignedUrl={loadingSignedUrl}
-                user={user}
-                goToPrev={goToPrev}
-                goToNext={goToNext}
-                canGoPrev={canGoPrev}
-                canGoNext={canGoNext}
-                getPrevLessonTitle={getPrevLessonTitle}
-                getNextLessonTitle={getNextLessonTitle}
-                playerCardRef={playerCardRef}
-                isSmall={isSmall}
-                darkMode={darkMode}
-                value={value}
-                handleChange={handleChange}
-                courseDetail={courseDetail}
-                percent={percent}
-                completed={completed}
-                total={total}
-                isFav={isFav}
-                toggleFavorite={toggleFavorite}
-                curriculumProps={{
-                    filteredCurriculum,
-                    expandedPanels,
-                    setExpandedPanels,
-                    selectedLesson,
-                    selectedLessonProgress,
-                    openLesson,
-                    localProgress,
-                    parseDurationToSeconds,
-                    searchQuery,
-                    setSearchQuery,
-                    darkMode,
-                    curriculumRef,
-                    HEADER_HEIGHT,
-                }}
-            /> :
+            {enrolledCourse ? (
+                <>
+                    <CourseLayoutDrawer
+                        selectedLesson={selectedLesson}
+                        courseProgress={courseProgress}
+                        signedUrl={signedUrl}
+                        // loadingSignedUrl={loadingSignedUrl}
+                        user={user}
+                        urlLessonNotFound={urlLessonNotFound}
+                        goToPrev={goToPrev}
+                        goToNext={goToNext}
+                        canGoPrev={canGoPrev}
+                        canGoNext={canGoNext}
+                        getPrevLessonTitle={getPrevLessonTitle}
+                        getNextLessonTitle={getNextLessonTitle}
+                        playerCardRef={playerCardRef}
+                        isSmall={isSmall}
+                        darkMode={darkMode}
+                        value={value}
+                        handleChange={handleChange}
+                        courseDetail={courseDetail}
+                        percent={percent}
+                        completed={completed}
+                        total={total}
+                        isFav={isFav}
+                        toggleFavorite={toggleFavorite}
+                        curriculumProps={{
+                            filteredCurriculum,
+                            expandedPanels,
+                            setExpandedPanels,
+                            selectedLesson,
+                            selectedLessonProgress,
+                            openLesson,
+                            localProgress,
+                            parseDurationToSeconds,
+                            searchQuery,
+                            setSearchQuery,
+                            darkMode,
+                            curriculumRef,
+                            HEADER_HEIGHT,
+                        }}
+                    />
+                </>
+            ) :
                 <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 240, px: 2 }}>
                     <Alert severity="warning" variant="outlined" sx={{ width: "100%", maxWidth: 700, textAlign: "center" }}>
                         You are not enrolled in this course.
