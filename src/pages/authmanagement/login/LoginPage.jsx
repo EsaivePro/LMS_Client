@@ -106,7 +106,9 @@ export default function LoginPage() {
     return (
         <Box
             sx={{
-                minHeight: "100vh",
+                // Account for a global --app-scale CSS variable (if present)
+                // so scaled UI doesn't cause an extra vertical scrollbar.
+                minHeight: "calc(100vh / var(--app-scale, 1))",
                 width: "100%",
                 backgroundImage: "url(/login/l1.png)",
                 backgroundSize: "cover",
@@ -115,7 +117,8 @@ export default function LoginPage() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: { xs: "center", md: "end" },
-                position: "relative"
+                position: "relative",
+                overflow: "hidden"
             }}
         >
             {/* THEME OVERLAY */}
@@ -138,7 +141,8 @@ export default function LoginPage() {
                     position: "relative",
                     zIndex: 1,
                     width: "100%",
-                    height: { xs: "auto", md: "100vh" },
+                    // Use calc with app-scale on large screens as well
+                    height: { xs: "auto", md: "calc(100vh / var(--app-scale, 1))" },
                     maxWidth: { xs: 400, md: 500 },
                     mx: { xs: 2, md: 0 },
                     p: 4,
@@ -146,7 +150,8 @@ export default function LoginPage() {
                     flexDirection: "column",
                     justifyContent: "center",
                     borderRadius: 2,
-                    backgroundColor: "#ffffffd7"
+                    backgroundColor: "#ffffffd7",
+                    overflow: 'hidden'
                 }}
             >
                 <form onSubmit={handleSubmit} noValidate>
