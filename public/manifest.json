@@ -1,7 +1,7 @@
 {
-    "name": "LMS Esai",
+    "name": "LMS Impulse",
     "short_name": "LMS",
-    "description": "Esai Learning Management System",
+    "description": "Impulse Learning Management System",
     "start_url": ".",
     "scope": "/",
     "display": "standalone",
