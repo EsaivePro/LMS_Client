@@ -8,11 +8,18 @@ import {
     FormControlLabel,
     Checkbox,
     Link,
-    IconButton,
     Divider,
-    Backdrop
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Slide,
+    IconButton,
+    InputAdornment
 } from "@mui/material";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import CloseIcon from '@mui/icons-material/Close';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useAuth } from "../../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { httpClient } from "../../../apiClient/httpClient";
@@ -27,204 +34,155 @@ export default function LoginPage() {
     const { login } = useAuth();
     const { setPermissionsAPI } = useAdmin();
     const { showLoader, hideLoader } = useCommon();
-    const [alert, setAlert] = useState({ open: false, type: "", message: "" });
 
+    const [alert, setAlert] = useState({ open: false, type: "", message: "" });
     const [loginData, setLoginData] = useState({
         user: "",
         password: "",
-        remember: false,
+        remember: false
     });
-
-    const [errors, setErrors] = useState({
-        user: "",
-        password: "",
-    });
+    const [errors, setErrors] = useState({});
+    const [openForgot, setOpenForgot] = useState(false);
+    const [openTerms, setOpenTerms] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const validate = () => {
-        let newErrors = {};
-
-        if (!loginData.user)
-            newErrors.user = "Username / Email / Phone number is required";
-        if (!loginData.password)
-            newErrors.password = "Password is required";
-
+        const newErrors = {};
+        if (!loginData.user) newErrors.user = "Required";
+        if (!loginData.password) newErrors.password = "Required";
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
-    };
-
-    const handleLogin = () => {
-        if (!validate()) return;
-        alert("Login Success!");
-    };
-
-    const handleChange = (e) => {
-        setForm((prev) => ({
-            ...prev,
-            [e.target.name]: e.target.value,
-        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) return;
+
         try {
             const resultAction = await login(loginData);
-            const fulfilled = resultAction?.type && resultAction.type.endsWith('/fulfilled');
-            if (!fulfilled) {
-                setAlert({ open: true, type: "error", message: resultAction?.data?.message || "Login failed" });
+            if (!resultAction?.type?.endsWith("/fulfilled")) {
+                setAlert({ open: true, type: "error", message: "Login failed" });
                 return;
             }
 
-            // get user id from token storage (set by login thunk)
             const userStr = tokenStorage.getUserToken();
             const userObj = userStr ? JSON.parse(userStr) : null;
-            const userId = userObj?.id || userObj?.userId || userObj?.user?.id;
-            if (!userId) {
-                setAlert({ open: true, type: "error", message: "Unable to determine user id after login." });
-                navigate("/unauthorized", { replace: true });
-                return;
-            }
+            const userId = userObj?.id || userObj?.userId;
 
             showLoader("Fetching permissions...");
             const res = await httpClient.fetchPermissionByUserId(userId);
-            const data = res?.data;
-            if (data?.response?.length) {
-                setPermissionsAPI(data.response);
+            if (res?.data?.response?.length) {
+                setPermissionsAPI(res.data.response);
                 navigate("/", { replace: true });
             } else {
                 navigate("/unauthorized", { replace: true });
             }
         } catch (err) {
-            setAlert({ open: true, type: "error", message: err?.message || "Login failed" });
+            setAlert({ open: true, type: "error", message: "Login failed" });
             navigate("/unauthorized", { replace: true });
         } finally {
             hideLoader();
         }
     };
 
+    const Transition = React.forwardRef(function Transition(props, ref) {
+        return <Slide direction="up" ref={ref} {...props} />;
+    });
+
     return (
-        <Box
-            sx={{
-                width: "100vw",
-                height: "100vh",
-                backgroundImage: `url(/login/l1.png)`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "right"
-            }}
-        >
-            <Backdrop open={true} sx={{ zIndex: 1, backgroundColor: "rgba(0, 0, 0, 0.53)" }} />
-            <Paper
-                elevation={6}
+        <Box sx={{ display: "flex", minHeight: "100vh", width: "100%", overflow: "hidden" }}>
+            {/* LEFT – LOGIN FORM */}
+            <Box
                 sx={{
-                    position: "absolute", zIndex: 2,
-                    width: { xs: "100%", sm: "420px", md: "480px" },
-                    p: { xs: 3, sm: 4 },
-                    textAlign: "center",
-                    height: "100vh",
-                    backdropFilter: "blur(15px)",
-                    background: "rgba(255, 255, 255, 0.1)",
+                    width: { xs: "100%", md: "50%" },
                     display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
                     alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: THEME.colors.background,
+                    overflowY: "auto"
                 }}
             >
-                {/* Top Section - Logo + Description */}
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        width: "100%",
-                        alignItems: "flex-end",   // Right align the logo and LMS
-                        gap: 1,
-                        mt: 2
-                    }}
-                >
-                    {/* Logo + LMS (Right Aligned) */}
-                    <Box
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "flex-start",
-                            width: "100%",
-                            gap: 1
-                        }}
+                <Paper elevation={0} sx={{ width: "100%", maxWidth: { xs: 420, md: 500 }, p: 4 }}>
+                    {/* Logo */}
+                    <Box sx={{ mb: 3 }}>
+                        <img
+                            src={
+                                THEME?.manifest?.icons?.[0]?.src
+                                    ? `/${THEME.manifest.icons[0].src}`
+                                    : "/logo/EsaiLogo.png"
+                            }
+                            alt="logo"
+                            width={170}
+                        />
+                    </Box>
+
+                    <Typography
+                        variant="h4"
+                        fontWeight={800}
+                        sx={{ color: THEME.colors.dark, mb: 1 }}
                     >
-                        <img src={THEME?.manifest?.icons?.[0]?.src ? `/${THEME.manifest.icons[0].src}` : '/logo/EsaiLogo.png'} alt={THEME?.manifest?.name || 'Logo'} width="70" />
+                        Welcome back to {THEME.manifest?.name || 'the LMS'}
+                    </Typography>
 
-                        <Typography
-                            variant="h4"
-                            sx={{
-                                color: "var(--text)",
-                                fontWeight: 700,
-                                letterSpacing: "2px"
-                            }}
-                        >
-                            {THEME?.manifest?.short_name || THEME?.manifest?.name || 'LMS'}
-                        </Typography>
-                    </Box>
+                    <Typography
+                        variant="body1"
+                        sx={{ color: THEME.colors.textSecondary, mb: 1.5 }}
+                    >
+                        Sign in to continue to your dashboard.
+                    </Typography>
 
-                    {/* Description (Center Aligned) */}
-                    <Box sx={{ width: "100%", display: "flex", justifyContent: "left", mt: 3 }}>
-                        <Typography
-                            variant="body2"
-                            sx={{
-                                textAlign: "center",
-                                color: "var(--text)",
-                                // fontSize: "13px",
-                                // maxWidth: "90%",
-                                lineHeight: 1.4
-                            }}
-                        >
-                            Enhance your learning experience with powerful tools. Track your academic progress in one place. Continue growing your skills anytime, anywhere.
-                        </Typography>
-                    </Box>
-                </Box>
-
-
-                {/* Center Section - Login Form */}
-                <Box
-                    sx={{
-                        width: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: 2
-                    }}
-                >
                     <TextField
-                        label="Email / Username / Phone number"
+                        label="Username"
                         fullWidth
-                        variant="filled"
+                        margin="normal"
+                        variant="outlined"
                         value={loginData.user}
-                        onChange={(e) =>
-                            setLoginData({ ...loginData, user: e.target.value })
-                        }
-                        error={Boolean(errors.user)}
+                        onChange={(e) => setLoginData({ ...loginData, user: e.target.value })}
+                        error={!!errors.user}
                         helperText={errors.user}
                         sx={{
-                            backgroundColor: "var(--surface)",
-                            borderRadius: "6px",
+                            borderRadius: 1,
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: THEME.colors.darkLight },
+                                '&:hover fieldset': { borderColor: THEME.colors.darkMedium },
+                                '&.Mui-focused fieldset': { borderColor: THEME.colors.dark }
+                            }
                         }}
                     />
 
                     <TextField
                         label="Password"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         fullWidth
-                        variant="filled"
+                        margin="normal"
+                        variant="outlined"
                         value={loginData.password}
                         onChange={(e) =>
                             setLoginData({ ...loginData, password: e.target.value })
                         }
-                        error={Boolean(errors.password)}
+                        error={!!errors.password}
                         helperText={errors.password}
                         sx={{
-                            backgroundColor: "var(--surface)",
-                            borderRadius: "6px",
+                            borderRadius: 1,
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: THEME.colors.darkLight },
+                                '&:hover fieldset': { borderColor: THEME.colors.darkMedium },
+                                '&.Mui-focused fieldset': { borderColor: THEME.colors.dark }
+                            }
+                        }}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                        onClick={() => setShowPassword((s) => !s)}
+                                        onMouseDown={(e) => e.preventDefault()}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                                    </IconButton>
+                                </InputAdornment>
+                            )
                         }}
                     />
 
@@ -232,65 +190,182 @@ export default function LoginPage() {
                         sx={{
                             display: "flex",
                             justifyContent: "space-between",
-                            width: "100%",
                             alignItems: "center",
+                            mt: 1
                         }}
                     >
                         <FormControlLabel
                             control={
                                 <Checkbox
-                                    size="small"
-                                    sx={{ color: "var(--text)" }}
                                     checked={loginData.remember}
                                     onChange={(e) =>
-                                        setLoginData({ ...loginData, remember: e.target.checked })
+                                        setLoginData({
+                                            ...loginData,
+                                            remember: e.target.checked
+                                        })
                                     }
                                 />
                             }
-                            label={<Typography sx={{ color: "var(--text)", fontSize: 13 }}>Remember me</Typography>}
+                            label="Remember me"
                         />
-
-                        <Link href="#" sx={{ color: "var(--text)", fontSize: 13 }}>
-                            Forgot password?
+                        <Link component="button" sx={{ color: THEME.colors.primary }} onClick={() => setOpenForgot(true)} underline="hover">
+                            Forgot password ?
                         </Link>
                     </Box>
 
                     <Button
                         fullWidth
                         variant="contained"
-                        sx={{ backgroundColor: "var(--surface)", color: "var(--text)", fontWeight: 700 }}
+                        sx={{
+                            mt: 3,
+                            py: 1.3,
+                            fontWeight: 700,
+                            backgroundColor: THEME.colors.dark,
+                            "&:hover": { backgroundColor: THEME.colors.darkMedium }
+                        }}
                         onClick={handleSubmit}
                     >
-                        LOGIN
+                        Sign in
                     </Button>
 
-                    <Box sx={{ mt: 1 }}>
-                        <IconButton sx={{ color: "var(--text)" }}>
-                            <HelpOutlineIcon />
-                        </IconButton>
-                        <Typography variant="caption" sx={{ color: "var(--onPrimary)" }}>
-                            Help & Support
-                        </Typography>
-                    </Box>
-                </Box>
-
-                {/* Bottom Section - Terms */}
-                <Box sx={{ mb: 1 }}>
-                    <Typography
-                        variant="caption"
-                        sx={{
-                            color: "var(--textSecondary)",
-                            cursor: "pointer",
-                            "&:hover": { textDecoration: "underline" }
-                        }}
-                    >
-                        Terms & Conditions | Privacy Policy
+                    <Typography variant="body2" align="center" sx={{ mt: 3 }}>
+                        By signing in you agree to our{' '}
+                        <Link component="button" sx={{ color: THEME.colors.primary }} onClick={() => setOpenTerms(true)}>
+                            Terms and Conditions
+                        </Link>
+                        .
                     </Typography>
-                    <Divider sx={{ borderColor: "var(--textSecondary)", mb: 1 }} />
+                </Paper>
+            </Box>
 
+            {/* RIGHT – IMAGE */}
+            <Box
+                sx={{
+                    width: "50%",
+                    display: { xs: "none", md: "block" },
+                    backgroundImage: `url(/login/l1.png)`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    position: "relative",
+                    minHeight: "100vh",
+                    overflow: "hidden"
+                }}
+            >
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        color: "#fff",
+                        m: 4,
+                        backgroundColor: "rgba(0, 0, 0, 0.63)",
+                        p: 2,
+                        borderRadius: 2
+                    }}
+                >
+                    {/* <Typography variant="body1" fontWeight={500}>
+                        {THEME.manifest?.description
+                            ? `"${THEME.manifest.description}"`
+                            : "Bring your ideas to life."}
+                    </Typography> */}
+                    {/* <Typography variant="body1" sx={{ mt: 1 }}>
+                        Sign up for free and enjoy access to all features for 30 days.
+                        No credit card required.
+                    </Typography> */}
                 </Box>
-            </Paper>
+            </Box>
+
             <GlobalAlert alert={alert} setAlert={setAlert} />
-        </Box>
+
+            {/* Forgot password Slide Dialog */}
+            <Dialog
+                open={openForgot}
+                onClose={() => setOpenForgot(false)}
+                fullWidth
+                maxWidth="sm"
+            >
+                <DialogTitle>
+                    Forget Password
+                    <IconButton
+                        aria-label="close"
+                        onClick={() => setOpenForgot(false)}
+                        sx={{ position: 'absolute', right: 8, top: 8 }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent dividers>
+                    <Typography variant="body1" gutterBottom>
+                        For forget passowrd, please contact your system administrator or IT support team. They can
+                        verify your account and securely reset your password for you.
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                        If you do not know who your administrator is, please reach out to your organization's
+                        helpdesk or the person who provided access to this LMS platform.
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenForgot(false)}>Close</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Terms and Conditions Dialog */}
+            <Dialog
+                open={openTerms}
+                onClose={() => setOpenTerms(false)}
+                fullWidth
+                maxWidth="md"
+            >
+                <DialogTitle>
+                    Terms and Conditions
+                    <IconButton
+                        aria-label="close"
+                        onClick={() => setOpenTerms(false)}
+                        sx={{ position: 'absolute', right: 8, top: 8 }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent dividers>
+                    <Typography paragraph>
+                        Welcome to the LMS platform. These Terms and Conditions govern your access to and use of the
+                        learning management system provided by your organization. The platform is intended to deliver
+                        course content, assessments, learning analytics, and collaboration tools to authorized users.
+                        Access is restricted to individuals granted accounts by an administrator. Users must keep their
+                        credentials secure and must not share access with others. The use of the platform must comply
+                        with your organization's acceptable use policies and any specific course or program rules.
+                    </Typography>
+                    <Typography paragraph>
+                        The platform may collect usage data and course progress for administrative and educational
+                        purposes. Such data is processed in accordance with applicable privacy laws and your
+                        organization's privacy policy. Personal data will be used to provide functionality such as
+                        grading, certification tracking, and personalized learning recommendations. By using the
+                        platform you consent to this processing as permitted by your organization.
+                    </Typography>
+                    <Typography paragraph>
+                        Intellectual property rights in course materials are owned by the respective content
+                        providers or your organization. You may access and use materials for learning purposes only;
+                        reproduction, distribution, or commercial use without permission is prohibited. You agree not
+                        to attempt unauthorized access to restricted areas of the platform or to interfere with the
+                        normal operation of the service.
+                    </Typography>
+                    <Typography paragraph>
+                        The platform is provided on an "as is" basis. Your organization may restrict or remove access
+                        for violations of these Terms or other policies. Liability for direct or indirect damages
+                        arising from platform use is limited to the extent permitted by law. If you have questions or
+                        require special accommodations, contact your administrator or helpdesk for assistance.
+                    </Typography>
+                    <Typography paragraph>
+                        By continuing to sign in and use this platform you acknowledge that you have read and agree
+                        to abide by these Terms and any additional policies your organization has published. These
+                        Terms may be updated from time to time; continued use following changes constitutes
+                        acceptance of the revised terms.
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenTerms(false)}>Close</Button>
+                </DialogActions>
+            </Dialog>
+        </Box >
     );
 }
