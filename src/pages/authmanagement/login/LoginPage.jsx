@@ -8,24 +8,24 @@ import {
     FormControlLabel,
     Checkbox,
     Link,
-    Divider,
     Dialog,
     DialogTitle,
     DialogContent,
     DialogActions,
-    Slide,
     IconButton,
     InputAdornment
 } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { useAuth } from "../../../hooks/useAuth";
+import CloseIcon from "@mui/icons-material/Close";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import ErrorOutline from '@mui/icons-material/ErrorOutline';
+
 import { useNavigate } from "react-router-dom";
-import { httpClient } from "../../../apiClient/httpClient";
-import { tokenStorage } from "../../../utils/tokenStorage.utils";
+import { useAuth } from "../../../hooks/useAuth";
 import { useAdmin } from "../../../hooks/useAdmin";
 import useCommon from "../../../hooks/useCommon";
+import { httpClient } from "../../../apiClient/httpClient";
+import { tokenStorage } from "../../../utils/tokenStorage.utils";
 import GlobalAlert from "../../../components/common/alert/GlobalAlert.jsx";
 import THEME from "../../../constants/theme";
 
@@ -45,13 +45,30 @@ export default function LoginPage() {
     const [openForgot, setOpenForgot] = useState(false);
     const [openTerms, setOpenTerms] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [formError, setFormError] = useState("");
 
     const validate = () => {
-        const newErrors = {};
-        if (!loginData.user) newErrors.user = "Required";
-        if (!loginData.password) newErrors.password = "Required";
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        // show single, form-level error when either field is missing
+        if (!loginData.user || !loginData.password) {
+            setFormError("Username and Password are required.");
+            setErrors({});
+            return false;
+        }
+        setFormError("");
+        setErrors({});
+        return true;
+    };
+
+    const handleUserChange = (e) => {
+        const value = e.target.value;
+        setLoginData((s) => ({ ...s, user: value }));
+        if (formError) setFormError("");
+    };
+
+    const handlePasswordChange = (e) => {
+        const value = e.target.value;
+        setLoginData((s) => ({ ...s, password: value }));
+        if (formError) setFormError("");
     };
 
     const handleSubmit = async (e) => {
@@ -71,6 +88,7 @@ export default function LoginPage() {
 
             showLoader("Fetching permissions...");
             const res = await httpClient.fetchPermissionByUserId(userId);
+
             if (res?.data?.response?.length) {
                 setPermissionsAPI(res.data.response);
                 navigate("/", { replace: true });
@@ -85,26 +103,55 @@ export default function LoginPage() {
         }
     };
 
-    const Transition = React.forwardRef(function Transition(props, ref) {
-        return <Slide direction="up" ref={ref} {...props} />;
-    });
-
     return (
-        <Box sx={{ display: "flex", minHeight: "100vh", width: "100%", overflow: "hidden" }}>
-            {/* LEFT – LOGIN FORM */}
+        <Box
+            sx={{
+                minHeight: "100vh",
+                width: "100%",
+                backgroundImage: "url(/login/l1.png)",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: { xs: "center", md: "end" },
+                position: "relative"
+            }}
+        >
+            {/* THEME OVERLAY */}
             <Box
                 sx={{
-                    width: { xs: "100%", md: "50%" },
+                    position: "absolute",
+                    inset: 0,
+                    background: `linear-gradient(
+                        180deg,
+                        ${THEME.colors.dark}CC,
+                        ${THEME.colors.darkMedium}AA
+                    )`
+                }}
+            />
+
+            {/* LOGIN CARD */}
+            <Paper
+                elevation={8}
+                sx={{
+                    position: "relative",
+                    zIndex: 1,
+                    width: "100%",
+                    height: { xs: "auto", md: "100vh" },
+                    maxWidth: { xs: 400, md: 500 },
+                    mx: { xs: 2, md: 0 },
+                    p: 4,
                     display: "flex",
-                    alignItems: "center",
+                    flexDirection: "column",
                     justifyContent: "center",
-                    backgroundColor: THEME.colors.background,
-                    overflowY: "auto"
+                    borderRadius: 2,
+                    backgroundColor: "#ffffffd7"
                 }}
             >
-                <Paper elevation={0} sx={{ width: "100%", maxWidth: { xs: 420, md: 500 }, p: 4 }}>
-                    {/* Logo */}
-                    <Box sx={{ mb: 3 }}>
+                <form onSubmit={handleSubmit} noValidate>
+                    {/* LOGO */}
+                    <Box sx={{ mb: 3, textAlign: "center" }}>
                         <img
                             src={
                                 THEME?.manifest?.icons?.[0]?.src
@@ -112,71 +159,101 @@ export default function LoginPage() {
                                     : "/logo/EsaiLogo.png"
                             }
                             alt="logo"
-                            width={170}
+                            width={160}
                         />
                     </Box>
 
                     <Typography
                         variant="h4"
                         fontWeight={800}
-                        sx={{ color: THEME.colors.dark, mb: 1 }}
+                        sx={{ color: THEME.colors.dark, mb: 1, textAlign: "center" }}
                     >
-                        Welcome back to {THEME.manifest?.name || 'the LMS'}
+                        Welcome back to {THEME.manifest.name}!
                     </Typography>
 
                     <Typography
                         variant="body1"
-                        sx={{ color: THEME.colors.textSecondary, mb: 1.5 }}
+                        sx={{
+                            color: THEME.colors.textSecondary,
+                            mb: 2,
+                            textAlign: "center"
+                        }}
                     >
-                        Sign in to continue to your dashboard.
+                        Sign in to continue
                     </Typography>
 
+                    {formError && (
+                        <Typography variant="body2" color="error" sx={{ mb: 2, textAlign: 'center' }}>
+                            {formError}
+                        </Typography>
+                    )}
+
+                    {/* USERNAME */}
                     <TextField
                         label="Username"
                         fullWidth
                         margin="normal"
-                        variant="outlined"
                         value={loginData.user}
-                        onChange={(e) => setLoginData({ ...loginData, user: e.target.value })}
+                        onChange={handleUserChange}
                         error={!!errors.user}
-                        helperText={errors.user}
+                        InputProps={{
+                            startAdornment: (
+                                formError ? (
+                                    <InputAdornment position="start">
+                                        <ErrorOutline sx={{ color: THEME.colors.danger }} />
+                                    </InputAdornment>
+                                ) : null
+                            )
+                        }}
+
                         sx={{
-                            borderRadius: 1,
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': { borderColor: THEME.colors.darkLight },
-                                '&:hover fieldset': { borderColor: THEME.colors.darkMedium },
-                                '&.Mui-focused fieldset': { borderColor: THEME.colors.dark }
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: THEME.colors.darkLight
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: THEME.colors.darkMedium
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: THEME.colors.dark
+                                }
                             }
                         }}
                     />
 
+                    {/* PASSWORD */}
                     <TextField
                         label="Password"
-                        type={showPassword ? 'text' : 'password'}
+                        type={showPassword ? "text" : "password"}
                         fullWidth
                         margin="normal"
-                        variant="outlined"
                         value={loginData.password}
-                        onChange={(e) =>
-                            setLoginData({ ...loginData, password: e.target.value })
-                        }
+                        onChange={handlePasswordChange}
                         error={!!errors.password}
-                        helperText={errors.password}
                         sx={{
-                            borderRadius: 1,
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': { borderColor: THEME.colors.darkLight },
-                                '&:hover fieldset': { borderColor: THEME.colors.darkMedium },
-                                '&.Mui-focused fieldset': { borderColor: THEME.colors.dark }
-                            }
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: THEME.colors.darkLight
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: THEME.colors.darkMedium
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: THEME.colors.dark
+                                }
+                            },
+                            // Hide built-in browser password reveal/clear buttons
+                            '& input[type=password]::-ms-reveal': { display: 'none' },
+                            '& input[type=password]::-ms-clear': { display: 'none' },
+                            '& input[type=password]::-webkit-textfield-decoration-container': { display: 'none' },
+                            '& input::-webkit-credentials-auto-fill-button': { display: 'none' },
+                            '& input::-webkit-autofill-button': { display: 'none' }
                         }}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <IconButton
-                                        aria-label={showPassword ? 'Hide password' : 'Show password'}
                                         onClick={() => setShowPassword((s) => !s)}
-                                        onMouseDown={(e) => e.preventDefault()}
                                         edge="end"
                                     >
                                         {showPassword ? <Visibility /> : <VisibilityOff />}
@@ -186,12 +263,15 @@ export default function LoginPage() {
                         }}
                     />
 
+                    {/* REMEMBER / FORGOT - single line */}
                     <Box
                         sx={{
                             display: "flex",
+                            flexDirection: "row",
                             justifyContent: "space-between",
                             alignItems: "center",
-                            mt: 1
+                            mt: 1,
+                            flexWrap: 'nowrap'
                         }}
                     >
                         <FormControlLabel
@@ -204,15 +284,24 @@ export default function LoginPage() {
                                             remember: e.target.checked
                                         })
                                     }
+                                    size="small"
                                 />
                             }
                             label="Remember me"
+                            sx={{ whiteSpace: 'nowrap', mr: 2 }}
                         />
-                        <Link component="button" sx={{ color: THEME.colors.primary }} onClick={() => setOpenForgot(true)} underline="hover">
-                            Forgot password ?
+
+                        <Link
+                            component="button"
+                            underline="hover"
+                            sx={{ color: THEME.colors.primary, whiteSpace: 'nowrap', ml: 'auto' }}
+                            onClick={() => setOpenForgot(true)}
+                        >
+                            Forgot password?
                         </Link>
                     </Box>
 
+                    {/* SIGN IN */}
                     <Button
                         fullWidth
                         variant="contained"
@@ -221,87 +310,45 @@ export default function LoginPage() {
                             py: 1.3,
                             fontWeight: 700,
                             backgroundColor: THEME.colors.dark,
-                            "&:hover": { backgroundColor: THEME.colors.darkMedium }
+                            "&:hover": {
+                                backgroundColor: THEME.colors.darkMedium
+                            }
                         }}
+                        type="submit"
                         onClick={handleSubmit}
                     >
                         Sign in
                     </Button>
 
                     <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-                        By signing in you agree to our{' '}
-                        <Link component="button" sx={{ color: THEME.colors.primary }} onClick={() => setOpenTerms(true)}>
+                        By signing in you agree to our{" "}
+                        <Link
+                            component="button"
+                            sx={{ color: THEME.colors.primary }}
+                            onClick={() => setOpenTerms(true)}
+                        >
                             Terms and Conditions
                         </Link>
-                        .
                     </Typography>
-                </Paper>
-            </Box>
-
-            {/* RIGHT – IMAGE */}
-            <Box
-                sx={{
-                    width: "50%",
-                    display: { xs: "none", md: "block" },
-                    backgroundImage: `url(/login/l1.png)`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    position: "relative",
-                    minHeight: "100vh",
-                    overflow: "hidden"
-                }}
-            >
-                <Box
-                    sx={{
-                        position: "absolute",
-                        top: 0,
-                        right: 0,
-                        color: "#fff",
-                        m: 4,
-                        backgroundColor: "rgba(0, 0, 0, 0.63)",
-                        p: 2,
-                        borderRadius: 2
-                    }}
-                >
-                    {/* <Typography variant="body1" fontWeight={500}>
-                        {THEME.manifest?.description
-                            ? `"${THEME.manifest.description}"`
-                            : "Bring your ideas to life."}
-                    </Typography> */}
-                    {/* <Typography variant="body1" sx={{ mt: 1 }}>
-                        Sign up for free and enjoy access to all features for 30 days.
-                        No credit card required.
-                    </Typography> */}
-                </Box>
-            </Box>
+                </form>
+            </Paper>
 
             <GlobalAlert alert={alert} setAlert={setAlert} />
 
-            {/* Forgot password Slide Dialog */}
-            <Dialog
-                open={openForgot}
-                onClose={() => setOpenForgot(false)}
-                fullWidth
-                maxWidth="sm"
-            >
+            {/* FORGOT PASSWORD */}
+            <Dialog open={openForgot} onClose={() => setOpenForgot(false)} fullWidth maxWidth="sm">
                 <DialogTitle>
-                    Forget Password
+                    Forgot Password
                     <IconButton
-                        aria-label="close"
                         onClick={() => setOpenForgot(false)}
-                        sx={{ position: 'absolute', right: 8, top: 8 }}
+                        sx={{ position: "absolute", right: 8, top: 8 }}
                     >
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
                 <DialogContent dividers>
-                    <Typography variant="body1" gutterBottom>
-                        For forget passowrd, please contact your system administrator or IT support team. They can
-                        verify your account and securely reset your password for you.
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-                        If you do not know who your administrator is, please reach out to your organization's
-                        helpdesk or the person who provided access to this LMS platform.
+                    <Typography>
+                        Please contact your system administrator or IT support team to reset your password.
                     </Typography>
                 </DialogContent>
                 <DialogActions>
@@ -309,63 +356,27 @@ export default function LoginPage() {
                 </DialogActions>
             </Dialog>
 
-            {/* Terms and Conditions Dialog */}
-            <Dialog
-                open={openTerms}
-                onClose={() => setOpenTerms(false)}
-                fullWidth
-                maxWidth="md"
-            >
+            {/* TERMS */}
+            <Dialog open={openTerms} onClose={() => setOpenTerms(false)} fullWidth maxWidth="md">
                 <DialogTitle>
                     Terms and Conditions
                     <IconButton
-                        aria-label="close"
                         onClick={() => setOpenTerms(false)}
-                        sx={{ position: 'absolute', right: 8, top: 8 }}
+                        sx={{ position: "absolute", right: 8, top: 8 }}
                     >
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
                 <DialogContent dividers>
                     <Typography paragraph>
-                        Welcome to the LMS platform. These Terms and Conditions govern your access to and use of the
-                        learning management system provided by your organization. The platform is intended to deliver
-                        course content, assessments, learning analytics, and collaboration tools to authorized users.
-                        Access is restricted to individuals granted accounts by an administrator. Users must keep their
-                        credentials secure and must not share access with others. The use of the platform must comply
-                        with your organization's acceptable use policies and any specific course or program rules.
-                    </Typography>
-                    <Typography paragraph>
-                        The platform may collect usage data and course progress for administrative and educational
-                        purposes. Such data is processed in accordance with applicable privacy laws and your
-                        organization's privacy policy. Personal data will be used to provide functionality such as
-                        grading, certification tracking, and personalized learning recommendations. By using the
-                        platform you consent to this processing as permitted by your organization.
-                    </Typography>
-                    <Typography paragraph>
-                        Intellectual property rights in course materials are owned by the respective content
-                        providers or your organization. You may access and use materials for learning purposes only;
-                        reproduction, distribution, or commercial use without permission is prohibited. You agree not
-                        to attempt unauthorized access to restricted areas of the platform or to interfere with the
-                        normal operation of the service.
-                    </Typography>
-                    <Typography paragraph>
-                        The platform is provided on an "as is" basis. Your organization may restrict or remove access
-                        for violations of these Terms or other policies. Liability for direct or indirect damages
-                        arising from platform use is limited to the extent permitted by law. If you have questions or
-                        require special accommodations, contact your administrator or helpdesk for assistance.
-                    </Typography>
-                    <Typography paragraph>
-                        By continuing to sign in and use this platform you acknowledge that you have read and agree
-                        to abide by these Terms and any additional policies your organization has published. These
-                        Terms may be updated from time to time; continued use following changes constitutes
-                        acceptance of the revised terms.
+                        This LMS platform is intended for authorized users only.
+                        Usage is governed by your organization’s policies.
                     </Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenTerms(false)}>Close</Button>
                 </DialogActions>
             </Dialog>
-        </Box >
+        </Box>
     );
 }
