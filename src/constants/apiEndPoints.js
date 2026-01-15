@@ -41,8 +41,31 @@ export const API_ENDPOINTS = {
     //Enrollment APIs
     GET_ENROLLMENT_COURSES: "/enrollment/getEnrollmentCourses",
     COURSE_MANUAL_ENROLLMENT: "/enrollment/course/manual",
+    ENROLL_COURSE_CATEGORY: "/user/course/enroll/category",
+
+    // Course Category APIs
+    GET_ALL_CATEGORIES: "/course-category/getCategories",
+    GET_CATEGORY_BY_ID: "/course-category",
+    CREATE_CATEGORY: "/course-category/createCategory",
+    UPDATE_CATEGORY: "/course-category",
+    DELETE_CATEGORY: "/course-category",
+    ASSIGN_COURSE: "/course-category/assign-course",
+    UNASSIGN_COURSE: "/course-category",
+    GET_ASSIGNED_COURSES: "/course-category",
+
+    // Group APIs
+    GET_ALL_GROUPS: "/groups/getGroups",
+    GET_GROUP_BY_ID: "/groups",
+    CREATE_GROUP: "/groups/createGroup",
+    UPDATE_GROUP: "/groups",
+    DELETE_GROUP: "/groups",
+    ASSIGN_USER_TO_GROUP: "/groups/assign-user",
+    UNASSIGN_USER_GROUP: "/groups",
+    GET_GROUP_ASSIGNMENTS: "/groups",
 
     GET_ENROLLMENT_COURSES_BY_USER_ID: "/user/course/enrollments",
+    GET_USER_COURSES: "/user/course/my",
+    GET_USER_ENROLLED_CATEGORIES: "/user/course/enrolledCategories",
     // User notes APIs
     GET_USER_NOTES: "/courses/user/notes/userid",
     ADD_USER_NOTES: "/courses/user/notes/add",

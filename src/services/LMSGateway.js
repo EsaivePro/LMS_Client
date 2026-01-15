@@ -134,6 +134,14 @@ export async function getUserNotes(dispatch, userId, courseId) {
     return await apiHandler(dispatch, httpClient.getUserNotes, userId, courseId);
 }
 
+export async function enrollUserToCourseCategory(dispatch, userId, categoryId) {
+    return await apiHandlerWithoutLoader(dispatch, httpClient.enrollUserToCourseCategory, userId, categoryId);
+}
+
+export async function getUserCourses(dispatch, userId, statuses = null) {
+    return await apiHandler(dispatch, httpClient.getUserCourses, userId, statuses);
+}
+
 export async function addUserNotes(dispatch, data) {
     return await apiHandler(dispatch, httpClient.addUserNotes, data);
 }
@@ -144,4 +152,78 @@ export async function updateUserNotes(dispatch, id, data) {
 
 export async function deleteUserNotes(dispatch, id) {
     return await apiHandler(dispatch, httpClient.deleteUserNotes, id);
+}
+
+// Course Category APIs
+export async function fetchAllCategories(dispatch) {
+    return await apiHandler(dispatch, httpClient.getAllCategories);
+}
+
+export async function getUserEnrolledCourseCategory(dispatch, userId) {
+    return await apiHandler(dispatch, httpClient.getUserEnrolledCourseCategory, userId);
+}
+
+export async function getCourseCategoryAssignmentsForUser(dispatch, userId, categoryId) {
+    return await apiHandler(dispatch, httpClient.getCourseCategoryAssignmentsForUser, userId, categoryId);
+}
+
+export async function fetchCategoryById(dispatch, id) {
+    return await apiHandler(dispatch, httpClient.getCategoryById, id);
+}
+
+export async function createCategory(dispatch, data) {
+    return await apiHandler(dispatch, httpClient.createCategory, data);
+}
+
+export async function updateCategory(dispatch, id, data) {
+    return await apiHandler(dispatch, httpClient.updateCategory, id, data);
+}
+
+export async function deleteCategory(dispatch, id) {
+    return await apiHandler(dispatch, httpClient.deleteCategory, id);
+}
+
+export async function assignCourseToCategory(dispatch, data) {
+    return await apiHandler(dispatch, httpClient.assignCourseToCategory, data);
+}
+
+export async function unassignCourseById(dispatch, id) {
+    return await apiHandler(dispatch, httpClient.unassignCourseById, id);
+}
+
+export async function getAssignedCourses(dispatch, categoryId) {
+    return await apiHandler(dispatch, httpClient.getAssignedCourses, categoryId);
+}
+
+// Group APIs
+export async function fetchAllGroups(dispatch) {
+    return await apiHandler(dispatch, httpClient.getAllGroups);
+}
+
+export async function fetchGroupById(dispatch, id) {
+    return await apiHandler(dispatch, httpClient.getGroupById, id);
+}
+
+export async function createGroup(dispatch, data) {
+    return await apiHandler(dispatch, httpClient.createGroup, data);
+}
+
+export async function updateGroup(dispatch, id, data) {
+    return await apiHandler(dispatch, httpClient.updateGroup, id, data);
+}
+
+export async function deleteGroup(dispatch, id) {
+    return await apiHandler(dispatch, httpClient.deleteGroup, id);
+}
+
+export async function assignUserToGroup(dispatch, data) {
+    return await apiHandler(dispatch, httpClient.assignUserToGroup, data);
+}
+
+export async function unassignUserFromGroup(dispatch, id) {
+    return await apiHandler(dispatch, httpClient.unassignUserFromGroup, id);
+}
+
+export async function getGroupAssignments(dispatch, groupId) {
+    return await apiHandler(dispatch, httpClient.getGroupAssignments, groupId);
 }

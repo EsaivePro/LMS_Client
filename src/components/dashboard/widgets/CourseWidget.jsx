@@ -375,7 +375,12 @@ export default function CourseWidget({ title }) {
 
     // Map enrollment records to simplified course-like objects for display
     const courses = useMemo(() => {
-        const rows = (user && enrollmentCoursesByUser && enrollmentCoursesByUser[user.id]) || [];
+        const rows = ((user && enrollmentCoursesByUser && enrollmentCoursesByUser[user.id]) || [])
+            .filter((e) => {
+                const s = (e && e.enrollment_status) ? String(e.enrollment_status).toLowerCase() : "";
+                return s === "active" || s === "inprogress" || s === "completed";
+            });
+
         return rows.map((e) => ({
             id: e.course_id,
             title: e.title || "Untitled Course",
@@ -386,6 +391,7 @@ export default function CourseWidget({ title }) {
             progress: e.progress_percent || 0,
         }));
     }, [enrollmentCoursesByUser, user]);
+
 
     // if (enrollmentLoading) {
     //     return (

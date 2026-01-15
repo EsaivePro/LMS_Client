@@ -184,7 +184,7 @@ const CourseView = () => {
         if (!courseId) return;
 
         if (enrollmentCoursesByUser && enrollmentCoursesByUser[user.id]?.length > 0) {
-            setEnrolledCourse(enrollmentCoursesByUser[user.id].find((c) => c.course_id === courseId));
+            setEnrolledCourse(enrollmentCoursesByUser[user.id].find((c) => c.course_id === courseId && (c.enrollment_status === "active" || c.enrollment_status === "completed" || c.enrollment_status === "inprogress")));
         }
         if (hasPermission(permissions, "course.manage") || enrolledCourse) {
             setEnrolledCourse(true);

@@ -2,6 +2,9 @@ import AdminDashboard from "../modules/dashboard/pages/AdminDashBoard";
 import CoursesList from "../modules/course/pages/CoursesList";
 import CourseView from "../modules/course/pages/CourseView";
 import CourseEdit from "../modules/course/pages/CourseEdit";
+import CourseCategory from "../modules/course/pages/CourseCategory";
+import GroupPage from "../modules/group/pages/GroupPage";
+import GroupAssign from "../modules/group/pages/GroupAssign";
 import UserManagement from "../modules/user/pages/UserManagement";
 import UserProfile from "../modules/user/pages/UserProfile";
 import EnrollmentBase from "../modules/enrollment/pages/EnrollmentBase";
@@ -15,6 +18,7 @@ export const protectedRoutes = [
         layoutProps: {},
         element: <AdminDashboard />,
     },
+
     {
         path: "/courses",
         title: "Course Management",
@@ -22,6 +26,7 @@ export const protectedRoutes = [
         permission: "course.list",
         element: <CoursesList />,
     },
+
     {
         path: "/course/view/:id",
         title: "Course Details",
@@ -30,6 +35,7 @@ export const protectedRoutes = [
         layoutProps: { containerCard: false, courseCard: true, footer: false },
         element: <CourseView />,
     },
+
     {
         path: "/course/edit/:id",
         title: "Edit Course",
@@ -37,6 +43,31 @@ export const protectedRoutes = [
         permission: "course.edit",
         element: <CourseEdit />,
     },
+
+    {
+        path: "/coursecategory",
+        title: "Course Categories",
+        description: "Manage course categories and assign courses to categories.",
+        permission: "course.view",
+        element: <CourseCategory />,
+    },
+
+    {
+        path: "/groups",
+        title: "Groups",
+        description: "Manage groups and assign users to groups.",
+        permission: "course.view",
+        element: <GroupPage />,
+    },
+
+    {
+        path: "/groups/assign",
+        title: "Assign Users to Group",
+        description: "Assign and unassign users for a selected group.",
+        permission: "course.view",
+        element: <GroupAssign />,
+    },
+
     {
         path: "/usermanagement/*",
         title: "User Management",
@@ -44,6 +75,7 @@ export const protectedRoutes = [
         permission: "user.management",
         element: <UserManagement />,
     },
+
     {
         path: "/user/profile/:id",
         title: "User Profile",
@@ -51,6 +83,7 @@ export const protectedRoutes = [
         permission: "user.profile.view",
         element: <UserProfile />,
     },
+
     {
         path: "/user/enrollment/*",
         title: "Enrollment Management",

@@ -14,10 +14,12 @@ import lessons from "../slices/lessonsSlice";
 import users from "../slices/userSlice";
 import role from "../slices/roleSlice";
 import dashboard from "../slices/dashboardSlice";
+import courseCategory from "../slices/courseCategorySlice";
+import group from "../slices/groupSlice";
 
 import { setAxiosStore } from "../../apiClient/apiStoreProvider";
 
-const rootReducer = combineReducers({ ui, dashboard, auth, courses, enrollment, permission, common, admin, topics, lessons, users, role, dashboard });
+const rootReducer = combineReducers({ ui, dashboard, auth, courses, enrollment, permission, common, admin, topics, lessons, users, role, dashboard, courseCategory, group });
 const persistConfig = {
   key: "root",
   storage,

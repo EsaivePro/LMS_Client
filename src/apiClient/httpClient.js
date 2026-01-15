@@ -55,6 +55,40 @@ export const httpClient = {
     getEnrollmentCourses: async () => axiosInstance.get(API_ENDPOINTS.GET_ENROLLMENT_COURSES),
     courseManualEnrollment: async (data) => axiosInstance.post(API_ENDPOINTS.COURSE_MANUAL_ENROLLMENT, data),
     getEnrollmentCoursesByUserId: async (userId) => axiosInstance.get(API_ENDPOINTS.GET_ENROLLMENT_COURSES_BY_USER_ID + "/" + userId),
+    enrollUserToCourseCategory: async (userId, categoryId) => axiosInstance.post(`${API_ENDPOINTS.ENROLL_COURSE_CATEGORY}/${userId}/${categoryId}`),
+    getUserCourses: async (userId, statuses) => {
+        // statuses: string (comma separated) or array of strings
+        let statusParam = '';
+        if (Array.isArray(statuses)) {
+            statusParam = statuses.join(',');
+        } else if (typeof statuses === 'string' && statuses.trim() !== '') {
+            statusParam = statuses;
+        }
+        const url = `${API_ENDPOINTS.GET_USER_COURSES}/${userId}${statusParam ? `?status=${encodeURIComponent(statusParam)}` : ''}`;
+        return axiosInstance.get(url);
+    },
+    getUserEnrolledCourseCategory: async (userId) => axiosInstance.get(API_ENDPOINTS.GET_USER_ENROLLED_CATEGORIES + "/" + userId),
+    getCourseCategoryAssignmentsForUser: async (userId, categoryId) => axiosInstance.get(`/user/course/category/${categoryId}/user/${userId}`),
+
+    // Course Category APIs
+    getAllCategories: async () => axiosInstance.get(API_ENDPOINTS.GET_ALL_CATEGORIES),
+    getCategoryById: async (id) => axiosInstance.get(`${API_ENDPOINTS.GET_CATEGORY_BY_ID}/${id}/getCategory`),
+    createCategory: async (data) => axiosInstance.post(API_ENDPOINTS.CREATE_CATEGORY, data),
+    updateCategory: async (id, data) => axiosInstance.put(`${API_ENDPOINTS.UPDATE_CATEGORY}/${id}/updateCategory`, data),
+    deleteCategory: async (id) => axiosInstance.delete(`${API_ENDPOINTS.DELETE_CATEGORY}/${id}/deleteCategory`),
+    assignCourseToCategory: async (data) => axiosInstance.post(API_ENDPOINTS.ASSIGN_COURSE, data),
+    unassignCourseById: async (id) => axiosInstance.delete(`${API_ENDPOINTS.UNASSIGN_COURSE}/${id}/assign-course`),
+    getAssignedCourses: async (categoryId) => axiosInstance.get(`${API_ENDPOINTS.GET_ASSIGNED_COURSES}/${categoryId}/assigned-courses`),
+
+    // Group APIs
+    getAllGroups: async () => axiosInstance.get(API_ENDPOINTS.GET_ALL_GROUPS),
+    getGroupById: async (id) => axiosInstance.get(`${API_ENDPOINTS.GET_GROUP_BY_ID}/${id}/getGroup`),
+    createGroup: async (data) => axiosInstance.post(API_ENDPOINTS.CREATE_GROUP, data),
+    updateGroup: async (id, data) => axiosInstance.put(`${API_ENDPOINTS.UPDATE_GROUP}/${id}/updateGroup`, data),
+    deleteGroup: async (id) => axiosInstance.delete(`${API_ENDPOINTS.DELETE_GROUP}/${id}/deleteGroup`),
+    assignUserToGroup: async (data) => axiosInstance.post(API_ENDPOINTS.ASSIGN_USER_TO_GROUP, data),
+    unassignUserFromGroup: async (id) => axiosInstance.delete(`${API_ENDPOINTS.UNASSIGN_USER_GROUP}/${id}/assigned-user/delete`),
+    getGroupAssignments: async (groupId) => axiosInstance.get(`${API_ENDPOINTS.GET_GROUP_ASSIGNMENTS}/${groupId}/assigned-user`),
 
     // User notes APIs
     getUserNotes: async (userId, courseId) => axiosInstance.get(`${API_ENDPOINTS.GET_USER_NOTES}/${userId}/courseid/${courseId}`),

@@ -49,6 +49,9 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import { useAdmin } from "../../hooks/useAdmin";
 import THEME from "../../constants/theme";
+import GroupsIcon from '@mui/icons-material/Groups';
+import CategoryIcon from '@mui/icons-material/Category';
+import AssignmentAddIcon from '@mui/icons-material/AssignmentAdd';
 
 const drawerWidth = 240;
 
@@ -79,13 +82,33 @@ const MENU = [
         role: "course.list"
     },
     {
+        label: "Category",
+        icon: <CategoryIcon />,
+        to: "/coursecategory",
+        type: "item",
+        role: "course.view"
+    },
+    {
+        label: "Groups",
+        icon: <GroupsIcon />,
+        to: "/groups",
+        type: "item",
+        role: "course.view"
+    },
+    {
+        label: "Group Assign",
+        icon: <AssignmentAddIcon />,
+        to: "/groups/assign",
+        type: "item",
+        role: "course.view"
+    },
+    {
         label: "User managemet",
         icon: <ManageAccountsIcon />,
         to: "/usermanagement/users",
         type: "item",
         role: "user.management"
     },
-    ,
     {
         label: "Enrollment",
         icon: <FolderSharedIcon />,

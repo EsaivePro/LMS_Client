@@ -5,6 +5,7 @@ import ScheduleWidget from "./widgets/ScheduleWidget";
 import CountWidget from "./widgets/CountWidget";
 import WelcomeWidget from "./widgets/WelcomeWidget";
 import StudentCountWidget from "./widgets/StudentCountWidget";
+import CourseCategoryWidget from "./widgets/CourseCategoryWidget";
 
 export default function WidgetRenderer({ widgetId }) {
     const widget = WIDGETS[widgetId];
@@ -18,7 +19,8 @@ export default function WidgetRenderer({ widgetId }) {
         scheduledCourses: ScheduleWidget,
         count: CountWidget,
         welcome: WelcomeWidget,
-        studentCounts: StudentCountWidget
+        studentCounts: StudentCountWidget,
+        courseCategory: CourseCategoryWidget
     };
 
     const Component = map[widget.type];
