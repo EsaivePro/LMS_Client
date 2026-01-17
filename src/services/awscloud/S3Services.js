@@ -6,7 +6,7 @@ import axiosInstance from "../../apiClient/axiosInstance";
  */
 const CLOUDFRONT_DOMAIN = "https://d1fsxe4g48oy4v.cloudfront.net";
 
-export async function presignAndUploadFile({ file, key }) {
+export async function presignAndUploadFile({ file, key, onProgress } = {}) {
     // 1) ask backend for presigned url
     const { data } = await axiosInstance.post("/upload/presign", {
         fileName: file.name,
@@ -17,18 +17,37 @@ export async function presignAndUploadFile({ file, key }) {
     if (data.error) throw new Error(data.message || "Presign failed");
 
     const presignedUrl = data.presignedUrl;
-    const putRes = await fetch(presignedUrl, {
-        method: "PUT",
-        headers: { "Content-Type": file.type },
-        body: file,
+
+    // Use XMLHttpRequest to track upload progress via onprogress
+    return await new Promise((resolve, reject) => {
+        try {
+            const xhr = new XMLHttpRequest();
+            xhr.open("PUT", presignedUrl, true);
+            xhr.setRequestHeader("Content-Type", file.type);
+
+            if (xhr.upload && typeof onProgress === 'function') {
+                xhr.upload.onprogress = (evt) => {
+                    if (evt.lengthComputable) {
+                        const percent = Math.round((evt.loaded / evt.total) * 100);
+                        try { onProgress(percent); } catch (e) { /* ignore callback errors */ }
+                    }
+                };
+            }
+
+            xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    resolve({ cdnUrl: data.cdnUrl, key: data.key });
+                } else {
+                    reject(new Error("Upload failed: " + (xhr.statusText || xhr.status)));
+                }
+            };
+
+            xhr.onerror = () => reject(new Error("Upload failed"));
+            xhr.send(file);
+        } catch (e) {
+            reject(e);
+        }
     });
-
-    if (!putRes.ok) {
-        const text = await putRes.text();
-        throw new Error("Upload failed: " + text);
-    }
-
-    return { cdnUrl: data.cdnUrl, key: data.key };
 }
 
 // ---------------- S3 DELETE ----------------

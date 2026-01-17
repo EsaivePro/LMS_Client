@@ -48,7 +48,7 @@ export const protectedRoutes = [
         path: "/coursecategory",
         title: "Course Categories",
         description: "Manage course categories and assign courses to categories.",
-        permission: "course.view",
+        permission: "coursecategory.manage",
         element: <CourseCategory />,
     },
 
@@ -56,7 +56,7 @@ export const protectedRoutes = [
         path: "/groups",
         title: "Groups",
         description: "Manage groups and assign users to groups.",
-        permission: "course.view",
+        permission: "group.management",
         element: <GroupPage />,
     },
 
@@ -64,7 +64,7 @@ export const protectedRoutes = [
         path: "/groups/assign",
         title: "Assign Users to Group",
         description: "Assign and unassign users for a selected group.",
-        permission: "course.view",
+        permission: "group.management",
         element: <GroupAssign />,
     },
 

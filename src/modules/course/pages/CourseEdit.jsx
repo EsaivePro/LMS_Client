@@ -146,6 +146,11 @@ const CourseEdit = () => {
         setTopicDialog(true);
         setTopicAction("Delete");
     };
+    const updateTopic = (topicId) => {
+        setUpdateTopicId(topicId);
+        setTopicDialog(true);
+        setTopicAction("Update");
+    };
 
     // -----------------------------------------------------
     // LESSON ACTION HANDLERS

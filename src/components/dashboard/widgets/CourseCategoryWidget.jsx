@@ -202,6 +202,11 @@ function HeroCarousel({ title, categories = [] }) {
         setIsUserEnrolled(!!(active && active.raw && active.raw.user_enroll_status));
     }, [active]);
 
+    // ensure hooks above always run; return early if no categories to render
+    if (!cats || cats.length <= 0) {
+        return null;
+    }
+
     // Refresh enrolled courses when user changes (or after enrollment)
     // useEffect(() => {
     //     if (user && user?.id && typeof fetchEnrollCoursesByUser === 'function') {

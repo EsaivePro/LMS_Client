@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom";
 import RouteRenderer from "./routes/RouteRenderer";
 import { protectedRoutes } from "./routes/routeConfig";
 import AppLayout from "./components/layout/AppLayout";
+import UserForm from "./components/user/UserForm";
+import RegistrationPage from "./components/user/RegistrationPage";
 
 export default function App() {
   const { user, isAuthenticated } = useAuth();
@@ -68,7 +70,14 @@ export default function App() {
             </AuthLayout>
           }
         />
-
+        <Route
+          path="/user/register"
+          element={
+            <AuthLayout>
+              <RegistrationPage />
+            </AuthLayout>
+          }
+        />
         {/* ---------- UNAUTHORIZED ---------- */}
         <Route
           path="/unauthorized"

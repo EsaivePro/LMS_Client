@@ -35,7 +35,7 @@ export default function CourseCategory() {
     const [editOpen, setEditOpen] = useState(false);
     const [assignOpen, setAssignOpen] = useState(false);
 
-    const [form, setForm] = useState({ title: "", description: "", enrollment_type: "manual", course_enroll: "daywise", imageurl: "", scheduled_start_at: "", scheduled_end_at: "" });
+    const [form, setForm] = useState({ title: "", description: "", enrollment_type: "manual", course_enroll: "daywise", imageurl: "", scheduled_start_at: "", scheduled_end_at: "", number_of_days: 0 });
     const [editing, setEditing] = useState(null);
 
     const [currentCat, setCurrentCat] = useState(null);
@@ -69,7 +69,7 @@ export default function CourseCategory() {
             showError("Image upload failed");
             return;
         }
-        const payload = { ...form };
+        const payload = { ...form, numberofdays: form.number_of_days || 0 };
         // if (payload.scheduled_start_at) payload.scheduled_start_at = new Date(payload.scheduled_start_at).toISOString();
         // if (payload.scheduled_end_at) payload.scheduled_end_at = new Date(payload.scheduled_end_at).toISOString();
         await create(payload).catch(() => { });
@@ -86,6 +86,7 @@ export default function CourseCategory() {
             imageurl: cat.imageurl || "",
             scheduled_start_at: cat.scheduled_start_at || "",
             scheduled_end_at: cat.scheduled_end_at || "",
+            number_of_days: cat.numberofdays || 0,
         });
         setSelectedImageFile(null);
         setSelectedImageName("");
@@ -106,7 +107,7 @@ export default function CourseCategory() {
             showError("Image upload failed");
             return;
         }
-        const payload = { ...form };
+        const payload = { ...form, numberofdays: form.number_of_days || 0 };
         // if (payload.scheduled_start_at) payload.scheduled_start_at = new Date(payload.scheduled_start_at).toISOString();
         // if (payload.scheduled_end_at) payload.scheduled_end_at = new Date(payload.scheduled_end_at).toISOString();
         await update(editing.id, payload).catch(() => { });
@@ -162,7 +163,7 @@ export default function CourseCategory() {
 
     const handleAssign = async () => {
         if (!currentCat || !selectedCourseId) return;
-        await assign({ course_id: Number(selectedCourseId), course_category_id: currentCat.id }).catch(() => { });
+        await assign({ course_id: Number(selectedCourseId), course_category_id: currentCat.id, day: 0, sortorder: 0 }).catch(() => { });
         await loadAssigned(currentCat.id).catch(() => { });
         setSelectedCourseId("");
     };
@@ -179,6 +180,7 @@ export default function CourseCategory() {
         { field: "title", headerName: "TITLE", flex: 1, minWidth: 250, sortable: false, align: "center", filterable: true, renderCell: ({ row }) => row.title },
         { field: "description", headerName: "DESCRIPTION", flex: 1, minWidth: 250, sortable: false, align: "center" },
         { field: "enrollment_type", headerName: "ENROLLMENT TYPE", flex: 1, minWidth: 250, sortable: false, align: "center" },
+        { field: "numberofdays", headerName: "NUMBER OF DAYS", flex: 1, minWidth: 250, sortable: false, align: "center" },
         { field: "scheduled_start_at", headerName: "START DATE", flex: 1, minWidth: 250, sortable: false, align: "center" },
         { field: "scheduled_end_at", headerName: "END DATE", flex: 1, minWidth: 250, sortable: false, align: "center" },
         {
@@ -328,21 +330,23 @@ export default function CourseCategory() {
                     <FormControl fullWidth sx={{ mb: 2 }}>
                         <InputLabel>Enrollment Type</InputLabel>
                         <Select value={form.enrollment_type} label="Enrollment Type" onChange={(e) => setForm((p) => ({ ...p, enrollment_type: e.target.value }))}>
-                            <MenuItem value="manual">manual</MenuItem>
-                            <MenuItem value="paid">paid</MenuItem>
-                            <MenuItem value="scheduled">scheduled</MenuItem>
                             <MenuItem value="assigned">assigned</MenuItem>
-                        </Select>
-                    </FormControl>
-
-                    <FormControl fullWidth sx={{ mb: 2 }}>
-                        <InputLabel>Course Enroll</InputLabel>
-                        <Select value={form.course_enroll} label="Course Enroll" onChange={(e) => setForm((p) => ({ ...p, course_enroll: e.target.value }))}>
                             <MenuItem value="daywise">daywise</MenuItem>
+                            {/* <MenuItem value="scheduled">scheduled</MenuItem>
                             <MenuItem value="completionwise">completionwise</MenuItem>
-                            <MenuItem value="all">all</MenuItem>
+                            <MenuItem value="all">all</MenuItem> */}
                         </Select>
                     </FormControl>
+                    {form.enrollment_type === 'assigned' && (
+                        <Typography variant="caption" sx={{ mb: 2, display: 'block' }}>Note: Courses will be assigned manually after category creation.</Typography>
+                    )}
+                    {form.enrollment_type === 'daywise' && (
+                        <Typography variant="caption" sx={{ mb: 2, display: 'block' }}>Note: Courses will be assigned dayswise after category assigned to user.</Typography>
+                    )}
+                    {form.enrollment_type === 'daywise' && (
+                        <TextField label="Number of Days" type="number" fullWidth sx={{ mb: 2 }} value={form.number_of_days || ""} onChange={(e) => setForm((p) => ({ ...p, number_of_days: e.target.value }))} />
+                    )}
+
                     {form.enrollment_type === 'scheduled' && (
                         <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', md: 'row' }, mb: 2 }}>
                             <TextField
@@ -363,6 +367,14 @@ export default function CourseCategory() {
                             />
                         </Box>
                     )}
+
+                    <FormControl fullWidth sx={{ mb: 2 }}>
+                        <InputLabel>Course Enroll</InputLabel>
+                        <Select aria-placeholder="Select the course enroll" value={form.course_enroll} label="Course Enroll" onChange={(e) => setForm((p) => ({ ...p, course_enroll: e.target.value }))}>
+                            <MenuItem value="Free">Free</MenuItem>
+                            {/* <MenuItem value="Paid">Paid</MenuItem> */}
+                        </Select>
+                    </FormControl>
                     <Box>
                         <input
                             type="file"

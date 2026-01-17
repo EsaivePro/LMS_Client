@@ -86,21 +86,21 @@ const MENU = [
         icon: <CategoryIcon />,
         to: "/coursecategory",
         type: "item",
-        role: "course.view"
+        role: "coursecategory.manage"
     },
     {
         label: "Groups",
         icon: <GroupsIcon />,
         to: "/groups",
         type: "item",
-        role: "course.view"
+        role: "group.management"
     },
     {
         label: "Group Assign",
         icon: <AssignmentAddIcon />,
         to: "/groups/assign",
         type: "item",
-        role: "course.view"
+        role: "group.management"
     },
     {
         label: "User managemet",

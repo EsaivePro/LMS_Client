@@ -14,7 +14,8 @@ import {
     MenuItem,
     Select,
     FormControl,
-    InputLabel
+    InputLabel,
+    Backdrop, Stack
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { presignAndUploadFile, deleteFromS3 } from "../../../services/awscloud/S3Services";
@@ -166,11 +167,24 @@ export default function LessonHandler({
     const uploadToS3 = async (file, lessonId) => {
         const key = `videos/courses/${courseId}/topics/${selectedTopicId}/lessons/${lessonId}/${Date.now()}-${file.name}`;
         try {
+            // reset progress and upload with progress callback
+            setUploadProgress(0);
+            hideLoader();
             const result = await presignAndUploadFile({
                 file,
                 key,
+                onProgress: (pct) => {
+                    setUploadProgress(Math.round(pct));
+                    if (pct >= 100) {
+                        showLoader();
+                    }
+                }
             });
 
+            // ensure full completion state briefly
+            // showLoader();
+            setUploadProgress(100);
+            // small delay to let UI show 100% progress, then reset in caller
             return result.cdnUrl;
         } catch (e) {
             console.error("Upload error:", e);
@@ -228,7 +242,10 @@ export default function LessonHandler({
             showLoader();
             fileUrl = await uploadToS3(selectedFile, selectedLessonId);
             hideLoader();
-            if (!fileUrl) return;
+            if (!fileUrl) {
+                setUploadProgress(0);
+                return;
+            }
         }
         const payload = {
             title: lessonForm.title,
@@ -262,6 +279,7 @@ export default function LessonHandler({
                 const updated = res?.data?.response;
                 resetForm();
                 setOpenDialog(false);
+                setUploadProgress(0);
                 showSuccess(CONSTANTS?.LESSON_UPDATED);
             } else {
                 showError(CONSTANTS?.SOMETING_WENT_WORNG);
@@ -292,7 +310,7 @@ export default function LessonHandler({
                     submitLabel={action}
                     cancelLabel="Cancel"
                 >
-                    <Box mt={1}>
+                    <Box mt={1} sx={{ position: 'relative' }}>
 
                         {/* Title */}
                         <TextField
@@ -389,7 +407,7 @@ export default function LessonHandler({
                                     <Box mt={2}>
                                         <LinearProgress variant="determinate" value={uploadProgress} />
                                         <Typography variant="caption">
-                                            {uploadProgress}%
+                                            Upload Progress {uploadProgress}%
                                         </Typography>
                                     </Box>
                                 )}
@@ -431,6 +449,23 @@ export default function LessonHandler({
                         )}
 
                     </Box>
+                    <Backdrop
+                        open={uploadProgress > 0 && uploadProgress < 100}
+                        sx={{
+                            inset: 0,
+                            zIndex: (theme) => theme.zIndex.modal + 100,
+                            color: "#fff",
+                        }}
+                    >
+                        <Stack alignItems="center">
+                            <Box sx={{ width: '100%' }}>
+                                <LinearProgress variant="determinate" value={uploadProgress} sx={{ height: 12, borderRadius: 6 }} />
+                                <Typography align="center" sx={{ color: '#fff', mt: 1 }}>{`Upload Inprogress ${uploadProgress}%`}</Typography>
+                                <Typography align="center" sx={{ color: '#fff', mt: 1 }}>Please wait — don't leave this page.</Typography>
+                            </Box>
+                        </Stack>
+                    </Backdrop>
+
                 </SlideDialog>
             )}
         </Box>
