@@ -12,7 +12,7 @@ body {
 }
 
 :root {
-    --app-scale: 1;
+    --app-scale: 1.05;
     /* global scale variable; update at runtime to zoom */
 }
 
@@ -124,4 +124,80 @@ body .MuiTooltip-popper>* {
     text-align: left;
     white-space: pre-wrap;
     word-wrap: break-word;
+}
+
+/* Global button styles: enforce app-wide palette
+   Background: var(--dark), text: var(--onPrimary), hover: var(--primary) */
+button,
+input[type="button"],
+input[type="submit"],
+.btn,
+.app-button {
+    background-color: var(--darkMedium);
+    color: var(--onPrimary);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+}
+
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+.btn:hover,
+.app-button:hover {
+    background-color: var(--primary);
+}
+
+/* Material UI button overrides (contained / outlined) */
+.MuiButton-root.MuiButton-contained,
+.MuiButton-contained {
+    background-color: var(--darkMedium) !important;
+    color: var(--onPrimary) !important;
+}
+
+.MuiButton-root.MuiButton-contained:hover,
+.MuiButton-contained:hover {
+    background-color: var(--primary) !important;
+}
+
+.MuiButton-root.MuiButton-outlined,
+.MuiButton-outlined {
+    color: var(--darkMedium) !important;
+    border-color: var(--darkMedium) !important;
+    background-color: transparent !important;
+}
+
+.MuiButton-root.MuiButton-outlined:hover,
+.MuiButton-outlined:hover {
+    background-color: var(--primary) !important;
+    color: var(--onPrimary) !important;
+}
+
+/* Generic outlined helpers (non-MUI) */
+button.outlined,
+.btn-outlined,
+.app-button.outlined,
+.outlined {
+    background: transparent;
+    border: 1px solid var(--darkMedium);
+    color: var(--darkMedium);
+}
+
+.outlined:hover,
+.btn-outlined:hover,
+.app-button.outlined:hover,
+button.outlined:hover {
+    background-color: var(--primary);
+    color: var(--onPrimary);
+}
+
+/* Utility: add `app-button` class to force app colors where inline/tailwind colors exist */
+.app-button {
+    background-color: var(--darkMedium) !important;
+    color: var(--onPrimary) !important;
+}
+
+.app-button:hover {
+    background-color: var(--primary) !important;
 }
