@@ -320,10 +320,30 @@ function HeroCarousel({ title, categories = [] }) {
                                                             </Typography>}
                                                             <Box sx={{ width: '100%', mb: 1 }}>
                                                                 {!enrollCompleted ? (
-                                                                    <LinearProgress variant="determinate" value={enrollProgress} sx={{ height: 10, borderRadius: 6, transition: 'all 400ms linear' }} />
+                                                                    <LinearProgress
+                                                                        variant="determinate"
+                                                                        value={enrollProgress}
+                                                                        sx={{
+                                                                            height: 10,
+                                                                            borderRadius: 6,
+                                                                            transition: 'all 400ms linear',
+                                                                            backgroundColor: 'rgba(0,0,0,0.08)',
+                                                                            '& .MuiLinearProgress-bar': { backgroundColor: 'var(--primary)' }
+                                                                        }}
+                                                                    />
                                                                 ) : (
                                                                     <Box>
-                                                                        <LinearProgress variant="determinate" value={overallCourseProgress ?? 0} sx={{ height: 10, borderRadius: 6, transition: 'all 400ms linear' }} />
+                                                                        <LinearProgress
+                                                                            variant="determinate"
+                                                                            value={overallCourseProgress ?? 0}
+                                                                            sx={{
+                                                                                height: 10,
+                                                                                borderRadius: 6,
+                                                                                transition: 'all 400ms linear',
+                                                                                backgroundColor: 'var(--darkLight)',
+                                                                                '& .MuiLinearProgress-bar': { backgroundColor: 'var(--primary)' }
+                                                                            }}
+                                                                        />
                                                                         <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5 }}>{`Overall course progress: ${overallCourseProgress ?? 0}%`}</Typography>
                                                                     </Box>
                                                                 )}
@@ -343,7 +363,7 @@ function HeroCarousel({ title, categories = [] }) {
                                                                                 <ListItem key={i} divider sx={{ alignItems: 'center' }}>
                                                                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
                                                                                         <Box sx={{ position: 'relative', width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                                                            <CircularProgress variant="determinate" value={Math.min(100, Math.max(0, row.progress_percent || 1))} size={56} />
+                                                                                            <CircularProgress variant="determinate" sx={{ color: 'var(--primary)' }} value={Math.min(100, Math.max(0, row.progress_percent || 1))} size={56} />
                                                                                             <Box sx={{ position: 'absolute', fontSize: 12 }}>{`${Math.round(row.progress_percent || 0)}%`}</Box>
                                                                                         </Box>
 
@@ -372,10 +392,10 @@ function HeroCarousel({ title, categories = [] }) {
 
                                                                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                                                             {canView ? (
-                                                                                                <Button variant="outlined" onClick={() => navigate(`/course/view/${row.course_id}`)}>View</Button>
+                                                                                                <Button variant="contained" onClick={() => navigate(`/course/view/${row.course_id}`)}>View</Button>
                                                                                             ) : (
                                                                                                 // show placeholder for non-viewable items
-                                                                                                <Button variant="outlined" disabled>{row.enrollment_result === "NOT_ENROLLED" ? "Not Enrolled" : "Pending"}</Button>
+                                                                                                <Button variant="outline" disabled>{row.enrollment_result === "NOT_ENROLLED" ? "Not Enrolled" : "Pending"}</Button>
                                                                                             )}
                                                                                         </Box>
                                                                                     </Box>
@@ -389,7 +409,7 @@ function HeroCarousel({ title, categories = [] }) {
                                                         </Box>
                                                     </DialogContent>
                                                     <DialogActions>
-                                                        <Button onClick={() => setEnrollDialogOpen(false)}>Close</Button>
+                                                        <Button variant="outlined" onClick={() => setEnrollDialogOpen(false)}>Close</Button>
                                                     </DialogActions>
                                                 </Dialog>
                                             </>
@@ -516,7 +536,7 @@ export default function CourseCategoryWidget({ title }) {
                 <Box sx={{ mt: 1 }}>
                     {loadingCategories ? (
                         <Box sx={{ minHeight: 240, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <CircularProgress />
+                            <CircularProgress sx={{ color: 'var(--primary)' }} />
                         </Box>
                     ) : (
                         <HeroCarousel title="Course Categories" categories={categories || []} />
