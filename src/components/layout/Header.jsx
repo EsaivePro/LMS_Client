@@ -139,9 +139,11 @@ function Header({ toggleSidebar, profile, logout, open }) {
 
                     {/* ---------------- LEFT ---------------- */}
                     <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0, md: 1 } }}>
-                        <IconButton size="medium" onClick={() => toggleSidebar(!open)}>
+                        {isAuthenticated ? <IconButton size="medium" onClick={() => toggleSidebar(!open)}>
                             <MenuIcon />
-                        </IconButton>
+                        </IconButton> : <IconButton size="medium">
+                            <MenuIcon />
+                        </IconButton>}
 
 
                         <img src={THEME?.manifest?.icons?.[0]?.src ? `/${THEME.manifest.icons[0].src}` : '/logo/EsaiLogo.png'} alt={THEME?.manifest?.name || 'Esai'} width="150" />
@@ -168,7 +170,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                     </Box>
 
                     {/* ---------------- RIGHT ---------------- */}
-                    <Box
+                    {isAuthenticated && <Box
                         sx={{
                             display: "flex",
                             alignItems: "center",
@@ -437,7 +439,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                                 </Box>
                             </DialogContent>
                         </Dialog>
-                    </Box>
+                    </Box>}
                 </Toolbar>
             </Container>
 

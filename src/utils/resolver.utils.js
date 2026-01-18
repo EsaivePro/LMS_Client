@@ -76,3 +76,30 @@ export function hasPermission(permissions, role) {
     if (!permissions || permissions.length === 0) return false;
     return permissions.some((p) => p?.key?.includes(role));
 }
+
+/**
+ * Format a date/time value into a readable string including seconds and am/pm.
+ * Example output: "Jan 18, 2026 7:26:50 am"
+ */
+export function formatDateTimeWithSeconds(value) {
+    if (!value) return "";
+    try {
+        const d = new Date(value);
+        if (Number.isNaN(d.getTime())) return String(value);
+
+        const datePart = d.toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        });
+        const h = d.getHours();
+        const h12 = h % 12 === 0 ? 12 : h % 12;
+        const m = String(d.getMinutes()).padStart(2, "0");
+        const s = String(d.getSeconds()).padStart(2, "0");
+        const ampm = h >= 12 ? "pm" : "am";
+        const timePart = `${h12}:${m}:${s} ${ampm}`;
+        return `${datePart} ${timePart}`;
+    } catch (e) {
+        return String(value);
+    }
+}

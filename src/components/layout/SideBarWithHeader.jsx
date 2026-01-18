@@ -145,7 +145,7 @@ export default function SideBarWithHeader({ children }) {
     const [open, setOpen] = React.useState(false);
     const [expandedGroup, setExpandedGroup] = React.useState(null);
     const sidebarRef = React.useRef(null);
-    const { logout, user } = useAuth();
+    const { logout, user, isAuthenticated } = useAuth();
     const { viewContainerCard, viewCourseCard } = useCommon();
     const { permissions } = useAdmin();
     const navigate = useNavigate();

@@ -36,6 +36,7 @@ import useEnrollment from "../../../hooks/useEnrollment";
 import { useAuth } from "../../../hooks/useAuth";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { secondsToTime, formatDateTimeWithSeconds } from "../../../utils/resolver.utils";
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 import CloseIcon from '@mui/icons-material/Close';
 // import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -160,26 +161,7 @@ function HeroCarousel({ title, categories = [] }) {
         }
     }
 
-    function formatSecondsToHMS(sec) {
-        const s = Number(sec) || 0;
-        const hours = Math.floor(s / 3600);
-        const minutes = Math.floor((s % 3600) / 60);
-        const seconds = Math.floor(s % 60);
-        const hh = String(hours).padStart(2, '0');
-        const mm = String(minutes).padStart(2, '0');
-        const ss = String(seconds).padStart(2, '0');
-        return `${hh}:${mm}:${ss}`;
-    }
-
-    function formatDateTime(iso) {
-        if (!iso) return '';
-        try {
-            const d = new Date(iso);
-            return d.toLocaleString();
-        } catch (e) {
-            return iso;
-        }
-    }
+    // use shared secondsToTime and formatDateTimeWithSeconds helpers
 
     useEffect(() => {
         // keep scroll in sync if using ref for any purpose later
@@ -378,14 +360,14 @@ function HeroCarousel({ title, categories = [] }) {
 
                                                                                             {!canView && isScheduled && (
                                                                                                 <Box sx={{ mt: 0.5 }}>
-                                                                                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>{`Scheduled Start: ${formatDateTime(row.scheduled_start_at)}`}</Typography>
+                                                                                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>{`Scheduled Start: ${formatDateTimeWithSeconds(row.scheduled_start_at)}`}</Typography>
                                                                                                 </Box>
                                                                                             )}
 
                                                                                             <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>{row.description}</Typography>
-                                                                                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>{`Duration: ${formatSecondsToHMS(row.duration)} • Lessons: ${row.total_lessons || 0}`}</Typography>
+                                                                                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>{`Duration: ${secondsToTime(row.duration)} • Lessons: ${row.total_lessons || 0}`}</Typography>
 
-                                                                                            <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary', mt: 0.5 }}>{`Expires: ${formatDateTime(row.expires_at)}`}</Typography>
+                                                                                            <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary', mt: 0.5 }}>{`Expires: ${formatDateTimeWithSeconds(row.expires_at)}`}</Typography>
                                                                                         </Box>
 
                                                                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

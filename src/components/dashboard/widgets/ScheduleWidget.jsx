@@ -47,6 +47,7 @@ const FALLBACK_ACCENTS = [
 const ACCENTS = Array.from({ length: 20 }, (_, i) => THEME?.colors?.[`card${i + 1}`] || FALLBACK_ACCENTS[i]);
 
 // Return a stable pseudo-random accent for a given key (course id/title)
+import { formatDateTimeWithSeconds } from "../../../utils/resolver.utils";
 function getAccentForKey(key) {
     const s = String(key ?? "");
     let hash = 0;
@@ -261,7 +262,7 @@ function CourseCard({ course, index, width = 300 }) {
                         <Chip
                             label={
                                 scheduledAt
-                                    ? `Starts: ${new Date(scheduledAt).toLocaleString()}`
+                                    ? `Starts: ${formatDateTimeWithSeconds(scheduledAt)}`
                                     : "Scheduled"
                             }
                             size="small"

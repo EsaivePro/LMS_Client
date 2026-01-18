@@ -28,6 +28,7 @@ import useEnrollment from "../../../hooks/useEnrollment";
 import { useAuth } from "../../../hooks/useAuth";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { formatDateTimeWithSeconds } from "../../../utils/resolver.utils";
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 // import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 // import MenuBookIcon from "@mui/icons-material/MenuBook";
@@ -87,6 +88,8 @@ function CourseCard({ course, index, width = 300 }) {
 
     const displayDuration = formatDurationToHHMMSS(course.duration ?? course.minutes);
     const image = course.image || "/course/default-course-card.png";
+
+    const expiryDisplay = formatDateTimeWithSeconds(course.expiry);
 
     return (
         <Box
@@ -184,6 +187,14 @@ function CourseCard({ course, index, width = 300 }) {
                     {course.description ||
                         "Learn and master this course with guided lessons."}
                 </Typography>
+                {expiryDisplay && (
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}>
+                        <AccessTimeIcon fontSize="small" color="action" />
+                        <Typography variant="caption" color="text.secondary">
+                            Expires: {expiryDisplay}
+                        </Typography>
+                    </Box>
+                )}
             </Box>
 
             {/* ================= PROGRESS ================= */}
@@ -389,6 +400,8 @@ export default function CourseWidget({ title }) {
             lessons: e.total_lessons || 0,
             topics: e.total_topics || [],
             progress: e.progress_percent || 0,
+            // include common expiry fields from enrollment record if present
+            expiry: e.expiry_date || e.expiry || e.enrollment_end_date || e.expires_at || null,
         }));
     }, [enrollmentCoursesByUser, user]);
 
