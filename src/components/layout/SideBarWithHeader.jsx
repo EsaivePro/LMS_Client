@@ -52,6 +52,7 @@ import THEME from "../../constants/theme";
 import GroupsIcon from '@mui/icons-material/Groups';
 import CategoryIcon from '@mui/icons-material/Category';
 import AssignmentAddIcon from '@mui/icons-material/AssignmentAdd';
+import InsightsIcon from '@mui/icons-material/Insights';
 
 const drawerWidth = 240;
 
@@ -89,6 +90,13 @@ const MENU = [
         role: "coursecategory.manage"
     },
     {
+        label: "Learning Insights",
+        icon: <InsightsIcon />,
+        to: "/users/learing-insights",
+        type: "item",
+        role: "user.management"
+    },
+    {
         label: "Groups",
         icon: <GroupsIcon />,
         to: "/groups",
@@ -109,13 +117,13 @@ const MENU = [
         type: "item",
         role: "user.management"
     },
-    {
-        label: "Enrollment",
-        icon: <FolderSharedIcon />,
-        to: "/user/enrollment",
-        type: "item",
-        role: "enrollment.management"
-    },
+    // {
+    //     label: "Enrollment",
+    //     icon: <FolderSharedIcon />,
+    //     to: "/user/enrollment",
+    //     type: "item",
+    //     role: "enrollment.management"
+    // },
     // {
     //     label: "Permissions",
     //     icon: <SecurityIcon />,

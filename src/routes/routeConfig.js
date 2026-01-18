@@ -78,8 +78,8 @@ export const protectedRoutes = [
     },
 
     {
-        path: "/users/progress",
-        title: "User Progress",
+        path: "/users/learing-insights",
+        title: "User Learning Insights",
         description: "View enrollment and progress summary for users.",
         permission: "user.management",
         element: <UsersProgress />,

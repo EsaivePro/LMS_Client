@@ -178,10 +178,10 @@ export default function UsersProgress() {
                 totalCount={total}
                 loading={loading}
                 columns={columns}
-                tableKey="users-progress-table"
+                // tableKey="users-progress-table"
                 checkboxSelection
                 onFetchData={fetchUsers}
-                onRowDoubleClick={(row) => openEdit(row)}
+            // onRowDoubleClick={(row) => openEdit(row)}
             />
 
             <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)} disableEscapeKeyDown PaperProps={{ sx: { width: { xs: "100%", md: "50%" } } }} ModalProps={{ BackdropProps: { onClick: (e) => e.stopPropagation() } }}>

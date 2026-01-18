@@ -28,6 +28,7 @@ import TuneIcon from "@mui/icons-material/Tune";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
+import SearchIcon from "@mui/icons-material/Search";
 import NoRowsOverlay from "./NoRowsOverlay";
 
 const STORAGE_KEY = "datatable_filters_v9";
@@ -51,6 +52,7 @@ export default function DataTable({
     /* -------- SERVER SIDE -------- */
     serverSide = true,
     onFetchData,
+    searchOnButton = true,
 
     tableKey = "default",
 }) {
@@ -130,12 +132,31 @@ export default function DataTable({
     }, [page, rowsPerPage, sortModel, filters, operators, columns]);
 
     /* ================= FETCH DATA ================= */
+    const initialLoadRef = React.useRef(false);
+    const [searchCounter, setSearchCounter] = React.useState(0);
+
     React.useEffect(() => {
         if (!serverSide || !onFetchData) return;
 
         const query = buildQueryString();
-        onFetchData(query);
-    }, [buildQueryString, onFetchData]);
+
+        if (searchOnButton) {
+            // always perform an initial load once
+            if (!initialLoadRef.current) {
+                initialLoadRef.current = true;
+                onFetchData(query);
+                return;
+            }
+
+            // subsequent loads only when user clicks Search
+            if (searchCounter > 0) {
+                onFetchData(query);
+                setSearchCounter(0);
+            }
+        } else {
+            onFetchData(query);
+        }
+    }, [buildQueryString, onFetchData, searchOnButton, searchCounter]);
 
     /* ================= HELPERS ================= */
     const isPinnedLeft = (field) => pinnedLeft.includes(field);
@@ -392,9 +413,24 @@ export default function DataTable({
 
                 <Button
                     size="small"
+                    variant="contained"
+                    startIcon={<SearchIcon />}
+                    onClick={() => {
+                        setPage(0);
+                        setSearchCounter((c) => c + 1);
+                    }}
+                >
+                    Search
+                </Button>
+
+                <Button
+                    size="small"
                     variant="outlined"
                     startIcon={<ClearIcon />}
-                    onClick={clearFilters}
+                    onClick={() => {
+                        clearFilters();
+                        setSearchCounter((c) => c + 1);
+                    }}
                 >
                     Clear
                 </Button>

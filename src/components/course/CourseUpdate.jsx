@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
 import SlideDialog from "../../components/common/dialog/SlideDialog";
 import { useDispatch } from "react-redux";
 import { updateCourse } from "../../redux/slices/coursesSlice";
 import useCommon from "../../hooks/useCommon";
 import { errorValidation } from "../../utils/resolver.utils";
+import { presignAndUploadFile, deleteFromS3 } from "../../services/awscloud/S3Services";
 
 export default function CourseUpdate({ openDialog, setOpenDialog, selectedCourse }) {
   const dispatch = useDispatch();
@@ -15,6 +17,8 @@ export default function CourseUpdate({ openDialog, setOpenDialog, selectedCourse
     title: "",
     description: ""
   });
+  const [selectedImageFile, setSelectedImageFile] = React.useState(null);
+  const [selectedImageName, setSelectedImageName] = React.useState("");
   const [titleError, setTitleError] = React.useState("");
   const [descriptionError, setDescriptionError] = React.useState("");
 
@@ -29,6 +33,7 @@ export default function CourseUpdate({ openDialog, setOpenDialog, selectedCourse
         title: selectedCourse.title,
         description: selectedCourse.description,
       });
+      setSelectedImageName(selectedCourse.imageurl ? selectedCourse.imageurl.split('/').pop() : "");
     }
   }, [selectedCourse]);
 
@@ -45,13 +50,45 @@ export default function CourseUpdate({ openDialog, setOpenDialog, selectedCourse
     (async () => {
       showLoader();
       try {
-        const res = await dispatch(updateCourse({ id: selectedCourse.id, data: courseForm })).unwrap();
+        const dataToSend = { ...courseForm };
+        const oldImageUrl = selectedCourse?.imageurl;
+        let newlyUploadedUrl = null;
+
+        if (selectedImageFile) {
+          try {
+            const { cdnUrl } = await presignAndUploadFile({ file: selectedImageFile, key: `images/courses/${Date.now()}-${selectedImageFile.name}` });
+            dataToSend.imageurl = cdnUrl;
+            newlyUploadedUrl = cdnUrl;
+          } catch (e) {
+            hideLoader();
+            showError("Image upload failed");
+            return;
+          }
+        }
+
+        const res = await dispatch(updateCourse({ id: selectedCourse.id, data: dataToSend })).unwrap();
         hideLoader();
         if (!errorValidation(res)) {
           setOpenDialog(false);
           showSuccess("Course updated successfully");
+          // If update succeeded and there was a previous image, delete it from S3
+          if (selectedImageFile && oldImageUrl && oldImageUrl !== newlyUploadedUrl) {
+            try {
+              await deleteFromS3(oldImageUrl);
+            } catch (e) {
+              console.warn("Failed to delete old image from S3", e);
+            }
+          }
         } else {
           showError("Failed to update course");
+          // rollback: if update failed but we uploaded a new image, delete the newly uploaded file
+          if (newlyUploadedUrl) {
+            try {
+              await deleteFromS3(newlyUploadedUrl);
+            } catch (e) {
+              console.warn("Failed to rollback new image after update failure", e);
+            }
+          }
         }
       } catch (err) {
         hideLoader();
@@ -68,6 +105,7 @@ export default function CourseUpdate({ openDialog, setOpenDialog, selectedCourse
           setOpenDialog(false);
           setTitleError("");
           setDescriptionError("");
+          setSelectedImageFile(null);
         }}
         title="Update Course"
         onSubmit={handleUpdateCourse}
@@ -116,6 +154,22 @@ export default function CourseUpdate({ openDialog, setOpenDialog, selectedCourse
                 setDescriptionError("");
               }}
             />
+          </Box>
+          <Box>
+            <input
+              type="file"
+              accept="image/*"
+              id="course-image-file-update"
+              style={{ display: "none" }}
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                setSelectedImageFile(f || null);
+                setSelectedImageName(f ? f.name : "");
+              }}
+            />
+            <label htmlFor="course-image-file-update">
+              <Button variant="outlined" component="span">{selectedImageName || "Choose Image"}</Button>
+            </label>
           </Box>
         </Box>
       </SlideDialog>

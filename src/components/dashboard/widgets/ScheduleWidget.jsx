@@ -96,7 +96,7 @@ function CourseCard({ course, index, width = 300 }) {
     }
 
     const displayDuration = formatDurationToHHMMSS(course.duration ?? course.minutes);
-    const image = course.image || "/course/default-course-card.png";
+    const image = course.imageurl || "/course/default-course-card.png";
 
     return (
         <Box
@@ -448,6 +448,7 @@ export default function CourseWidget({ title }) {
             title: e.title || "Untitled Course",
             description: e.description || "Untitled description",
             minutes: e.duration || 0,
+            imageurl: e.imageurl || null,
             lessons: e.total_lessons || 0,
             topics: e.total_topics || [],
             progress: e.progress_percent || 0,

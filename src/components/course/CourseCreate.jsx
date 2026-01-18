@@ -6,6 +6,8 @@ import { useDispatch } from "react-redux";
 import { addCourse } from "../../redux/slices/coursesSlice";
 import useCommon from "../../hooks/useCommon";
 import { errorValidation } from "../../utils/resolver.utils";
+import { presignAndUploadFile } from "../../services/awscloud/S3Services";
+import { Button } from "@mui/material";
 
 export default function CourseCreate({ openDialog, setOpenDialog }) {
   const dispatch = useDispatch();
@@ -15,6 +17,8 @@ export default function CourseCreate({ openDialog, setOpenDialog }) {
     title: "",
     description: ""
   });
+  const [selectedImageFile, setSelectedImageFile] = React.useState(null);
+  const [selectedImageName, setSelectedImageName] = React.useState("");
   const [titleError, setTitleError] = React.useState("");
   const [descriptionError, setDescriptionError] = React.useState("");
 
@@ -40,6 +44,17 @@ export default function CourseCreate({ openDialog, setOpenDialog }) {
     (async () => {
       showLoader();
       try {
+        // if image selected, upload first and attach URL
+        if (selectedImageFile) {
+          try {
+            const { cdnUrl } = await presignAndUploadFile({ file: selectedImageFile, key: `images/courses/${Date.now()}-${selectedImageFile.name}` });
+            payload.imageurl = cdnUrl;
+          } catch (e) {
+            hideLoader();
+            showError("Image upload failed");
+            return;
+          }
+        }
         const res = await dispatch(addCourse(payload)).unwrap();
         hideLoader();
         if (!errorValidation(res)) {
@@ -104,6 +119,23 @@ export default function CourseCreate({ openDialog, setOpenDialog }) {
                 setDescriptionError(""); // remove error while typing
               }}
             />
+          </Box>
+
+          <Box>
+            <input
+              type="file"
+              accept="image/*"
+              id="course-image-file"
+              style={{ display: "none" }}
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                setSelectedImageFile(f || null);
+                setSelectedImageName(f ? f.name : "");
+              }}
+            />
+            <label htmlFor="course-image-file">
+              <Button variant="outlined" component="span">{selectedImageName || "Choose Image"}</Button>
+            </label>
           </Box>
         </Box>
       </SlideDialog>

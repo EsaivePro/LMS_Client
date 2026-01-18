@@ -140,6 +140,7 @@ export default function UserRegistration({ mode = "create", user, onSuccess, onC
             ...data,
             role_id: Number(2), // Default to Student role
             status: "active",
+            group_id: 1,
             details,
         };
         delete payload.confirmPassword;
@@ -151,6 +152,7 @@ export default function UserRegistration({ mode = "create", user, onSuccess, onC
                 if (!errorValidation(res)) {
                     showSuccess("User created successfully");
                     onSuccess?.();
+                    navigate('/login');
                 } else {
                     // showError("Failed to create user");
                 }

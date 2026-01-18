@@ -87,7 +87,7 @@ function CourseCard({ course, index, width = 300 }) {
     }
 
     const displayDuration = formatDurationToHHMMSS(course.duration ?? course.minutes);
-    const image = course.image || "/course/default-course-card.png";
+    const image = course.imageurl || "/course/default-course-card.png";
 
     const expiryDisplay = formatDateTimeWithSeconds(course.expiry);
 
@@ -400,6 +400,7 @@ export default function CourseWidget({ title }) {
             lessons: e.total_lessons || 0,
             topics: e.total_topics || [],
             progress: e.progress_percent || 0,
+            imageurl: e.imageurl || null,
             // include common expiry fields from enrollment record if present
             expiry: e.expiry_date || e.expiry || e.enrollment_end_date || e.expires_at || null,
         }));

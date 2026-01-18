@@ -152,7 +152,7 @@ export default function GroupAssign() {
             // newly assigned = right - initialRight
             const newly = right.filter((id) => !initialRight.includes(id));
             for (const uid of newly) {
-                await assign({ user_id: uid, course_category_id: Number(groupId) });
+                await assign({ user_id: uid, group_id: Number(groupId) });
             }
 
             // removed = initialRight - right
