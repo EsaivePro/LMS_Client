@@ -73,9 +73,9 @@ export default function App() {
         <Route
           path="/user/register"
           element={
-            <AuthLayout>
+            <AppLayout>
               <RegistrationPage />
-            </AuthLayout>
+            </AppLayout>
           }
         />
         {/* ---------- UNAUTHORIZED ---------- */}

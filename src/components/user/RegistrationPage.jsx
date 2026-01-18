@@ -12,21 +12,21 @@ export default function RegistrationPage() {
 
     return (
         <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#ffffff' }}>
-            <AppBar position="fixed" color="transparent" elevation={0} sx={{ bgcolor: '#e4e4e4' }}>
+            {/* <AppBar position="fixed" color="transparent" elevation={0} sx={{ bgcolor: '#e4e4e4' }}>
                 <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <img src={THEME?.manifest?.icons?.[0]?.src ? `/${THEME.manifest.icons[0].src}` : '/logo/EsaiLogo.png'} alt={THEME?.manifest?.name || 'Esai'} width="150" />
                     </Box>
                 </Toolbar>
-            </AppBar>
+            </AppBar> */}
 
-            <Container sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: { xs: 8, sm: 8 } }}>
+            <Container sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <UserRegistration />
             </Container>
 
-            <Box component="footer" sx={{ py: 1.5, textAlign: 'center', fontSize: '0.9rem', color: 'var(--onPrimary)', backgroundColor: "var(--primary)" }}>
+            {/* <Box component="footer" sx={{ py: 1.5, textAlign: 'center', fontSize: '0.9rem', color: 'var(--onPrimary)', backgroundColor: "var(--primary)" }}>
                 © {new Date().getFullYear()} LMS — All rights reserved.
-            </Box>
+            </Box> */}
         </Box>
     );
 };

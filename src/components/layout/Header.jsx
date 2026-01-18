@@ -91,7 +91,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
 
     const handleOpenSettings = () => {
         setAnchorElUser(null);
-        setSettingsMenu("dashboard");
+        setSettingsMenu("account");
         setSettingsOpen(true);
     };
 
@@ -405,7 +405,7 @@ function Header({ toggleSidebar, profile, logout, open }) {
                                                 p: 0,
                                             }}
                                         >
-                                            {["dashboard", "account", "preferences"].map((key) => (
+                                            {["account", "preferences"].map((key) => (
                                                 <ListItemButton
                                                     key={key}
                                                     selected={settingsMenu === key}
@@ -425,9 +425,9 @@ function Header({ toggleSidebar, profile, logout, open }) {
                                     </Box>
 
                                     <Box sx={{ flex: 1 }}>
-                                        {settingsMenu === "dashboard" && (
+                                        {/* {settingsMenu === "dashboard" && (
                                             <DashboardCustomizer role="student" />
-                                        )}
+                                        )} */}
                                         {settingsMenu !== "dashboard" && (
                                             <Alert severity="warning">
                                                 Currently no settings available.
