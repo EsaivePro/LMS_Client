@@ -49,8 +49,13 @@ export const THEME = {
         background_color: "#ffffff",
         icons: [
             { src: "logo/ImpulseLogo.png", sizes: "192x192", type: "image/png" },
-            { src: "logo/EsaiLogo-512.png", sizes: "512x512", type: "image/png" }
+            { src: "logo/ImpulseLogo-512.png", sizes: "512x512", type: "image/png" }
         ],
+        contact: {
+            email: "support@impulsecoachinginstitute.com",
+            phone: "+91 75300 78007",
+            location: "Coimbatore, India",
+        },
     },
 };
 

@@ -87,13 +87,13 @@ export default function Footer({ compView = false }) {
             </Typography>
 
             <Typography sx={{ fontSize: 14, lineHeight: 1.6 }}>
-              Email: support@esai.com
+              Email: {THEME?.manifest?.contact?.email || 'support@esai.com'}
             </Typography>
             <Typography sx={{ fontSize: 14, lineHeight: 1.6 }}>
-              Phone: +91 75300 78007
+              Phone: {THEME?.manifest?.contact?.phone || '+91 75300 78007'}
             </Typography>
             <Typography sx={{ fontSize: 14, lineHeight: 1.6 }}>
-              Chennai, India
+              {THEME?.manifest?.contact?.location || 'Chennai, India'}
             </Typography>
           </Box>
         </Box>
