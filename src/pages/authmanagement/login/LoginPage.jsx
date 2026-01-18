@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     TextField,
@@ -31,7 +31,7 @@ import THEME from "../../../constants/theme";
 
 export default function LoginPage() {
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { login, user } = useAuth();
     const { setPermissionsAPI } = useAdmin();
     const { showLoader, hideLoader } = useCommon();
 
@@ -102,6 +102,13 @@ export default function LoginPage() {
             hideLoader();
         }
     };
+
+    // If already authenticated, redirect to dashboard
+    useEffect(() => {
+        if (user && (user.id || user.userId)) {
+            navigate("/", { replace: true });
+        }
+    }, [user, navigate]);
 
     return (
         <Box
@@ -300,6 +307,7 @@ export default function LoginPage() {
                             component="button"
                             underline="hover"
                             sx={{ color: THEME.colors.primary, whiteSpace: 'nowrap', ml: 'auto' }}
+                            type="button"
                             onClick={() => setOpenForgot(true)}
                         >
                             Forgot password?
@@ -325,11 +333,28 @@ export default function LoginPage() {
                         Sign in
                     </Button>
 
+                    <Button
+                        fullWidth
+                        variant="outlined"
+                        sx={{
+                            mt: 1,
+                            py: 1.1,
+                            fontWeight: 700,
+                            borderColor: THEME.colors.dark,
+                            color: THEME.colors.dark,
+                        }}
+                        type="button"
+                        onClick={() => navigate("/user/register")}
+                    >
+                        Create account
+                    </Button>
+
                     <Typography variant="body2" align="center" sx={{ mt: 3 }}>
                         By signing in you agree to our{" "}
                         <Link
                             component="button"
                             sx={{ color: THEME.colors.primary }}
+                            type="button"
                             onClick={() => setOpenTerms(true)}
                         >
                             Terms and Conditions
@@ -373,10 +398,38 @@ export default function LoginPage() {
                     </IconButton>
                 </DialogTitle>
                 <DialogContent dividers>
-                    <Typography paragraph>
-                        This LMS platform is intended for authorized users only.
-                        Usage is governed by your organization’s policies.
-                    </Typography>
+                    <Box component="ol" sx={{ pl: 3 }}>
+                        <Box component="li" sx={{ mb: 1 }}>
+                            <Typography variant="body2">Authorized access only: this platform is for registered users with valid credentials.</Typography>
+                        </Box>
+                        <Box component="li" sx={{ mb: 1 }}>
+                            <Typography variant="body2">Account security: you are responsible for safeguarding your login and must not share credentials.</Typography>
+                        </Box>
+                        <Box component="li" sx={{ mb: 1 }}>
+                            <Typography variant="body2">Acceptable use: use the system only for legitimate learning and work-related activities.</Typography>
+                        </Box>
+                        <Box component="li" sx={{ mb: 1 }}>
+                            <Typography variant="body2">Prohibited behaviour: harassment, misuse, or disruption of services is forbidden.</Typography>
+                        </Box>
+                        <Box component="li" sx={{ mb: 1 }}>
+                            <Typography variant="body2">Intellectual property: course content is owned or licensed and must not be redistributed without permission.</Typography>
+                        </Box>
+                        <Box component="li" sx={{ mb: 1 }}>
+                            <Typography variant="body2">Privacy: personal data is processed according to your organization’s privacy policy.</Typography>
+                        </Box>
+                        <Box component="li" sx={{ mb: 1 }}>
+                            <Typography variant="body2">Data retention: usage and progress data may be logged and retained for administrative purposes.</Typography>
+                        </Box>
+                        <Box component="li" sx={{ mb: 1 }}>
+                            <Typography variant="body2">Compliance: you must comply with applicable laws and organizational policies while using the LMS.</Typography>
+                        </Box>
+                        <Box component="li" sx={{ mb: 1 }}>
+                            <Typography variant="body2">Consequences: violations may result in access suspension, disciplinary action, or legal remedies.</Typography>
+                        </Box>
+                        <Box component="li">
+                            <Typography variant="body2">Support: contact your administrator or IT support for issues, access requests, or policy questions.</Typography>
+                        </Box>
+                    </Box>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenTerms(false)}>Close</Button>

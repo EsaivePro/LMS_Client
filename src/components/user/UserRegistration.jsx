@@ -18,6 +18,9 @@ import {
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import LoginIcon from '@mui/icons-material/Login';
+import { useNavigate } from "react-router-dom";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -71,6 +74,7 @@ const Section = ({ title, children }) => (
 
 /* -------------------- Component -------------------- */
 export default function UserRegistration({ mode = "create", user, onSuccess, onCancel, profileMode = false }) {
+    const navigate = useNavigate();
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [details, setDetails] = useState(user?.details || "");
     const [loading, setLoading] = useState(false);
@@ -161,8 +165,7 @@ export default function UserRegistration({ mode = "create", user, onSuccess, onC
 
     /* ---------------- Cancel ---------------- */
     const handleCancel = () => {
-        if (isDirty) setConfirmCancel(true);
-        else onCancel();
+
     };
 
     return (
@@ -284,10 +287,28 @@ export default function UserRegistration({ mode = "create", user, onSuccess, onC
                     </Typography>
                 )}
                 <Box sx={{ p: 1, display: "flex", justifyContent: "end", gap: 2 }}>
-                    <Button variant="contained" type="submit">
-                        {"Register"}
+                    <Button
+                        variant="contained"
+                        type="submit"
+                        startIcon={<PersonAddIcon />}
+                        sx={{
+                            backgroundColor: "var(--primary)",
+                            color: "#fff",
+                            '&:hover': { backgroundColor: 'var(--primary)' },
+                        }}
+                    >
+                        Register
                     </Button>
-                    <Button variant="outlined" onClick={handleCancel}>
+                    <Button
+                        variant="outlined"
+                        type="button"
+                        startIcon={<LoginIcon />}
+                        onClick={() => navigate('/login')}
+                        sx={{
+                            borderColor: "var(--primary)",
+                            color: "var(--primary)",
+                        }}
+                    >
                         Back to Sign In
                     </Button>
                 </Box>

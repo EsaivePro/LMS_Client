@@ -8,6 +8,7 @@ import GroupAssign from "../modules/group/pages/GroupAssign";
 import UserManagement from "../modules/user/pages/UserManagement";
 import UserProfile from "../modules/user/pages/UserProfile";
 import EnrollmentBase from "../modules/enrollment/pages/EnrollmentBase";
+import UsersProgress from "../modules/user/pages/UsersProgress";
 
 export const protectedRoutes = [
     {
@@ -74,6 +75,14 @@ export const protectedRoutes = [
         description: "Create users, assign roles, and manage access.",
         permission: "user.management",
         element: <UserManagement />,
+    },
+
+    {
+        path: "/users/progress",
+        title: "User Progress",
+        description: "View enrollment and progress summary for users.",
+        permission: "user.management",
+        element: <UsersProgress />,
     },
 
     {
