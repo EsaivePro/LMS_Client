@@ -254,7 +254,7 @@ function HeroCarousel({ title, categories = [] }) {
 
                         {/* Bottom bar that spans right column width; button aligned to right */}
                         <Box sx={{ mt: { xs: 2, md: 0 } }}>
-                            <Box sx={{ width: '100%', py: 1.5, px: 2, borderRadius: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                            <Box sx={{ width: '100%', py: { xs: 1, md: 1.5 }, px: 2, borderRadius: 1, display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' }, alignItems: 'center' }}>
                                 {(() => {
                                     const start = active.raw && active.raw.scheduled_start_at ? new Date(active.raw.scheduled_start_at) : null;
                                     const now = new Date();
@@ -264,26 +264,23 @@ function HeroCarousel({ title, categories = [] }) {
                                             <>
                                                 <Button
                                                     variant="contained"
-                                                    startIcon={isUserEnrolled ? <CollectionsBookmarkIcon sx={{ color: '#ffffff' }} /> : <PlayArrowIcon sx={{ color: '#000' }} />}
+                                                    startIcon={isUserEnrolled ? <CollectionsBookmarkIcon sx={{ color: '#ffffff' }} /> : <PlayArrowIcon sx={{ color: isMobile ? '#ffffff' : '#000' }} />}
                                                     onClick={() => {
-                                                        // if (isMobile) {
-                                                        //     navigate(`/user/category/${active.id}`);
-                                                        //     return;
-                                                        // }
                                                         setEnrollDialogOpen(true);
                                                         startEnroll();
                                                     }}
                                                     sx={{
-                                                        backgroundColor: 'rgba(255,255,255,0.95)',
+                                                        backgroundColor: isMobile ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.95)',
                                                         color: '#ffffff',
                                                         textTransform: 'none',
                                                         fontWeight: 700,
                                                         borderRadius: 1,
-                                                        fontSize: 16,
-                                                        px: 3,
-                                                        py: 1,
+                                                        fontSize: { xs: 14, md: 16 },
+                                                        px: { xs: 2.5, md: 3 },
+                                                        py: { xs: 0.8, md: 1 },
+                                                        minWidth: { xs: 170, md: 'auto' },
                                                         boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
-                                                        '&:hover': { boxShadow: '0 8px 22px rgba(0,0,0,0.16)', transform: 'scale(1.05)' },
+                                                        '&:hover': { boxShadow: '0 8px 22px rgba(0,0,0,0.16)', transform: 'scale(1.03)' },
                                                     }}
                                                 >
                                                     {isUserEnrolled ? "Category Progress" : "Enroll Now"}
