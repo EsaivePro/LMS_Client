@@ -31,6 +31,7 @@ import useUser from "../../hooks/useUser";
 import useCommon from "../../hooks/useCommon";
 import { errorValidation } from "../../utils/resolver.utils";
 import useRole from "../../hooks/useRole";
+import useGroup from "../../hooks/useGroup";
 
 /* -------------------- Validation Schema -------------------- */
 const schema = (mode, resetPassword) =>
@@ -52,6 +53,12 @@ const schema = (mode, resetPassword) =>
                     .required("Confirm password required")
                 : yup.string().notRequired(),
 
+        group_id: yup
+            .number()
+            .transform((value, originalValue) => (originalValue === "" || originalValue === null ? undefined : value))
+            .typeError("Class Type is required")
+            .required("Class Type is required")
+            .moreThan(0, "Select a valid class type"),
         email_verified: yup.boolean(),
         // first_name: yup.string().required("First name required"),
         // last_name: yup.string().required("Last name required"),
@@ -83,6 +90,7 @@ export default function UserRegistration({ mode = "create", user, onSuccess, onC
 
     const { create, update } = useUser();
     const { roles, fetchAll: fetchAllRoles } = useRole();
+    const { groups, loadGroups } = useGroup();
     const { showLoader, hideLoader, showSuccess, showError } = useCommon();
 
     const {
@@ -97,6 +105,7 @@ export default function UserRegistration({ mode = "create", user, onSuccess, onC
             email: user?.email || "",
             phonenumber: user?.phonenumber || "",
             role_id: 2,
+            group_id: user?.group_id || "",
             status: "active",
             email_verified: user?.email_verified || false,
 
@@ -131,16 +140,18 @@ export default function UserRegistration({ mode = "create", user, onSuccess, onC
 
     useEffect(() => {
         // if (!roles || !roles.length) fetchAllRoles();
+        loadGroups();
     }, []);
 
     /* ---------------- Submit ---------------- */
     const onSubmit = async (data) => {
         setLoading(true);
+        const selectedGroupId = data.group_id ?? user?.group_id ?? (groups?.[0]?.id ?? undefined);
         const payload = {
             ...data,
             role_id: Number(2), // Default to Student role
             status: "active",
-            group_id: 1,
+            group_id: selectedGroupId ? Number(selectedGroupId) : undefined,
             details,
         };
         delete payload.confirmPassword;
@@ -206,6 +217,25 @@ export default function UserRegistration({ mode = "create", user, onSuccess, onC
                     <Controller name="language" control={control} render={({ field }) => (
                         <TextField {...field} label="Language" size="small" fullWidth />
                     )} /> */}
+                </Section>
+
+                {/* Group */}
+                <Section title="Class Group">
+                    <Controller name="group_id" control={control} render={({ field }) => (
+                        <TextField
+                            {...field}
+                            label="Class Type *"
+                            size="small"
+                            select
+                            fullWidth
+                            error={!!errors.group_id}
+                            helperText={errors.group_id?.message}
+                        >
+                            {groups?.map((g) => (
+                                <MenuItem key={g.id} value={g.id}>{g.name}</MenuItem>
+                            ))}
+                        </TextField>
+                    )} />
                 </Section>
 
                 {/* Security */}

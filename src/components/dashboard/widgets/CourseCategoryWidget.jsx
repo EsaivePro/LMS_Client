@@ -296,9 +296,10 @@ function HeroCarousel({ title, categories = [] }) {
                                                         if (reason === 'backdropClick' || reason === 'escapeKeyDown') return;
                                                         setEnrollDialogOpen(false);
                                                     }}
+                                                    fullScreen={isMobile}
                                                     fullWidth
                                                     maxWidth="lg"
-                                                    PaperProps={{ sx: { minHeight: 420 } }}
+                                                    PaperProps={{ sx: { minHeight: isMobile ? '100vh' : 420 } }}
                                                 >
                                                     <DialogTitle>
                                                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
@@ -315,7 +316,15 @@ function HeroCarousel({ title, categories = [] }) {
                                                             </IconButton>
                                                         </Box>
                                                     </DialogTitle>
-                                                    <DialogContent dividers sx={{ maxHeight: '60vh', overflowY: 'auto', minHeight: 300 }}>
+                                                    <DialogContent
+                                                        dividers
+                                                        sx={{
+                                                            maxHeight: isMobile ? 'calc(100vh - 112px)' : '60vh',
+                                                            overflowY: 'auto',
+                                                            minHeight: isMobile ? 'calc(100vh - 112px)' : 300,
+                                                            px: isMobile ? 2 : undefined,
+                                                        }}
+                                                    >
                                                         {/* show linear progress with message */}
                                                         <Box sx={{ width: '100%', mt: 1 }}>
                                                             {!isUserEnrolled && <Typography sx={{ mb: 1 }}>
