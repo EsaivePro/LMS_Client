@@ -9,6 +9,7 @@ import UserManagement from "../modules/user/pages/UserManagement";
 import UserProfile from "../modules/user/pages/UserProfile";
 import EnrollmentBase from "../modules/enrollment/pages/EnrollmentBase";
 import UsersProgress from "../modules/user/pages/UsersProgress";
+import UserCategoryPage from "../pages/user/CategoryPage";
 
 export const protectedRoutes = [
     {
@@ -99,5 +100,13 @@ export const protectedRoutes = [
         description: "Assign users to courses and manage enrollments.",
         permission: "enrollment.management",
         element: <EnrollmentBase />,
+    },
+
+    {
+        path: "/user/category/:categoryId",
+        title: "Category Details",
+        description: "View category enrollment and course progress for the current user.",
+        permission: "course.view",
+        element: <UserCategoryPage />,
     },
 ];

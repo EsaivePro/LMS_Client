@@ -12,7 +12,7 @@ body {
 }
 
 :root {
-    --app-scale: 1.05;
+    --app-scale: 1;
     /* global scale variable; update at runtime to zoom */
 }
 

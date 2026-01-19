@@ -306,8 +306,13 @@ export default function LoginPage() {
                         <Link
                             component="button"
                             underline="hover"
-                            sx={{ color: THEME.colors.primary, whiteSpace: 'nowrap', ml: 'auto' }}
-                            type="button"
+                            sx={{
+                                color: THEME.colors.primary,
+                                whiteSpace: 'nowrap',
+                                ml: 'auto',
+                                '&:hover': { backgroundColor: "transparent" }
+                            }}
+                            // type="button"
                             onClick={() => setOpenForgot(true)}
                         >
                             Forgot password?
@@ -353,7 +358,8 @@ export default function LoginPage() {
                         By signing in you agree to our{" "}
                         <Link
                             component="button"
-                            sx={{ color: THEME.colors.primary }}
+                            underline="hover"
+                            sx={{ color: THEME.colors.primary, '&:hover': { backgroundColor: "transparent" } }}
                             type="button"
                             onClick={() => setOpenTerms(true)}
                         >

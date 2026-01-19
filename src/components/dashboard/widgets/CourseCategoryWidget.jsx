@@ -265,7 +265,14 @@ function HeroCarousel({ title, categories = [] }) {
                                                 <Button
                                                     variant="contained"
                                                     startIcon={isUserEnrolled ? <CollectionsBookmarkIcon sx={{ color: '#ffffff' }} /> : <PlayArrowIcon sx={{ color: '#000' }} />}
-                                                    onClick={() => { setEnrollDialogOpen(true); startEnroll(); }}
+                                                    onClick={() => {
+                                                        // if (isMobile) {
+                                                        //     navigate(`/user/category/${active.id}`);
+                                                        //     return;
+                                                        // }
+                                                        setEnrollDialogOpen(true);
+                                                        startEnroll();
+                                                    }}
                                                     sx={{
                                                         backgroundColor: 'rgba(255,255,255,0.95)',
                                                         color: '#ffffff',
