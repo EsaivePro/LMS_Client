@@ -161,7 +161,20 @@ export default function LoginPage() {
                     overflow: 'hidden'
                 }}
             >
-                <form onSubmit={handleSubmit} noValidate>
+                <form
+                    onSubmit={handleSubmit}
+                    // Only submit when Enter is pressed while focus is on an input/textarea
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            const tag = e.target?.tagName?.toLowerCase();
+                            if (tag === "input" || tag === "textarea") {
+                                e.preventDefault();
+                                handleSubmit(e);
+                            }
+                        }
+                    }}
+                    noValidate
+                >
                     {/* LOGO */}
                     <Box sx={{ mb: 3, textAlign: "center" }}>
                         <img
@@ -312,7 +325,7 @@ export default function LoginPage() {
                                 ml: 'auto',
                                 '&:hover': { backgroundColor: "transparent" }
                             }}
-                            // type="button"
+                            type="button"
                             onClick={() => setOpenForgot(true)}
                         >
                             Forgot password?
@@ -333,7 +346,6 @@ export default function LoginPage() {
                             }
                         }}
                         type="submit"
-                        onClick={handleSubmit}
                     >
                         Sign in
                     </Button>

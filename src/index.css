@@ -141,13 +141,7 @@ input[type="submit"],
     cursor: pointer;
 }
 
-button:hover,
-input[type="button"]:hover,
-input[type="submit"]:hover,
-.btn:hover,
-.app-button:hover {
-    background-color: var(--primary);
-}
+
 
 /* Material UI button overrides (contained / outlined) */
 .MuiButton-root.MuiButton-contained,
@@ -170,8 +164,8 @@ input[type="submit"]:hover,
 
 .MuiButton-root.MuiButton-outlined:hover,
 .MuiButton-outlined:hover {
-    background-color: var(--primary) !important;
-    color: var(--onPrimary) !important;
+    border: 1px solid var(--primary) !important;
+    color: var(--primary) !important;
 }
 
 /* Generic outlined helpers (non-MUI) */
@@ -184,20 +178,8 @@ button.outlined,
     color: var(--darkMedium);
 }
 
-.outlined:hover,
-.btn-outlined:hover,
-.app-button.outlined:hover,
-button.outlined:hover {
-    background-color: var(--primary);
-    color: var(--onPrimary);
-}
-
 /* Utility: add `app-button` class to force app colors where inline/tailwind colors exist */
 .app-button {
     background-color: var(--darkMedium) !important;
     color: var(--onPrimary) !important;
-}
-
-.app-button:hover {
-    background-color: var(--primary) !important;
 }

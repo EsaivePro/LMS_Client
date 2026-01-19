@@ -478,8 +478,8 @@ export default function DataTable({
             </Menu>
 
             {/* ================= TABLE ================= */}
-            <TableContainer sx={{ maxHeight }}>
-                <Table stickyHeader>
+            <TableContainer>
+                <Table stickyHeader >
                     <TableHead>
                         <TableRow>
                             {checkboxSelection && <TableCell padding="checkbox" />}

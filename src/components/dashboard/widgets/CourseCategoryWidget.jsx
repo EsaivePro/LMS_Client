@@ -75,6 +75,8 @@ function HeroCarousel({ title, categories = [] }) {
         setIndex(((i % len) + len) % len);
     };
 
+    // removed incorrect async useEffect (can't use `await` at top-level in useEffect)
+
     async function startEnroll() {
         if (!user || !user.id) {
             setEnrollError("User not authenticated");
@@ -180,6 +182,35 @@ function HeroCarousel({ title, categories = [] }) {
 
     const active = cats[index] || {};
 
+    // Auto-enroll when the active category changes:
+    // - only run when we have a logged-in user and a valid active category id
+    // - skip if the user is already enrolled for this category
+    // - safely call async code from inside the effect
+    useEffect(() => {
+        let mounted = true;
+        async function autoEnroll() {
+            if (!user || !user.id) return;
+            if (!active || !active.id) return;
+            // skip auto-enroll if already enrolled
+            if (active.raw && active.raw.user_enroll_status) return;
+            try {
+                await enrollToCategory(user.id, active.id);
+                // refresh user's enrolled courses if available
+                if (mounted && typeof fetchEnrollCoursesByUser === 'function') {
+                    try {
+                        await fetchEnrollCoursesByUser(user.id);
+                    } catch (e) {
+                        // ignore refresh errors
+                    }
+                }
+            } catch (err) {
+                // Silently ignore auto-enroll errors for now
+            }
+        }
+        autoEnroll();
+        return () => { mounted = false; };
+    }, [index, user, active, enrollToCategory, fetchEnrollCoursesByUser]);
+
     useEffect(() => {
         setIsUserEnrolled(!!(active && active.raw && active.raw.user_enroll_status));
     }, [active]);
@@ -262,7 +293,7 @@ function HeroCarousel({ title, categories = [] }) {
                                         // If user is already enrolled show "View Courses", otherwise show "Enroll Now"
                                         return (
                                             <>
-                                                <Button
+                                                {/* <Button
                                                     variant="contained"
                                                     startIcon={isUserEnrolled ? <CollectionsBookmarkIcon sx={{ color: '#ffffff' }} /> : <PlayArrowIcon sx={{ color: isMobile ? '#ffffff' : '#000' }} />}
                                                     onClick={() => {
@@ -284,7 +315,7 @@ function HeroCarousel({ title, categories = [] }) {
                                                     }}
                                                 >
                                                     {isUserEnrolled ? "Category Progress" : "Enroll Now"}
-                                                </Button>
+                                                </Button> */}
 
                                                 <Dialog
                                                     open={enrollDialogOpen}
