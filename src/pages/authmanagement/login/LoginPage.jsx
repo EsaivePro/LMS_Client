@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTheme, useMediaQuery } from "@mui/material";
 import {
     Box,
     TextField,
@@ -34,6 +35,8 @@ export default function LoginPage() {
     const { login, user } = useAuth();
     const { setPermissionsAPI } = useAdmin();
     const { showLoader, hideLoader } = useCommon();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const [alert, setAlert] = useState({ open: false, type: "", message: "" });
     const [loginData, setLoginData] = useState({
@@ -117,7 +120,7 @@ export default function LoginPage() {
                 // so scaled UI doesn't cause an extra vertical scrollbar.
                 minHeight: "calc(100vh / var(--app-scale, 1))",
                 width: "100%",
-                backgroundImage: "url(/login/l1.png)",
+                backgroundImage: "url(/login/l5.jpg)",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
@@ -152,7 +155,8 @@ export default function LoginPage() {
                     height: { xs: "auto", md: "calc(100vh / var(--app-scale, 1))" },
                     maxWidth: { xs: 400, md: 500 },
                     mx: { xs: 2, md: 0 },
-                    p: 4,
+                    // my: { xs: 4, md: 0 },
+                    p: { xs: 2, md: 4 },
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "center",
@@ -189,11 +193,11 @@ export default function LoginPage() {
                     </Box>
 
                     <Typography
-                        variant="h4"
-                        fontWeight={800}
-                        sx={{ color: THEME.colors.dark, mb: 1, textAlign: "center" }}
+                        variant={isMobile ? "h6" : "h5"}
+                        fontWeight={isMobile ? 500 : 500}
+                        sx={{ color: THEME.colors.dark, mb: 1, textAlign: "center", wordBreak: 'break-word' }}
                     >
-                        Welcome back to {THEME.manifest.name}!
+                        Welcome back to {THEME.manifest?.name || ""}!
                     </Typography>
 
                     <Typography

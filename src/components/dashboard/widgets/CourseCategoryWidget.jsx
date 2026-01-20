@@ -191,6 +191,7 @@ function HeroCarousel({ title, categories = [] }) {
         async function autoEnroll() {
             if (!user || !user.id) return;
             if (!active || !active.id) return;
+            if (isUserEnrolled) return;
             // skip auto-enroll if already enrolled
             if (active.raw && active.raw.user_enroll_status) return;
             try {
@@ -209,7 +210,7 @@ function HeroCarousel({ title, categories = [] }) {
         }
         autoEnroll();
         return () => { mounted = false; };
-    }, [index, user, active, enrollToCategory, fetchEnrollCoursesByUser]);
+    }, [index, user, active, isUserEnrolled, enrollToCategory, fetchEnrollCoursesByUser]);
 
     useEffect(() => {
         setIsUserEnrolled(!!(active && active.raw && active.raw.user_enroll_status));
