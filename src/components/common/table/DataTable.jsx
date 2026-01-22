@@ -52,7 +52,7 @@ export default function DataTable({
     /* -------- SERVER SIDE -------- */
     serverSide = true,
     onFetchData,
-    searchOnButton = true,
+    searchOnButton = false,
 
     tableKey = "default",
 }) {
@@ -478,9 +478,9 @@ export default function DataTable({
             </Menu>
 
             {/* ================= TABLE ================= */}
-            <TableContainer>
+            <TableContainer sx={{ maxHeight }}>
                 <Table stickyHeader >
-                    <TableHead>
+                    <TableHead sx={{ backgroundColor: "var(--lightgrey)" }}>
                         <TableRow>
                             {checkboxSelection && <TableCell padding="checkbox" />}
                             {orderedColumns.map((col) => (

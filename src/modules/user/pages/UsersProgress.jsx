@@ -61,6 +61,7 @@ export default function UsersProgress() {
 
     const fetchUsers = useCallback(async (queryString) => {
         try {
+            showLoader();
             const groupVal = selectedGroupRef.current;
             const qs = queryString + (groupVal ? `&group_id=${encodeURIComponent(groupVal)}` : "");
             const res = await axiosInstance.get(`/user/search/enrollment-summary?${qs}`);

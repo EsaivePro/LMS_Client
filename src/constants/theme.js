@@ -13,6 +13,7 @@ export const THEME = {
         secondary: "#9ACD32",
         background: "#ffffff",
         surface: "#fbfbfbff",
+        lightgrey: "#f5f5f5ff",
         textPrimary: "#212121",
         textSecondary: "#616161",
         onPrimary: "#ffffff",
