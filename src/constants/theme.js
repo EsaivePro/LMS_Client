@@ -53,7 +53,7 @@ export const THEME = {
         ],
         contact: {
             email: "support@impulsecoachinginstitute.com",
-            phone: "+91 75300 78007",
+            phone: "+91 9600899507",
             location: "Coimbatore, India",
         },
     },
