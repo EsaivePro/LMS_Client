@@ -1,7 +1,7 @@
 import axios from "axios";
 import { tokenStorage } from "../utils/tokenStorage.utils"; // your sessionStorage helper
 
-const BASE_URL = process.env.API_BASE_URL || "https://lmsapi-production-bd33.up.railway.app/api"; //"http://localhost:3003/api";
+const BASE_URL = process.env.API_BASE_URL || "https://lmsapi-production-bd33.up.railway.app/api-gateway"; //"http://localhost:3003/api";
 
 const api = axios.create({
     baseURL: BASE_URL,
