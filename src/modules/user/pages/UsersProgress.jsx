@@ -64,7 +64,7 @@ export default function UsersProgress() {
             showLoader();
             const groupVal = selectedGroupRef.current;
             const qs = queryString + (groupVal ? `&group_id=${encodeURIComponent(groupVal)}` : "");
-            const res = await axiosInstance.get(`/user/search/enrollment-summary?${qs}`);
+            const res = await axiosInstance.get(`/user-service/search/enrollment-summary?${qs}`);
             const payload = res?.data?.response || {};
             setRows(payload?.data || []);
             setTotal(payload?.total || 0);

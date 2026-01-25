@@ -30,7 +30,7 @@ export default function GroupAssign() {
     const fetchUsers = async () => {
         showLoader();
         try {
-            const res = await axiosInstance.get(`/user/search?limit=10000`);
+            const res = await axiosInstance.get(`/user-service/search?limit=10000`);
             const payload = res?.data?.response || {};
             const list = payload?.data || [];
             setUsers(list);

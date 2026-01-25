@@ -87,7 +87,7 @@ export default function UserList() {
         showLoader();
         try {
             const res = await axiosInstance.get(
-                `/user/search?${queryString}`
+                `/user-service/search?${queryString}`
             );
             const payload = res?.data?.response || {};
             setRows(payload?.data || []);
