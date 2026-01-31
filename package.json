@@ -37,7 +37,8 @@
     "redux-persist": "^6.0.0",
     "vite": "^7.2.4",
     "yup": "^1.7.1",
-    "zxcvbn": "^4.4.2"
+    "zxcvbn": "^4.4.2",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.0.0",

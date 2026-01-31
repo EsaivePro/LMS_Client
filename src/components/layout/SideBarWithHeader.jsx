@@ -53,6 +53,8 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import CategoryIcon from '@mui/icons-material/Category';
 import AssignmentAddIcon from '@mui/icons-material/AssignmentAdd';
 import InsightsIcon from '@mui/icons-material/Insights';
+import { httpClient } from "../../apiClient/httpClient";
+import { tokenStorage } from "../../utils/tokenStorage.utils";
 
 const drawerWidth = 240;
 
@@ -158,9 +160,15 @@ export default function SideBarWithHeader({ children }) {
     const { permissions } = useAdmin();
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        logout();
-        navigate("/login");
+    const handleLogout = async (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        try {
+            await httpClient.logoutUser();
+            tokenStorage.clearAll();
+            navigate("/login");
+        } catch (err) {
+            console.error("Server logout failed:", err);
+        }
     };
     const handleProfile = () => {
         navigate("/user/profile/" + user?.id);
@@ -440,40 +448,35 @@ export default function SideBarWithHeader({ children }) {
                             </ListItem>
                         </Link>
 
-                        <Link
-                            to="/login"
-                            style={{ textDecoration: "none", color: "inherit" }}
-                            onClick={handleLogout}
-                        >
-                            <ListItem disablePadding>
-                                <ListItemButton
-                                    sx={{
+                        <ListItem disablePadding>
+                            <ListItemButton
+                                onClick={handleLogout}
+                                sx={{
+                                    backgroundColor: false
+                                        ? "var(--primaryLight)"
+                                        : "transparent",
+                                    color: false ? "var(--onPrimary)" : "var(--onPrimary)",
+                                    borderLeft: false
+                                        ? "4px solid var(--primary)"
+                                        : "4px solid transparent",
+                                    "&:hover": {
                                         backgroundColor: false
-                                            ? "var(--primaryLight)"
-                                            : "transparent",
-                                        color: false ? "var(--onPrimary)" : "var(--onPrimary)",
-                                        borderLeft: false
-                                            ? "4px solid var(--primary)"
-                                            : "4px solid transparent",
-                                        "&:hover": {
-                                            backgroundColor: false
-                                                ? "rgba(255,255,255,0.9)"
-                                                : "rgba(255,255,255,0.12)",
-                                        },
+                                            ? "rgba(255,255,255,0.9)"
+                                            : "rgba(255,255,255,0.12)",
+                                    },
+                                }}
+                            >
+                                <ListItemIcon
+                                    sx={{
+                                        color: false ? "var(--onPrimary)" : "var(--primary)",
+                                        minWidth: 40,
                                     }}
                                 >
-                                    <ListItemIcon
-                                        sx={{
-                                            color: false ? "var(--onPrimary)" : "var(--primary)",
-                                            minWidth: 40,
-                                        }}
-                                    >
-                                        < LogoutIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary="Sign out" />
-                                </ListItemButton>
-                            </ListItem>
-                        </Link>
+                                    < LogoutIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Sign out" />
+                            </ListItemButton>
+                        </ListItem>
                     </List>
                 </Box>
 

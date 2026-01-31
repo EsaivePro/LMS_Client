@@ -29,6 +29,7 @@ import { httpClient } from "../../../apiClient/httpClient";
 import { tokenStorage } from "../../../utils/tokenStorage.utils";
 import GlobalAlert from "../../../components/common/alert/GlobalAlert.jsx";
 import THEME from "../../../constants/theme";
+import deviceUtils from "../../../utils/device.utils";
 
 export default function LoginPage() {
     const navigate = useNavigate();
@@ -77,9 +78,21 @@ export default function LoginPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) return;
-
         try {
-            const resultAction = await login(loginData);
+            // attach device info to login payload
+            const device_id = deviceUtils.getDeviceId();
+            const { device_type, device_info } = deviceUtils.getDeviceInfo();
+            const ip_address = await deviceUtils.getPublicIp();
+
+            const payload = {
+                ...loginData,
+                device_id,
+                device_type,
+                device_info,
+                ip_address,
+            };
+
+            const resultAction = await login(payload);
             if (!resultAction?.type?.endsWith("/fulfilled")) {
                 setAlert({ open: true, type: "error", message: "Login failed" });
                 return;

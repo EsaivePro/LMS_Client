@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, logout as logoutAction } from "../redux/slices/authSlice";
+import { loginUser, performLogout } from "../redux/slices/authSlice";
 
 export const useAuth = () => {
     const dispatch = useDispatch();
@@ -12,6 +12,6 @@ export const useAuth = () => {
         error,
         isAuthenticated,
         login: (creds) => dispatch(loginUser(creds)),
-        logout: () => dispatch(logoutAction()),
+        logout: () => dispatch(performLogout()),
     };
 };

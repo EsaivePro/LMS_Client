@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from "@mui/material";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import { ProtectedRoute } from "./components/protectedRoute/ProtectedRoute";
@@ -12,6 +13,7 @@ import { httpClient } from "./apiClient/httpClient";
 import useCommon from "./hooks/useCommon";
 
 import { useNavigate } from "react-router-dom";
+import IdleLogout from "./components/common/IdleLogout";
 import RouteRenderer from "./routes/RouteRenderer";
 import { protectedRoutes } from "./routes/routeConfig";
 import AppLayout from "./components/layout/AppLayout";
@@ -27,6 +29,7 @@ export default function App() {
   const [hasPermission, setHasPermission] = useState(false);
   const fetched = useRef(false);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -56,10 +59,25 @@ export default function App() {
     loadPermissions();
   }, [isAuthenticated, user]);
 
+  const handleIdleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      navigate("/login", { replace: true });
+    }
+  };
+
+  const handleIdleStay = () => {
+    // no-op; IdleLogout resets timers itself
+  };
+
   if (!ready) return null;
 
   return (
     <main>
+      {isAuthenticated && (
+        <IdleLogout onLogout={handleIdleLogout} onStay={handleIdleStay} />
+      )}
       <Routes>
         {/* ---------- AUTH ---------- */}
         <Route

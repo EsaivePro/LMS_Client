@@ -51,5 +51,6 @@ export const tokenStorage = {
         tokenStorage.removeAccessToken();
         tokenStorage.removeRefreshToken();
         tokenStorage.removeUserToken();
+        localStorage.clear();
     }
 };

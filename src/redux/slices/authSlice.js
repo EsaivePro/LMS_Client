@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { tokenStorage } from "../../utils/tokenStorage.utils";
-import { loginUserValidation } from "../../services/LMSGateway";
+import { loginUserValidation, logoutUser as logoutUserService } from "../../services/LMSGateway";
 // import { persistor } from "../store/store";
 export const loginUser = createAsyncThunk(
     "auth/loginUser",
@@ -12,6 +12,19 @@ export const loginUser = createAsyncThunk(
         if (data.user) tokenStorage.setUserToken(JSON.stringify(data.user));
         if (data.refreshToken) tokenStorage.setRefreshToken(data.refreshToken);
         return res;
+    }
+);
+
+export const performLogout = createAsyncThunk(
+    'auth/performLogout',
+    async (_, { dispatch }) => {
+        // try {
+        //     await logoutUserService(dispatch);
+        // } catch (e) {
+        //     // ignore backend errors but continue to clear client
+        // }
+        tokenStorage.clearAll();
+        return true;
     }
 );
 
@@ -50,6 +63,12 @@ const authSlice = createSlice({
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
             });
+        builder.addCase(performLogout.fulfilled, (state) => {
+            state.user = null;
+            state.token = null;
+            state.isAuthenticated = false;
+            state.loading = false;
+        });
     },
 });
 
