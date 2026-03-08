@@ -8,7 +8,7 @@ const CLOUDFRONT_DOMAIN = "https://d1fsxe4g48oy4v.cloudfront.net";
 
 export async function presignAndUploadFile({ file, key, onProgress } = {}) {
     // 1) ask backend for presigned url
-    const { data } = await axiosInstance.post("/upload/presign", {
+    const { data } = await axiosInstance.post("/upload-service/presign", {
         fileName: file.name,
         contentType: file.type,
         key,
@@ -55,7 +55,7 @@ export async function deleteFromS3(url) {
     const key = extractS3Key(url);
     if (!key) return;
     try {
-        const res = await axiosInstance.post("/upload/delete", { key });
+        const res = await axiosInstance.post("/upload-service/delete", { key });
         return res;
     } catch (e) {
         console.error("S3 delete failed", e);

@@ -3,7 +3,7 @@ import { Box, Breadcrumbs, Typography, Link, useTheme, useMediaQuery } from "@mu
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { useLocation, useNavigate } from "react-router-dom";
 
-export default function BreadcrumbsNav() {
+export default function BreadcrumbsNav({ breadCurmbs = true }) {
     const location = useLocation();
     const navigate = useNavigate();
     const theme = useTheme();
@@ -11,8 +11,8 @@ export default function BreadcrumbsNav() {
     const pathnames = location.pathname.split("/").filter((x) => x);
 
     // Hide breadcrumbs on login or full-screen pages if needed
-    if (location.pathname === "/login") return null;
-
+    if (location.pathname === "/login" || !breadCurmbs) return null;
+    else if (!breadCurmbs) return null;
     return (
         <Box
             sx={{

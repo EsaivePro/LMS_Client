@@ -1,0 +1,187 @@
+{
+    "title": "Exam Details",
+    "tablename": "exams",
+    "sections": [
+        {
+            "key": "basic",
+            "title": "Basic Details",
+            "fields": [
+                {
+                    "name": "id",
+                    "label": "ID",
+                    "type": "number",
+                    "readOnly": true,
+                    "minWidth": 120
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "type": "text",
+                    "required": true,
+                    "minWidth": 320
+                },
+                {
+                    "name": "description",
+                    "label": "Description",
+                    "type": "textarea",
+                    "minWidth": 640
+                }
+            ]
+        },
+        {
+            "key": "settings",
+            "title": "Settings",
+            "fields": [
+                {
+                    "name": "total_marks",
+                    "label": "Total Marks",
+                    "type": "number",
+                    "required": true,
+                    "default": 100,
+                    "minWidth": 160
+                },
+                {
+                    "name": "passing_marks",
+                    "label": "Passing Marks",
+                    "type": "number",
+                    "required": true,
+                    "default": 40,
+                    "minWidth": 160
+                },
+                {
+                    "name": "duration_minutes",
+                    "label": "Duration (mins)",
+                    "type": "number",
+                    "required": true,
+                    "default": 30,
+                    "minWidth": 160
+                }
+            ]
+        },
+        {
+            "key": "options",
+            "title": "Options",
+            "fields": [
+                {
+                    "name": "shuffle_questions",
+                    "label": "Shuffle Questions",
+                    "type": "checkbox"
+                },
+                {
+                    "name": "shuffle_options",
+                    "label": "Shuffle Options",
+                    "type": "checkbox"
+                },
+                {
+                    "name": "is_active",
+                    "label": "Active",
+                    "type": "checkbox",
+                    "default": true
+                }
+            ]
+        },
+        {
+            "key": "schedules",
+            "title": "Schedules",
+            "fields": [
+                {
+                    "name": "exam_schedules",
+                    "label": "Exam Schedules",
+                    "type": "table",
+                    "table": {
+                        "columns": [
+                            {
+                                "name": "start_time",
+                                "label": "Start Time",
+                                "type": "datetime",
+                                "minWidth": 180
+                            },
+                            {
+                                "name": "end_time",
+                                "label": "End Time",
+                                "type": "datetime",
+                                "minWidth": 180
+                            },
+                            {
+                                "name": "max_attempts",
+                                "label": "Max Attempts",
+                                "type": "number",
+                                "default": 1,
+                                "minWidth": 120
+                            },
+                            {
+                                "name": "is_active",
+                                "label": "Active",
+                                "type": "checkbox",
+                                "minWidth": 80
+                            },
+                            {
+                                "name": "actions",
+                                "label": "",
+                                "type": "actions",
+                                "minWidth": 80
+                            }
+                        ],
+                        "addButton": {
+                            "label": "Add Schedule",
+                            "mode": "inline"
+                        },
+                        "layout": "cards",
+                        "allowDelete": true,
+                        "minRows": 0
+                    }
+                }
+            ]
+        },
+        {
+            "key": "questions",
+            "title": "Questions",
+            "fields": [
+                {
+                    "name": "exam_questions",
+                    "label": "Assigned Questions",
+                    "type": "table",
+                    "table": {
+                        "columns": [
+                            {
+                                "name": "question_id",
+                                "label": "Question",
+                                "type": "select",
+                                "optionsSource": "question_bank",
+                                "minWidth": 320,
+                                "required": true
+                            },
+                            {
+                                "name": "marks",
+                                "label": "Marks",
+                                "type": "number",
+                                "minWidth": 120,
+                                "default": 1,
+                                "required": true
+                            },
+                            {
+                                "name": "order_no",
+                                "label": "Order",
+                                "type": "number",
+                                "minWidth": 100
+                            },
+                            {
+                                "name": "actions",
+                                "label": "",
+                                "type": "actions",
+                                "minWidth": 80
+                            }
+                        ],
+                        "addButton": {
+                            "label": "Add Question",
+                            "mode": "dialog"
+                        },
+                        "allowDelete": true,
+                        "allowReorder": true,
+                        "minRows": 0
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,82 @@
+{
+    "baseRoute": "/exams/manage",
+    "tableName": "exams",
+    "endpoint": "/common-service/search",
+    "readFrom": "response.data",
+    "serverSide": true,
+    "tableKey": "exams-table",
+    "header": {
+        "title": "Exams",
+        "showCount": true,
+        "buttons": [
+            {
+                "key": "create",
+                "label": "New Exam",
+                "variant": "contained"
+            }
+        ]
+    },
+    "fields": [
+        {
+            "name": "id",
+            "label": "ID",
+            "type": "number",
+            "maxWidth": 80
+        },
+        {
+            "name": "title",
+            "label": "Title",
+            "type": "string",
+            "minWidth": 240,
+            "filterable": true,
+            "linkTemplate": "{id}"
+        },
+        {
+            "name": "description",
+            "label": "Description",
+            "type": "string",
+            "minWidth": 300
+        },
+        {
+            "name": "total_marks",
+            "label": "Total Marks",
+            "type": "number",
+            "minWidth": 120
+        },
+        {
+            "name": "duration_minutes",
+            "label": "Duration (mins)",
+            "type": "number",
+            "minWidth": 140
+        },
+        {
+            "name": "is_active",
+            "label": "Status",
+            "type": "boolean",
+            "minWidth": 120,
+            "valueOptions": [
+                true,
+                false
+            ],
+            "renderValues": {
+                "true": "Active",
+                "false": "Inactive"
+            }
+        },
+        {
+            "name": "created_at",
+            "label": "Created At",
+            "type": "string",
+            "minWidth": 180
+        },
+        {
+            "name": "actions",
+            "label": "Actions",
+            "type": "actions",
+            "maxWidth": 120,
+            "minWidth": 150,
+            "pinned": "right",
+            "sortable": false
+        }
+    ]
+}

@@ -96,4 +96,29 @@ export const httpClient = {
     updateUserNotes: async (id, data) => axiosInstance.put(`${API_ENDPOINTS.UPDATE_USER_NOTES}/${id}`, data),
     deleteUserNotes: async (id) => axiosInstance.delete(`${API_ENDPOINTS.DELETE_USER_NOTES}/${id}`),
 
+    // Exam-service APIs
+    fetchExams: async () => axiosInstance.get(API_ENDPOINTS.GET_EXAMS),
+    fetchExamById: async (id) => axiosInstance.get(API_ENDPOINTS.GET_EXAM + id),
+    createExam: async (data) => axiosInstance.post(API_ENDPOINTS.CREATE_EXAM, data),
+    updateExam: async (id, data) => axiosInstance.put(API_ENDPOINTS.UPDATE_EXAM + id, data),
+    deleteExam: async (id) => axiosInstance.delete(API_ENDPOINTS.DELETE_EXAM + id),
+
+    // Question bank
+    fetchQuestions: async () => axiosInstance.get(API_ENDPOINTS.GET_QUESTIONS),
+    fetchQuestionById: async (id) => axiosInstance.get(API_ENDPOINTS.GET_QUESTION + id),
+    createQuestion: async (data) => axiosInstance.post(API_ENDPOINTS.CREATE_QUESTION, data),
+    updateQuestion: async (id, data) => axiosInstance.put(API_ENDPOINTS.UPDATE_QUESTION + id, data),
+    deleteQuestion: async (id) => axiosInstance.delete(API_ENDPOINTS.DELETE_QUESTION + id),
+
+    // Question options
+    fetchOptionsByQuestion: async (questionId) => axiosInstance.get(API_ENDPOINTS.GET_OPTIONS_BY_QUESTION + questionId + "/options"),
+    createOption: async (questionId, data) => axiosInstance.post(API_ENDPOINTS.CREATE_OPTION + questionId + "/options", data),
+    updateOption: async (id, data) => axiosInstance.put(API_ENDPOINTS.UPDATE_OPTION + id, data),
+    deleteOption: async (id) => axiosInstance.delete(API_ENDPOINTS.DELETE_OPTION + id),
+
+    // Form APIs (generic)
+    insertForm: async (data) => axiosInstance.post(API_ENDPOINTS.INSERT_FORM, data),
+    updateForm: async (data) => axiosInstance.put(API_ENDPOINTS.UPDATE_FORM, data),
+    deleteForm: async (data) => axiosInstance.delete(API_ENDPOINTS.DELETE_FORM, data),
+
 };

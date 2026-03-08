@@ -55,6 +55,7 @@ import AssignmentAddIcon from '@mui/icons-material/AssignmentAdd';
 import InsightsIcon from '@mui/icons-material/Insights';
 import { httpClient } from "../../apiClient/httpClient";
 import { tokenStorage } from "../../utils/tokenStorage.utils";
+import LaptopChromebookIcon from '@mui/icons-material/LaptopChromebook';
 
 const drawerWidth = 240;
 
@@ -119,6 +120,13 @@ const MENU = [
         type: "item",
         role: "user.management"
     },
+    {
+        label: "Exam managemet",
+        icon: <LaptopChromebookIcon />,
+        to: "/exams",
+        type: "item",
+        role: "user.management"
+    }
     // {
     //     label: "Enrollment",
     //     icon: <FolderSharedIcon />,

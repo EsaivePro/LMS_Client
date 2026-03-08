@@ -14,7 +14,8 @@ export default function AppLayout({
     header = true,
     sidebar = true,
     containerCard = true,
-    courseCard = false
+    courseCard = false,
+    breadCurmbs = true,
 }) {
     const {
         setFooterView,
@@ -40,7 +41,7 @@ export default function AppLayout({
         <div className="app-root">
             <SideBarWithHeader>
                 {/* FIXED BREADCRUMB NAV */}
-                <BreadcrumbsNav />
+                <BreadcrumbsNav breadCurmbs={breadCurmbs} />
                 <GlobalAlert />
                 {/* PAGE CONTENT */}
                 <LoadingScreen />

@@ -69,4 +69,41 @@ export const API_ENDPOINTS = {
     UNASSIGN_USER_GROUP: "/group-service",
     GET_GROUP_ASSIGNMENTS: "/group-service",
 
+    // Exam-service APIs
+    GET_EXAMS: "/exam-service/exams",
+    GET_EXAM: "/exam-service/exams/", // append :id
+    CREATE_EXAM: "/exam-service/exams",
+    UPDATE_EXAM: "/exam-service/exams/", // append :id
+    DELETE_EXAM: "/exam-service/exams/", // append :id
+
+    GET_QUESTIONS: "/exam-service/questions",
+    GET_QUESTION: "/exam-service/questions/", // append :id
+    CREATE_QUESTION: "/exam-service/questions",
+    UPDATE_QUESTION: "/exam-service/questions/", // append :id
+    DELETE_QUESTION: "/exam-service/questions/", // append :id
+
+    GET_OPTIONS_BY_QUESTION: "/exam-service/questions/", // append :questionId/options
+    CREATE_OPTION: "/exam-service/questions/", // append :questionId/options
+    UPDATE_OPTION: "/exam-service/options/", // append :id
+    DELETE_OPTION: "/exam-service/options/", // append :id
+
+    GET_SCHEDULES_BY_EXAM: "/exam-service/exams/", // append :examId/schedules
+    CREATE_SCHEDULE: "/exam-service/exams/", // append :examId/schedules
+    UPDATE_SCHEDULE: "/exam-service/schedules/", // append :id
+    DELETE_SCHEDULE: "/exam-service/schedules/", // append :id
+
+    CREATE_ATTEMPT: "/exam-service/attempts",
+    GET_ATTEMPT: "/exam-service/attempts/", // append :id
+    UPDATE_ATTEMPT: "/exam-service/attempts/", // append :id
+    GET_ATTEMPTS_BY_USER: "/exam-service/users/", // append :userId/attempts
+
+    UPSERT_ANSWER: "/exam-service/attempts/", // append :attemptId/answers
+    GET_ANSWERS_BY_ATTEMPT: "/exam-service/attempts/", // append :attemptId/answers
+
+    UPSERT_RESULT: "/exam-service/results",
+    GET_RESULT: "/exam-service/results/", // append :attemptId
+
+    INSERT_FORM: "/form-service/insert",
+    UPDATE_FORM: "/form-service/update", // append :id
+    DELETE_FORM: "/form-service/delete", // append :id
 };

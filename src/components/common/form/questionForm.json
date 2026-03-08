@@ -1,0 +1,113 @@
+{
+    "title": "Question Form",
+    "sections": [
+        {
+            "title": "Question",
+            "fields": [
+                {
+                    "name": "question_text",
+                    "type": "richtext",
+                    "label": "Question",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "name": "question_description",
+                    "type": "textarea",
+                    "label": "Description",
+                    "validation": {
+                        "required": false
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Options",
+            "fields": [
+                {
+                    "name": "options",
+                    "type": "optionsArray",
+                    "label": "Options",
+                    "validation": {
+                        "minItems": 2
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Details",
+            "fields": [
+                {
+                    "name": "topic",
+                    "type": "text",
+                    "label": "Topic Tag",
+                    "validation": {
+                        "required": false
+                    }
+                },
+                {
+                    "name": "difficulty",
+                    "type": "select",
+                    "label": "Difficulty Level",
+                    "options": [
+                        "",
+                        "Easy",
+                        "Medium",
+                        "High"
+                    ],
+                    "validation": {
+                        "required": false
+                    }
+                },
+                {
+                    "name": "marks",
+                    "type": "number",
+                    "label": "Marks",
+                    "validation": {
+                        "required": false,
+                        "min": 0
+                    }
+                },
+                {
+                    "name": "negative_marks",
+                    "type": "number",
+                    "label": "Negative Marks",
+                    "validation": {
+                        "required": false,
+                        "min": 0
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Settings",
+            "fields": [
+                {
+                    "name": "question_type",
+                    "type": "select",
+                    "label": "Question Type",
+                    "options": [
+                        "mcq",
+                        "True_False"
+                    ],
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "name": "multiple_answers",
+                    "type": "switch",
+                    "label": "Multiple answers",
+                    "validation": {}
+                },
+                {
+                    "name": "is_active",
+                    "type": "switch",
+                    "label": "Active",
+                    "validation": {}
+                }
+            ]
+        }
+    ]
+}

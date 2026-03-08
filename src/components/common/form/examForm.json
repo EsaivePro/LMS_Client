@@ -1,0 +1,76 @@
+{
+    "title": "Exam Form",
+    "sections": [
+        {
+            "title": "Basic Information",
+            "fields": [
+                {
+                    "name": "title",
+                    "type": "text",
+                    "label": "Title",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "name": "description",
+                    "type": "textarea",
+                    "label": "Description",
+                    "validation": {
+                        "required": false
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Settings",
+            "fields": [
+                {
+                    "name": "total_marks",
+                    "type": "number",
+                    "label": "Total Marks",
+                    "validation": {
+                        "required": true,
+                        "min": 0
+                    }
+                },
+                {
+                    "name": "passing_marks",
+                    "type": "number",
+                    "label": "Passing Marks",
+                    "validation": {
+                        "required": false,
+                        "min": 0
+                    }
+                },
+                {
+                    "name": "duration_minutes",
+                    "type": "number",
+                    "label": "Duration (minutes)",
+                    "validation": {
+                        "required": true,
+                        "min": 1
+                    }
+                },
+                {
+                    "name": "shuffle_questions",
+                    "type": "switch",
+                    "label": "Shuffle Questions",
+                    "validation": {}
+                },
+                {
+                    "name": "shuffle_options",
+                    "type": "switch",
+                    "label": "Shuffle Options",
+                    "validation": {}
+                },
+                {
+                    "name": "is_active",
+                    "type": "switch",
+                    "label": "Active",
+                    "validation": {}
+                }
+            ]
+        }
+    ]
+}

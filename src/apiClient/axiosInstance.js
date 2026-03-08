@@ -1,7 +1,9 @@
 import axios from "axios";
 import { tokenStorage } from "../utils/tokenStorage.utils"; // your sessionStorage helper
+import deviceUtils from "../utils/device.utils";
+import { API_ENDPOINTS } from "../constants/apiEndPoints";
 
-const BASE_URL = process.env.API_BASE_URL || "https://lmsapi-production-bd33.up.railway.app/api-gateway"; //"http://localhost:3003/api";
+const BASE_URL = "http://localhost:3003/api-gateway";
 
 const api = axios.create({
     baseURL: BASE_URL,
@@ -15,6 +17,17 @@ api.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+        try {
+            const deviceId = deviceUtils.getDeviceId();
+            const info = deviceUtils.getDeviceInfo();
+            if (deviceId) config.headers["x-device-id"] = deviceId;
+            if (info?.device_type) config.headers["x-device-type"] = info.device_type;
+            if (info?.device_info) config.headers["x-device-info"] = info.device_info;
+            const refresh = tokenStorage.getRefreshToken();
+            if (refresh) config.headers["x-refresh-token"] = refresh;
+        } catch (e) {
+            // ignore
+        }
         return config;
     },
     (error) => Promise.reject(error)
@@ -26,13 +39,35 @@ api.interceptors.response.use(
         return response;
     }
     ,
-    (error) => {
-        const message =
-            error?.message ||
-            "Something went wrong";
+    async (error) => {
+        const originalRequest = error?.config || {};
+        const status = error?.response?.status;
+
+        // Try refresh once on 401
+        if (status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            try {
+                const refreshToken = tokenStorage.getRefreshToken();
+                if (refreshToken) {
+                    const resp = await api.post(API_ENDPOINTS.REFRESH, { refreshToken });
+                    const newAccess = resp?.data?.response?.accessToken || resp?.data?.response?.token;
+                    const newRefresh = resp?.data?.response?.refreshToken || null;
+                    if (newAccess) tokenStorage.setAccessToken(newAccess);
+                    if (newRefresh) tokenStorage.setRefreshToken(newRefresh);
+                    // set new header and retry original request
+                    originalRequest.headers = originalRequest.headers || {};
+                    originalRequest.headers.Authorization = `Bearer ${tokenStorage.getAccessToken()}`;
+                    return api(originalRequest);
+                }
+            } catch (refreshErr) {
+                // fall through to reject
+            }
+        }
+
+        const message = error?.message || "Something went wrong";
 
         return Promise.reject({
-            status: error?.statusCode,
+            status: error?.response?.status || error?.statusCode,
             message,
             data: error?.response || null,
         });

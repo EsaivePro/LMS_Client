@@ -11,6 +11,7 @@ import {
     Checkbox,
     Box,
     IconButton,
+    Tooltip,
     Menu,
     MenuItem,
     Switch,
@@ -29,6 +30,7 @@ import PushPinIcon from "@mui/icons-material/PushPin";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import NoRowsOverlay from "./NoRowsOverlay";
 
 const STORAGE_KEY = "datatable_filters_v9";
@@ -53,6 +55,8 @@ export default function DataTable({
     serverSide = true,
     onFetchData,
     searchOnButton = false,
+    externalSearch: externalSearchProp = "",
+    onExternalSearchChange,
     tableName,
     tableKey = "default",
 }) {
@@ -68,10 +72,20 @@ export default function DataTable({
     const [pinnedLeft, setPinnedLeft] = React.useState(
         () => columns.filter((c) => c.pinned === "left").map((c) => c.field)
     );
+    const [pinnedRight, setPinnedRight] = React.useState(
+        () => columns.filter((c) => c.pinned === "right").map((c) => c.field)
+    );
 
     const [filters, setFilters] = React.useState({});
     const [operators, setOperators] = React.useState({});
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [localExternalSearch, setLocalExternalSearch] = React.useState(externalSearchProp);
+    const searchDebounceRef = React.useRef(null);
+
+    React.useEffect(() => {
+        setLocalExternalSearch(externalSearchProp);
+    }, [externalSearchProp]);
+    const searchActive = (localExternalSearch || "").trim().length >= 3;
 
     /* ================= RESTORE FILTERS ================= */
     React.useEffect(() => {
@@ -127,8 +141,14 @@ export default function DataTable({
             params.append(`operators[${col.field}]`, operator);
         });
 
+        // include global search if provided (use prop if provided, otherwise local)
+        const rawSearch = (externalSearchProp || localExternalSearch || "").trim();
+        const effectiveExternalSearch = rawSearch.length >= 3 ? rawSearch : "";
+        if (effectiveExternalSearch) params.set("q", effectiveExternalSearch);
+
         return params.toString();
-    }, [page, rowsPerPage, sortModel, filters, operators, columns]);
+    }, [page, rowsPerPage, sortModel, filters, operators, columns, externalSearchProp, localExternalSearch]);
+
 
     /* ================= FETCH DATA ================= */
     const initialLoadRef = React.useRef(false);
@@ -162,10 +182,11 @@ export default function DataTable({
             lastQueryRef.current = query;
             onFetchData(query);
         }
-    }, [buildQueryString, onFetchData, searchOnButton, searchCounter]);
+    }, [buildQueryString, onFetchData, searchOnButton, searchCounter, externalSearchProp, localExternalSearch]);
 
     /* ================= HELPERS ================= */
     const isPinnedLeft = (field) => pinnedLeft.includes(field);
+    const isPinnedRight = (field) => pinnedRight.includes(field);
 
     const visibleColumns = React.useMemo(
         () => columns.filter((c) => !hiddenCols[c.field]),
@@ -175,9 +196,10 @@ export default function DataTable({
     const orderedColumns = React.useMemo(
         () => [
             ...visibleColumns.filter((c) => isPinnedLeft(c.field)),
-            ...visibleColumns.filter((c) => !isPinnedLeft(c.field)),
+            ...visibleColumns.filter((c) => !isPinnedLeft(c.field) && !isPinnedRight(c.field)),
+            ...visibleColumns.filter((c) => isPinnedRight(c.field)),
         ],
-        [visibleColumns, pinnedLeft]
+        [visibleColumns, pinnedLeft, pinnedRight]
     );
 
     /* ================= LOCAL PROCESSING (filters / sort / paginate) ================= */
@@ -289,6 +311,12 @@ export default function DataTable({
         setOperators({});
         setPage(0);
     };
+
+    React.useEffect(() => {
+        return () => {
+            if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+        };
+    }, []);
 
     /* ========================================================= */
 
@@ -429,21 +457,70 @@ export default function DataTable({
                     Search
                 </Button> */}
 
-                <Button
-                    size="small"
-                    variant="outlined"
-                    startIcon={<ClearIcon />}
-                    onClick={() => {
-                        clearFilters();
-                        setSearchCounter((c) => c + 1);
-                    }}
-                >
-                    Clear
-                </Button>
+                {columns.some((c) => c.filterable) && (
+                    <Button
+                        size="small"
+                        variant="outlined"
+                        startIcon={<ClearIcon />}
+                        onClick={() => {
+                            clearFilters();
+                            setSearchCounter((c) => c + 1);
+                        }}
+                    >
+                        Clear
+                    </Button>
+                )}
 
                 <IconButton size="small" onClick={(e) => setAnchorEl(e.currentTarget)}>
                     <TuneIcon fontSize="small" />
                 </IconButton>
+                <Box sx={{ ml: 'auto', display: 'flex', gap: 1, alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <TextField
+                            size="small"
+                            placeholder="Search"
+                            value={localExternalSearch}
+                            onChange={(e) => {
+                                const v = e.target.value;
+                                setLocalExternalSearch(v);
+                                const trimmed = v.trim();
+                                // if parent provided a controller, notify it
+                                if (typeof onExternalSearchChange === "function") {
+                                    onExternalSearchChange(v);
+                                } else {
+                                    // if input is less than 3 chars, immediately trigger a fetch with empty q
+                                    if (trimmed.length < 3) {
+                                        if (searchDebounceRef.current) {
+                                            clearTimeout(searchDebounceRef.current);
+                                            searchDebounceRef.current = null;
+                                        }
+                                        setPage(0);
+                                        setSearchCounter((c) => c + 1);
+                                        return;
+                                    }
+
+                                    // otherwise debounce and trigger a search
+                                    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+                                    searchDebounceRef.current = setTimeout(() => {
+                                        setPage(0);
+                                        setSearchCounter((c) => c + 1);
+                                    }, 350);
+                                }
+                            }}
+                            InputProps={{
+                                startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1 }} />,
+                                endAdornment: (
+                                    <Tooltip title={searchActive ? 'Search active' : 'Search activates when 3+ characters are entered'}>
+                                        <IconButton size="small" sx={{ p: 0.5 }} disableRipple>
+                                            <InfoOutlinedIcon sx={{ color: searchActive ? 'primary.main' : 'text.disabled' }} fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
+                                ),
+                            }}
+                            sx={{ width: 260 }}
+                        />
+                    </Box>
+                </Box>
             </Box>
 
             {/* ================= COLUMN VISIBILITY ================= */}
@@ -486,24 +563,37 @@ export default function DataTable({
             {/* ================= TABLE ================= */}
             <TableContainer sx={{ maxHeight }}>
                 <Table stickyHeader >
-                    <TableHead sx={{ backgroundColor: "var(--lightgrey)" }}>
+                    <TableHead sx={{ backgroundColor: "var(--darkMedium)", color: "var(--onPrimary)" }}>
                         <TableRow>
                             {checkboxSelection && <TableCell padding="checkbox" />}
-                            {orderedColumns.map((col) => (
-                                <TableCell
-                                    key={col.field}
-                                    onClick={() => handleSort(col)}
-                                    sx={{
-                                        fontWeight: 600,
-                                        background: "var(--lightgrey)",
-                                        cursor: col.sortable === false ? "default" : "pointer",
-                                    }}
-                                >
-                                    {col.headerName}
-                                    {sortModel.field === col.field &&
-                                        (sortModel.direction === "asc" ? " ▲" : " ▼")}
-                                </TableCell>
-                            ))}
+                            {orderedColumns.map((col) => {
+                                const sx = {
+                                    fontWeight: 400,
+                                    background: "var(--darkMedium)",
+                                    color: "var(--onPrimary)",
+                                    cursor: col.sortable === false ? "default" : "pointer",
+                                };
+                                if (col.minWidth) sx.minWidth = col.minWidth;
+                                if (col.maxWidth) sx.maxWidth = col.maxWidth;
+                                if (isPinnedRight(col.field)) {
+                                    sx.position = 'sticky';
+                                    sx.right = 0;
+                                    sx.zIndex = 3;
+                                    sx.borderLeft = '1px solid var(--lightgrey)';
+                                }
+
+                                return (
+                                    <TableCell
+                                        key={col.field}
+                                        onClick={() => handleSort(col)}
+                                        sx={sx}
+                                    >
+                                        {col.headerName}
+                                        {sortModel.field === col.field &&
+                                            (sortModel.direction === "asc" ? " ▲" : " ▼")}
+                                    </TableCell>
+                                );
+                            })}
                         </TableRow>
                     </TableHead>
 
@@ -526,6 +616,7 @@ export default function DataTable({
                                     key={row.id}
                                     hover
                                     onDoubleClick={() => onRowDoubleClick?.(row)}
+                                    sx={{ '&:nth-of-type(even)': { backgroundColor: '#fbfbfb' } }}
                                 >
                                     {checkboxSelection && (
                                         <TableCell padding="checkbox">
@@ -535,13 +626,26 @@ export default function DataTable({
                                             />
                                         </TableCell>
                                     )}
-                                    {orderedColumns.map((col) => (
-                                        <TableCell key={col.field}>
-                                            {col.renderCell
-                                                ? col.renderCell({ value: row[col.field], row })
-                                                : row[col.field] ?? "-"}
-                                        </TableCell>
-                                    ))}
+                                    {orderedColumns.map((col) => {
+                                        const cellSx = {};
+                                        if (col.minWidth) cellSx.minWidth = col.minWidth;
+                                        if (col.maxWidth) cellSx.maxWidth = col.maxWidth;
+                                        if (isPinnedRight(col.field)) {
+                                            cellSx.position = 'sticky';
+                                            cellSx.right = 0;
+                                            cellSx.background = 'var(--onPrimary)';
+                                            cellSx.zIndex = 2;
+                                            cellSx.borderLeft = '1px solid var(--lightgrey)';
+                                        }
+
+                                        return (
+                                            <TableCell key={col.field} sx={cellSx}>
+                                                {col.renderCell
+                                                    ? col.renderCell({ value: row[col.field], row })
+                                                    : row[col.field] ?? "-"}
+                                            </TableCell>
+                                        );
+                                    })}
                                 </TableRow>
                             ))
                         )}
@@ -561,6 +665,9 @@ export default function DataTable({
                     setPage(0);
                 }}
                 rowsPerPageOptions={pageSizeOptions}
+                labelRowsPerPage="Records to Show"
+                labelDisplayedRows={({ from, to, count }) => `Showing ${from} - ${to} of ${count}`}
+                sx={{ px: 2 }}
             />
         </Paper>
     );

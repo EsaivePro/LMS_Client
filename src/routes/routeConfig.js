@@ -10,6 +10,14 @@ import UserProfile from "../modules/user/pages/UserProfile";
 import EnrollmentBase from "../modules/enrollment/pages/EnrollmentBase";
 import UsersProgress from "../modules/user/pages/UsersProgress";
 import UserCategoryPage from "../pages/user/CategoryPage";
+import QuestionManagement from "../modules/exam/pages/QuestionManagement";
+import QuestionsList from "../modules/exam/pages/QuestionsList";
+import QuestionCreate from "../modules/exam/pages/QuestionCreate";
+import ExamCreate from "../modules/exam/pages/ExamCreate";
+import MasterForm from "../forms/components/MasterForm";
+import examMaster from "../forms/master-forms/exam-master.json";
+import ExamManage from "../modules/exam/pages/ExamManage";
+import ExamPage from "../pages/exam/ExamPage";
 
 export const protectedRoutes = [
     {
@@ -108,5 +116,57 @@ export const protectedRoutes = [
         description: "View category enrollment and course progress for the current user.",
         permission: "course.view",
         element: <UserCategoryPage />,
+    },
+
+    {
+        path: "/questions/bank",
+        title: "Question Bank",
+        description: "Create and manage exam questions and answers.",
+        permission: "user.management",
+        element: <QuestionsList />,
+    },
+
+    {
+        path: "/questions/create",
+        title: "Question Bank",
+        description: "Create and manage exam questions and answers.",
+        permission: "user.management",
+        element: <QuestionCreate />,
+    },
+    {
+        path: "/exams",
+        title: "Exams",
+        description: "View and manage exams.",
+        permission: "user.management",
+        element: <MasterForm config={examMaster} />,
+    },
+    {
+        path: "/exam/create",
+        title: "Create Exam",
+        description: "Create exams, assign questions and schedule them.",
+        permission: "user.management",
+        element: <ExamCreate />,
+    },
+    {
+        path: "/exam/edit/:id",
+        title: "Manage exam",
+        description: "Create exams, assign questions and schedule them.",
+        permission: "user.management",
+        element: <ExamManage />,
+    },
+    {
+        path: "/exams/manage/:id",
+        title: "Manage exam",
+        description: "Create exams, assign questions and schedule them.",
+        permission: "user.management",
+        element: <ExamManage />,
+    },
+    {
+        path: "/exam/mock-test",
+        title: "Mock Exam",
+        description: "Live mock test view for candidates.",
+        permission: "user.management",
+        layoutProps: { containerCard: false, footer: false },
+        element: <ExamPage />,
     },
 ];
