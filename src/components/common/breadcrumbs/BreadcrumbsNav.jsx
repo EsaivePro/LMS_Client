@@ -8,7 +8,10 @@ export default function BreadcrumbsNav({ breadCurmbs = true }) {
     const navigate = useNavigate();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-    const pathnames = location.pathname.split("/").filter((x) => x);
+    const rawPathnames = location.pathname.split("/").filter((x) => x);
+    const displayItems = rawPathnames
+        .map((seg, idx) => ({ seg, idx }))
+        .filter(({ seg }) => seg.toLowerCase() !== "manage");
 
     // Hide breadcrumbs on login or full-screen pages if needed
     if (location.pathname === "/login" || !breadCurmbs) return null;
@@ -35,13 +38,13 @@ export default function BreadcrumbsNav({ breadCurmbs = true }) {
                     Dashboard
                 </Link>
 
-                {pathnames.map((value, index) => {
-                    const to = "/" + pathnames.slice(0, index + 1).join("/");
-                    const isLast = index === pathnames.length - 1;
+                {displayItems.map(({ seg, idx }, index) => {
+                    const to = "/" + rawPathnames.slice(0, idx + 1).join("/");
+                    const isLast = index === displayItems.length - 1;
 
                     return isLast ? (
                         <Typography key={to} color="text.primary" sx={{ fontWeight: 600 }}>
-                            {decodeURI(value)}
+                            {decodeURI(seg)}
                         </Typography>
                     ) : (
                         <Link
@@ -50,7 +53,7 @@ export default function BreadcrumbsNav({ breadCurmbs = true }) {
                             color="inherit"
                             onClick={() => navigate(to)}
                         >
-                            {decodeURI(value)}
+                            {decodeURI(seg)}
                         </Link>
                     );
                 })}
