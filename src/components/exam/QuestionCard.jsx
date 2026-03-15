@@ -1,39 +1,77 @@
-import React from 'react';
-import { Card, CardContent, Typography, RadioGroup, FormControlLabel, Radio, Box, Fade } from '@mui/material';
+import React from "react";
+import {
+    Card,
+    CardContent,
+    Typography,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
+    Box
+} from "@mui/material";
 
-export default function QuestionCard({ question, questionIndex, selected, onSelect }) {
+export default function QuestionCard({
+    question,
+    questionIndex,
+    selected,
+    onSelect
+}) {
+
     if (!question) return null;
 
     return (
-        <Fade in timeout={300}>
-            <Card elevation={2} sx={{ borderRadius: 0, boxShadow: 0 }}>
-                <CardContent sx={{ pb: 2 }}>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-                        Question No. {questionIndex + 1}
-                    </Typography>
 
-                    <Typography variant="h6" sx={{ mb: 2 }}>{question.text}</Typography>
+        <Card elevation={0}>
 
-                    <Box>
-                        <RadioGroup value={selected ?? ''} onChange={(e) => onSelect(e.target.value)}>
-                            {question.options.map((opt, idx) => (
-                                <FormControlLabel
-                                    key={idx}
-                                    value={String(idx)}
-                                    control={<Radio />}
-                                    label={<Typography variant="body1">{opt}</Typography>}
-                                    sx={{
-                                        mb: 1,
-                                        borderRadius: 1,
-                                        px: 1,
-                                        '&:hover': { bgcolor: 'action.hover', transition: 'background-color 150ms' },
-                                    }}
-                                />
-                            ))}
-                        </RadioGroup>
-                    </Box>
-                </CardContent>
-            </Card>
-        </Fade>
-    );
+            <CardContent>
+
+                <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
+                    sx={{ mb: 1 }}
+                >
+                    Question {questionIndex}
+                </Typography>
+
+                <Typography
+                    variant="h6"
+                    sx={{ mb: 3, fontWeight: 500 }}
+                >
+                    {question.text}
+                </Typography>
+
+                <RadioGroup
+                    value={selected ?? ""}
+                    onChange={(e) => onSelect(e.target.value)}
+                >
+
+                    {question.rawOptions.map((opt, idx) => (
+
+                        <Box
+                            key={opt.id}
+                            sx={{
+                                border: '1px solid #e5e7eb',
+                                borderRadius: 2,
+                                mb: 1
+                            }}
+                        >
+
+                            <FormControlLabel
+                                value={String(opt.id)}
+                                control={<Radio />}
+                                label={opt.option_text}
+                                sx={{ width: '100%', p: 1 }}
+                            />
+
+                        </Box>
+
+                    ))}
+
+                </RadioGroup>
+
+            </CardContent>
+
+        </Card>
+
+    )
+
 }

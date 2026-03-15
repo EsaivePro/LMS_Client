@@ -122,18 +122,24 @@ export default function ExamPage() {
                 if (!mounted) return;
                 if (questionResp?.error === false) {
                     const sectionQuestions = Array.isArray(questionResp?.response[0]?.questions) ? questionResp?.response[0]?.questions : [];
-                    const flat = (sectionQuestions || []).map((q, qIdx) => ({
-                        id: q.question_id,
-                        text: q.title,
-                        options: (q.options || []).map((o) => o.option_text),
-                        rawOptions: q.options || [],
-                        type: q.question_type,
-                        marks: q.marks,
-                        sectionIndex: q.question_id,
-                        order_no: q.order_no,
-                    }));
+                    const flat = [];
+                    (sectionQuestions || []).forEach((q) => {
+                        const obj = {
+                            id: q.question_id,
+                            text: q.title,
+                            options: (q.options || []).map((o) => o.option_text),
+                            rawOptions: q.options || [],
+                            type: q.question_type,
+                            marks: q.marks,
+                            sectionIndex: q.question_id,
+                            order_no: q.order_no,
+                        };
+                        flat[q.question_id] = obj;
+                    });
                     setQuestions(flat || []);
-                    setCurrent(0);
+                    // set current to the first question's id so questions[current] resolves
+                    const firstQuestionId = sectionQuestions?.[0]?.question_id ?? 0;
+                    setCurrent(firstQuestionId);
                     // ensure we have storage for this section (do not clear existing data)
                     setSelectedAnswers((prev) => ({ ...(prev || {}), [sectionIndex]: prev?.[sectionIndex] || {} }));
                     setMarked((prev) => ({ ...(prev || {}), [sectionIndex]: prev?.[sectionIndex] || new Set() }));
@@ -161,6 +167,24 @@ export default function ExamPage() {
 
     const answeredSet = useMemo(() => new Set(Object.keys(selectedAnswers[sectionIndex] || {}).map((k) => Number(k) + 1)), [selectedAnswers, sectionIndex]);
 
+    // Log answered set whenever it or the section changes
+    useEffect(() => {
+        try {
+            console.log(`answeredSet (section ${sectionIndex}):`, Array.from(answeredSet));
+        } catch (e) {
+            console.log('answeredSet log error', e);
+        }
+    }, [answeredSet, sectionIndex]);
+
+    // Log marked set whenever marked state or section changes
+    useEffect(() => {
+        try {
+            const curMarked = getSetFrom(marked[sectionIndex]);
+            console.log(`markedSet (section ${sectionIndex}):`, Array.from(curMarked));
+        } catch (e) {
+            console.log('markedSet log error', e);
+        }
+    }, [marked, sectionIndex]);
     function handleSelect(value) {
         setSelectedAnswers((prev) => {
             const bySection = { ...(prev || {}) };
@@ -219,111 +243,87 @@ export default function ExamPage() {
     };
 
     return (
-        <ThemeProvider theme={theme} sx={{ backgroundColor: "var(--surface2)" }}>
-            {/* <CssBaseline /> */}
-            <Box sx={{ height: '100vh', backgroundColor: "var(--surface2)", display: 'flex', flexDirection: 'column' }}>
-                {/* Header */}
+        <ThemeProvider theme={theme}>
+            <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+                {/* HEADER */}
                 <ExamHeader
                     title=""
                     timeLeft={timeLeft}
-                    onToggleFullscreen={toggleFullscreen}
                     language={language}
                     onLanguageChange={setLanguage}
-                    onToggleDark={() => setDark((d) => !d)}
                 />
 
-                <Box >
+                {/* BODY */}
+                <Box sx={{ flex: 1, display: "flex", overflow: "hidden" }}>
+                    {/* LEFT PANEL */}
+                    <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                        {/* SECTION HEADER */}
+                        <Box
+                            sx={{
+                                px: 3,
+                                py: 2,
+                                bgcolor: "#fff",
+                                borderBottom: "1px solid #e5e7eb",
+                                position: "sticky",
+                                top: 0,
+                                zIndex: 10
+                            }}
+                        >
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography variant="h6">SSC Mock Test</Typography>
 
-                    {/* Main Layout */}
-                    <Box sx={{ display: 'flex', height: 'calc(100vh - 64px)', bgcolor: '#f5f6fa' }}>
+                                <Box sx={{ flex: 1 }} />
 
-                        {/* LEFT PANEL */}
-                        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-
-                            {/* HEADER */}
-                            <Box
-                                sx={{
-                                    px: 3,
-                                    py: 2,
-                                    bgcolor: '#fff',
-                                    borderBottom: '1px solid #e6e6e6',
-                                    position: 'sticky',
-                                    top: 0,
-                                    zIndex: 10
-                                }}
-                            >
-                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <Typography variant="h6" fontWeight={600}>
-                                        SSC Mock Test
-                                    </Typography>
-
-                                    <Box sx={{ flex: 1 }} />
-
-                                    {/* Timer */}
-                                    <Box
-                                        sx={{
-                                            bgcolor: '#111827',
-                                            color: '#fff',
-                                            px: 2,
-                                            py: 0.6,
-                                            borderRadius: 2,
-                                            fontWeight: 600,
-                                            fontSize: 14
-                                        }}
-                                    >
-                                        ⏱ {formatTimeSimple(timeLeft)}
-                                    </Box>
-                                </Box>
-
-                                {/* SECTION TABS */}
-                                <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                                    {sections.map((s) => {
-                                        const active = s.section_id === sectionIndex;
-
-                                        return (
-                                            <Box
-                                                key={s.section_id}
-                                                onClick={() => setSectionIndex(s.section_id)}
-                                                sx={{
-                                                    px: 2.5,
-                                                    py: 0.6,
-                                                    borderRadius: 6,
-                                                    cursor: 'pointer',
-                                                    fontSize: 14,
-                                                    fontWeight: 500,
-                                                    transition: 'all .2s',
-                                                    bgcolor: active ? 'primary.main' : '#eef1f6',
-                                                    color: active ? '#fff' : 'text.primary',
-                                                    '&:hover': {
-                                                        bgcolor: active ? 'primary.dark' : '#e3e7ef'
-                                                    }
-                                                }}
-                                            >
-                                                {s.display_name}
-                                            </Box>
-                                        );
-                                    })}
+                                <Box
+                                    sx={{
+                                        bgcolor: "#111827",
+                                        color: "#fff",
+                                        px: 2,
+                                        py: 0.6,
+                                        borderRadius: 2
+                                    }}
+                                >
+                                    ⏱ {formatTimeSimple(timeLeft)}
                                 </Box>
                             </Box>
 
-                            {/* QUESTION AREA */}
-                            <Box
-                                sx={{
-                                    flex: 1,
-                                    overflowY: 'auto',
-                                    px: 3,
-                                    py: 3
-                                }}
-                            >
-                                <Card
-                                    elevation={2}
-                                    sx={{
-                                        borderRadius: 3,
-                                        p: 3,
-                                        maxWidth: 900,
-                                        margin: '0 auto'
-                                    }}
-                                >
+                            {/* SECTION TABS */}
+                            <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
+                                {sections.map((s) => {
+                                    const active = s.section_id === sectionIndex;
+
+                                    return (
+                                        <Box
+                                            key={s.section_id}
+                                            onClick={() => setSectionIndex(s.section_id)}
+                                            sx={{
+                                                px: 2.5,
+                                                py: 0.6,
+                                                borderRadius: 5,
+                                                cursor: "pointer",
+                                                bgcolor: active ? "primary.main" : "#eef2f7",
+                                                color: active ? "#fff" : "#333"
+                                            }}
+                                        >
+                                            {s.display_name}
+                                        </Box>
+                                    );
+                                })}
+                            </Box>
+                        </Box>
+
+                        {/* QUESTION SCROLL AREA */}
+                        <Box
+                            sx={{
+                                flex: 1,
+                                overflowY: "auto",
+                                px: 3,
+                                py: 3,
+                                pb: "120px"
+                            }}
+                        >
+                            <Box sx={{ maxWidth: 900, mx: "auto" }}>
+                                <Card sx={{ p: 3, borderRadius: 3 }}>
                                     <QuestionCard
                                         question={questions[current]}
                                         questionIndex={current}
@@ -333,80 +333,90 @@ export default function ExamPage() {
                                 </Card>
                             </Box>
                         </Box>
-
-                        {/* RIGHT PANEL */}
-                        {isLarge ? (
-                            <Box
-                                sx={{
-                                    width: drawerWidth,
-                                    bgcolor: '#fff',
-                                    borderLeft: '1px solid #e6e6e6',
-                                    boxShadow: '-2px 0 8px rgba(0,0,0,0.05)',
-                                    height: '100%'
-                                }}
-                            >
-                                <SidebarPanel
-                                    questions={questions}
-                                    current={current}
-                                    answeredSet={answeredSet}
-                                    markedSet={getSetFrom(marked[sectionIndex])}
-                                    onJump={handleJump}
-                                    displayName={displayName}
-                                    userInitial={userInitial}
-                                    roleName={roleName}
-                                    timeLeft={timeLeft}
-                                />
-                            </Box>
-                        ) : (
-                            <>
-                                <Button
-                                    onClick={() => setDrawerOpen(true)}
-                                    variant="contained"
-                                    sx={{
-                                        position: 'fixed',
-                                        right: 20,
-                                        bottom: 20,
-                                        borderRadius: 10,
-                                        px: 3
-                                    }}
-                                >
-                                    Questions
-                                </Button>
-
-                                <Drawer
-                                    anchor="right"
-                                    open={drawerOpen}
-                                    onClose={() => setDrawerOpen(false)}
-                                >
-                                    <Box sx={{ width: drawerWidth, p: 2 }}>
-                                        <SidebarPanel
-                                            questions={questions}
-                                            current={current}
-                                            answeredSet={answeredSet}
-                                            markedSet={getSetFrom(marked[sectionIndex])}
-                                            onJump={(i) => {
-                                                setDrawerOpen(false);
-                                                handleJump(i);
-                                            }}
-                                            displayName={displayName}
-                                            userInitial={userInitial}
-                                            roleName={roleName}
-                                            timeLeft={timeLeft}
-                                        />
-                                    </Box>
-                                </Drawer>
-                            </>
-                        )}
                     </Box>
+
+                    {/* SIDEBAR */}
+                    {isLarge ? (
+                        <Box
+                            sx={{
+                                width: drawerWidth,
+                                borderLeft: "1px solid #e6e6e6",
+                                position: "sticky",
+                                top: 0,
+                                height: "calc(100vh - 64px)",
+                                display: "flex",
+                                flexDirection: "column",
+                                bgcolor: "#fff"
+                            }}
+                        >
+                            <SidebarPanel
+                                questions={questions}
+                                current={current}
+                                answeredSet={answeredSet}
+                                markedSet={getSetFrom(marked[sectionIndex])}
+                                onJump={handleJump}
+                                displayName={displayName}
+                                userInitial={userInitial}
+                                roleName={roleName}
+                                timeLeft={timeLeft}
+                            />
+                        </Box>
+                    ) : (
+                        <>
+                            <Button
+                                onClick={() => setDrawerOpen(true)}
+                                variant="contained"
+                                sx={{ position: "fixed", right: 20, bottom: 90 }}
+                            >
+                                Questions
+                            </Button>
+
+                            <Drawer
+                                anchor="right"
+                                open={drawerOpen}
+                                onClose={() => setDrawerOpen(false)}
+                            >
+                                <Box sx={{ width: drawerWidth }}>
+                                    <SidebarPanel
+                                        questions={questions}
+                                        current={current}
+                                        answeredSet={answeredSet}
+                                        markedSet={getSetFrom(marked[sectionIndex])}
+                                        onJump={(i) => {
+                                            setDrawerOpen(false);
+                                            handleJump(i);
+                                        }}
+                                        displayName={displayName}
+                                        userInitial={userInitial}
+                                        roleName={roleName}
+                                        timeLeft={timeLeft}
+                                    />
+                                </Box>
+                            </Drawer>
+                        </>
+                    )}
                 </Box>
 
-                {/* Footer (fixed) */}
-                <Box sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, display: 'flex', justifyContent: 'center' }}>
-                    <Box sx={{ width: '100%', '& > *': { position: 'relative !important' } }}>
-                        <ActionBar onMark={handleMark} onClear={handleClear} onSaveNext={handleSaveNext} isMarked={getSetFrom(marked[sectionIndex]).has(current + 1)} />
-                    </Box>
+                {/* FOOTER */}
+                <Box
+                    sx={{
+                        position: "fixed",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        bgcolor: "#fff",
+                        borderTop: "1px solid #e5e7eb",
+                        py: 1
+                    }}
+                >
+                    <ActionBar
+                        onMark={handleMark}
+                        onClear={handleClear}
+                        onSaveNext={handleSaveNext}
+                        isMarked={getSetFrom(marked[sectionIndex]).has(current + 1)}
+                    />
                 </Box>
             </Box>
-        </ThemeProvider >
+        </ThemeProvider>
     );
 }
