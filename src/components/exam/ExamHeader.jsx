@@ -1,8 +1,10 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Box, IconButton, MenuItem, Select, Stack } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, IconButton, MenuItem, Select, Stack, Link } from '@mui/material';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import THEME from '../../constants/theme';
 
 export default function ExamHeader({ title, timeLeft, onToggleFullscreen, language, onLanguageChange, onToggleDark }) {
     const formatTime = (s) => {
@@ -13,15 +15,19 @@ export default function ExamHeader({ title, timeLeft, onToggleFullscreen, langua
     };
 
     return (
-        <AppBar position="static" color="inherit" elevation={1} sx={{ borderRadius: 1 }}>
+        <AppBar position="static" color="inherit" elevation={1} sx={{ borderRadius: 1, height: '62px' }}>
             <Toolbar sx={{ px: { xs: 1, md: 3 }, gap: 2 }}>
+                <img src={THEME?.manifest?.icons?.[0]?.src ? `/${THEME.manifest.icons[0].src}` : '/logo/EsaiLogo.png'} alt={THEME?.manifest?.name || 'Esai'} width="150" />
+
+                {/* <Box size="large" >
+                    <ChevronRightIcon />
+                </Box> */}
+
                 <Typography variant="h6" sx={{ flex: 1, fontWeight: 600 }}>{title}</Typography>
 
-                <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography variant="body2" color="text.secondary">Time Left</Typography>
-                    <Box sx={{ px: 1, py: 0.5, bgcolor: 'background.paper', borderRadius: 1, boxShadow: 1 }}>
-                        <Typography variant="subtitle2" sx={{ fontFamily: 'monospace' }}>{formatTime(timeLeft)}</Typography>
-                    </Box>
+                <Stack direction="row" spacing={2} alignItems="center">
+                    <Link component="button" underline="none" sx={{ fontSize: 14, color: 'var(--primary)' }}>Question Paper</Link>
+                    <Link component="button" underline="none" sx={{ fontSize: 14, color: 'var(--primary)' }}>Instructions</Link>
 
                     <IconButton onClick={onToggleFullscreen} aria-label="fullscreen" size="large">
                         <FullscreenIcon />
@@ -29,16 +35,16 @@ export default function ExamHeader({ title, timeLeft, onToggleFullscreen, langua
 
                     <Select value={language} size="small" onChange={(e) => onLanguageChange(e.target.value)}>
                         <MenuItem value="en">English</MenuItem>
-                        <MenuItem value="hi">हिंदी</MenuItem>
+                        {/* <MenuItem value="hi">हिंदी</MenuItem> */}
                     </Select>
 
-                    <IconButton onClick={onToggleDark} size="large" aria-label="toggle theme">
+                    {/* <IconButton onClick={onToggleDark} size="large" aria-label="toggle theme">
                         <Brightness4Icon />
-                    </IconButton>
+                    </IconButton> */}
 
-                    <IconButton size="large" aria-label="report">
+                    {/* <IconButton size="large" aria-label="report">
                         <ReportProblemOutlinedIcon />
-                    </IconButton>
+                    </IconButton> */}
                 </Stack>
             </Toolbar>
         </AppBar>

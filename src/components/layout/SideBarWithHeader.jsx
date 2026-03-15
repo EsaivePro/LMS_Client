@@ -164,7 +164,7 @@ export default function SideBarWithHeader({ children }) {
     const [expandedGroup, setExpandedGroup] = React.useState(null);
     const sidebarRef = React.useRef(null);
     const { logout, user, isAuthenticated } = useAuth();
-    const { viewContainerCard, viewCourseCard } = useCommon();
+    const { viewContainerCard, viewCourseCard, viewHeader } = useCommon();
     const { permissions } = useAdmin();
     const navigate = useNavigate();
 
@@ -216,9 +216,9 @@ export default function SideBarWithHeader({ children }) {
                 <CssBaseline />
 
                 {/* TOP NAVBAR */}
-                <AppBar position="fixed">
+                {viewHeader && <AppBar position="fixed">
                     <Header toggleSidebar={toggleSidebar} profile={handleProfile} logout={handleLogout} open />
-                </AppBar>
+                </AppBar>}
 
                 {/* OVERLAY BACKDROP */}
                 {open && (
@@ -489,7 +489,7 @@ export default function SideBarWithHeader({ children }) {
                 </Box>
 
                 {/* MAIN CONTENT */}
-                <Main sx={{ m: 0, p: 0, maxWidth: '100%' }}>
+                {viewHeader ? <Main sx={{ m: 0, p: 0, maxWidth: '100%' }}>
                     <Box sx={{ m: isMobile ? 1.8 : 4, mt: isMobile ? 9 : 9, mb: 0 }}>
                         {viewContainerCard && <ContentContainer>{children}</ContentContainer>}
                         {(!viewContainerCard && !viewCourseCard) && <Box>{children}</Box>}
@@ -497,7 +497,9 @@ export default function SideBarWithHeader({ children }) {
                     <Box sx={{ mt: isMobile ? 16 : 16 }}>
                         {viewCourseCard && <CourseContainer>{children}</CourseContainer>}
                     </Box>
-                </Main>
+                </Main> : <Main sx={{ m: 0, p: 0, maxWidth: '100%' }}>
+                    <Box>{children}</Box>
+                </Main>}
             </Box>
         </div>
     );

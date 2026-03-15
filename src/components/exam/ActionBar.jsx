@@ -8,6 +8,7 @@ export default function ActionBar({ onMark, onClear, onSaveNext, isMarked }) {
                 <Button color="warning" variant="contained" onClick={onMark}>{isMarked ? 'Unmark' : 'Mark for Review'}</Button>
                 <Button variant="outlined" onClick={onClear}>Clear Response</Button>
                 <Button variant="contained" color="primary" onClick={onSaveNext}>Save & Next</Button>
+                <Button variant="contained" color="primary">Submit Test</Button>
             </Stack>
         </Box>
     );

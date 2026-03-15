@@ -6,7 +6,7 @@ export default function QuestionCard({ question, questionIndex, selected, onSele
 
     return (
         <Fade in timeout={300}>
-            <Card elevation={2} sx={{ borderRadius: 2 }}>
+            <Card elevation={2} sx={{ borderRadius: 0, boxShadow: 0 }}>
                 <CardContent sx={{ pb: 2 }}>
                     <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
                         Question No. {questionIndex + 1}

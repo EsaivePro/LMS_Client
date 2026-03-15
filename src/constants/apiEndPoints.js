@@ -106,4 +106,6 @@ export const API_ENDPOINTS = {
     INSERT_FORM: "/form-service/insert",
     UPDATE_FORM: "/form-service/update", // append :id
     DELETE_FORM: "/form-service/delete", // append :id
+
+    EXECUTE: "/v1/execute/", // append :id
 };

@@ -14,29 +14,31 @@ function getColorTheme(state, theme) {
     }
 }
 
-export default function QuestionGrid({ questions, current, answeredSet, markedSet, onJump }) {
+export default function QuestionGrid({ questions, current, answeredSet = new Set(), markedSet = new Set(), onJump }) {
     return (
         <Box sx={{ mt: 2 }}>
             <Grid container spacing={1}>
-                {questions.map((q) => {
-                    const state = answeredSet.has(q.id) ? 'answered' : markedSet.has(q.id) ? 'marked' : 'notVisited';
+                {questions.map((q, idx) => {
+                    const number = idx + 1;
+                    const state = answeredSet.has(number) ? 'answered' : markedSet.has(number) ? 'marked' : 'notAnswered';
                     return (
-                        <Grid item xs={12} sm={2.4} md={2.4} key={q.id}>
+                        <Grid item xs={3} sm={2} md={2} key={q.id || number}>
                             <Button
-                                onClick={() => onJump(q.id - 1)}
-                                variant={current === q.id - 1 ? 'outlined' : 'contained'}
+                                onClick={() => onJump(idx)}
+                                variant={current === idx ? 'outlined' : 'contained'}
                                 sx={(theme) => ({
                                     minWidth: 44,
-                                    width: '100%',
+                                    width: 44,
                                     height: 44,
-                                    bgcolor: current === q.id - 1 ? 'background.paper' : getColorTheme(state, theme),
-                                    color: current === q.id - 1 ? 'primary.main' : 'common.white',
-                                    borderColor: current === q.id - 1 ? theme.palette.primary.main : undefined,
+                                    bgcolor: current === idx ? 'background.paper' : getColorTheme(state, theme),
+                                    color: current === idx ? 'primary.main' : 'common.white',
+                                    borderColor: current === idx ? theme.palette.primary.main : undefined,
                                     '&:hover': { transform: 'translateY(-2px)' },
-                                    borderRadius: 1,
+                                    borderRadius: '50%',
+                                    fontWeight: 700,
                                 })}
                             >
-                                {q.id}
+                                {number}
                             </Button>
                         </Grid>
                     );

@@ -121,4 +121,5 @@ export const httpClient = {
     updateForm: async (data) => axiosInstance.put(API_ENDPOINTS.UPDATE_FORM, data),
     deleteForm: async (data) => axiosInstance.delete(API_ENDPOINTS.DELETE_FORM, data),
 
+    execute: async (name, data) => axiosInstance.post(API_ENDPOINTS.EXECUTE + name, data),
 };

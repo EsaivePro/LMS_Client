@@ -17,7 +17,7 @@ import ExamCreate from "../modules/exam/pages/ExamCreate";
 import MasterForm from "../forms/components/MasterForm";
 import examMaster from "../forms/master-forms/exam-master.json";
 import ExamManage from "../modules/exam/pages/ExamManage";
-import ExamPage from "../pages/exam/ExamPage";
+import ExamPage from "../modules/exam/pages/ExamPage";
 
 export const protectedRoutes = [
     {
@@ -162,11 +162,11 @@ export const protectedRoutes = [
         element: <ExamManage />,
     },
     {
-        path: "/exam/mock-test",
-        title: "Mock Exam",
+        path: "/exam/:examid/user/:userid",
+        title: "Exam",
         description: "Live mock test view for candidates.",
         permission: "user.management",
-        layoutProps: { containerCard: false, footer: false },
+        layoutProps: { containerCard: false, footer: false, breadCurmbs: false, header: false },
         element: <ExamPage />,
     },
 ];
