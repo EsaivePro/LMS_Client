@@ -15,7 +15,7 @@ export default function ExamHeader({ title, timeLeft, onToggleFullscreen, langua
     };
 
     return (
-        <AppBar position="static" color="inherit" elevation={1} sx={{ borderRadius: 1, height: '62px' }}>
+        <AppBar position="static" color="inherit" elevation={1} sx={{ borderRadius: 1, height: '62px', backgroundColor: 'var(--surface2)', boxShadow: 8 }}>
             <Toolbar sx={{ px: { xs: 1, md: 3 }, gap: 2 }}>
                 <img src={THEME?.manifest?.icons?.[0]?.src ? `/${THEME.manifest.icons[0].src}` : '/logo/EsaiLogo.png'} alt={THEME?.manifest?.name || 'Esai'} width="150" />
 

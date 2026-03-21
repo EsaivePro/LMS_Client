@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Button, Stack } from "@mui/material";
 
-export default function ActionBar({ onMark, onClear, onSaveNext, isMarked }) {
+export default function ActionBar({ onMark, onClear, onSaveNext, isMarked, onSubmit }) {
     return (
         <Box
             sx={{
@@ -71,6 +71,7 @@ export default function ActionBar({ onMark, onClear, onSaveNext, isMarked }) {
                     <Button
                         variant="contained"
                         color="error"
+                        onClick={onSubmit}
                         sx={{
                             fontWeight: 600,
                             px: 3,

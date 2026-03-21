@@ -56,7 +56,7 @@ export default function QuestionCard({
                         >
 
                             <FormControlLabel
-                                value={String(opt.id)}
+                                value={opt.id}
                                 control={<Radio />}
                                 label={opt.option_text}
                                 sx={{ width: '100%', p: 1 }}
