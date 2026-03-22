@@ -154,13 +154,15 @@ const MENU = [
     // },
 ];
 
-export default function SideBarWithHeader({ children }) {
+export default function SideBarWithHeader({ children, fixed = true, footer = null }) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const location = useLocation();
     const viewSidebarHeader = useSelector((s) => s.ui.viewSidebarHeader) || true;
-    const [open, setOpen] = React.useState(false);
+    // fixed=true → persistent sidebar (default open, pushes content)
+    // fixed=false → overlay sidebar (default closed, slides over content)
+    const [open, setOpen] = React.useState(fixed ? true : false);
     const [expandedGroup, setExpandedGroup] = React.useState(null);
     const sidebarRef = React.useRef(null);
     const { logout, user, isAuthenticated } = useAuth();
@@ -190,17 +192,18 @@ export default function SideBarWithHeader({ children }) {
         });
     }, [location.pathname]);
 
-    const toggleSidebar = () => {
-        setOpen(true);
-    }
+    const toggleSidebar = () => setOpen(prev => !prev);
 
     // Toggle group expand
     const handleGroupClick = (index) => {
         setExpandedGroup((prev) => (prev === index ? null : index));
     };
 
-    // Close sidebar when clicking outside
+    // Outside click closes sidebar:
+    // fixed=true  → only on mobile (desktop is persistent)
+    // fixed=false → always (overlay mode)
     React.useEffect(() => {
+        if (fixed && !isMobile) return;
         const handleOutside = (e) => {
             if (open && sidebarRef.current && !sidebarRef.current.contains(e.target)) {
                 setOpen(false);
@@ -208,10 +211,12 @@ export default function SideBarWithHeader({ children }) {
         };
         document.addEventListener("mousedown", handleOutside);
         return () => document.removeEventListener("mousedown", handleOutside);
-    }, [open]);
+    }, [open, isMobile, fixed]);
+
+    const sidebarOffset = fixed && !isMobile && open ? `${drawerWidth}px` : '0px';
 
     return (
-        <div>
+        <div style={{ '--sidebar-offset': sidebarOffset }}>
             <Box sx={{ display: "flex" }}>
                 <CssBaseline />
 
@@ -220,17 +225,17 @@ export default function SideBarWithHeader({ children }) {
                     <Header toggleSidebar={toggleSidebar} profile={handleProfile} logout={handleLogout} open />
                 </AppBar>}
 
-                {/* OVERLAY BACKDROP */}
-                {open && (
+                {/* OVERLAY BACKDROP:
+                    - fixed=true  → only on mobile (desktop sidebar is persistent)
+                    - fixed=false → always (sidebar is always an overlay) */}
+                {open && (fixed ? isMobile : true) && (
                     <Box
                         sx={{
                             position: "fixed",
-                            top: "64px",
-                            left: 0,
+                            top: "64px", left: 0,
                             width: "100%",
                             height: "calc(100vh - 64px)",
                             backgroundColor: "rgba(0,0,0,0.25)",
-                            // backdropFilter: "blur(1px)",
                             zIndex: 1500,
                         }}
                         onClick={() => setOpen(false)}
@@ -264,7 +269,7 @@ export default function SideBarWithHeader({ children }) {
                             px: 2,
                         }}
                     >
-                        <IconButton onClick={() => setOpen(false)} sx={{ color: "var(--primary)" }}>
+                        <IconButton onClick={() => (!fixed || isMobile) && setOpen(false)} sx={{ color: "var(--primary)" }}>
                             <ChevronLeftIcon />
                         </IconButton>
                     </Box>
@@ -293,7 +298,7 @@ export default function SideBarWithHeader({ children }) {
                                         <Link
                                             to={item.to}
                                             style={{ textDecoration: "none", color: "inherit" }}
-                                            onClick={() => setOpen(false)}
+                                            onClick={() => (!fixed || isMobile) && setOpen(false)}
                                         >
                                             <ListItem disablePadding>
                                                 <ListItemButton
@@ -367,7 +372,7 @@ export default function SideBarWithHeader({ children }) {
                                                                     textDecoration: "none",
                                                                     color: "inherit",
                                                                 }}
-                                                                onClick={() => setOpen(false)}
+                                                                onClick={() => (!fixed || isMobile) && setOpen(false)}
                                                             >
                                                                 <ListItem disablePadding>
                                                                     <ListItemButton
@@ -424,7 +429,7 @@ export default function SideBarWithHeader({ children }) {
                         <Link
                             to={"/user/profile/" + user?.id}
                             style={{ textDecoration: "none", color: "inherit" }}
-                            onClick={() => setOpen(false)}
+                            onClick={() => (!fixed || isMobile) && setOpen(false)}
                         >
                             <ListItem disablePadding>
                                 <ListItemButton
@@ -489,10 +494,15 @@ export default function SideBarWithHeader({ children }) {
                 </Box>
 
                 {/* MAIN CONTENT */}
-                {viewHeader ? <Main sx={{ m: 0, p: 0, maxWidth: '100%' }}>
+                {viewHeader ? <Main sx={{
+                    m: 0, p: 0, maxWidth: '100%',
+                    // fixed=true on desktop → push content; fixed=false → content stays full width
+                    ml: fixed && !isMobile && open ? `${drawerWidth}px` : 0,
+                    transition: 'margin-left 0.3s ease',
+                }}>
                     <Box sx={{
                         m: 0, px: isMobile ? 1.8 : 4, mt: isMobile ? 9 : 9, mb: 0,
-                        background: "linear-gradient(135deg, #f8f9fb 0%, #fdfdff  50%, #ffffff 100%)",
+                        background: "linear-gradient(135deg, #f8f9fb 0%, #fdfdff 50%, #ffffff 100%)",
                     }}>
                         {viewContainerCard && <ContentContainer>{children}</ContentContainer>}
                         {(!viewContainerCard && !viewCourseCard) && <Box>{children}</Box>}
@@ -500,6 +510,7 @@ export default function SideBarWithHeader({ children }) {
                     <Box sx={{ mt: isMobile ? 16 : 16 }}>
                         {viewCourseCard && <CourseContainer>{children}</CourseContainer>}
                     </Box>
+                    {footer}
                 </Main> : <Main sx={{ m: 0, p: 0, maxWidth: '100%' }}>
                     <Box>{children}</Box>
                 </Main>}

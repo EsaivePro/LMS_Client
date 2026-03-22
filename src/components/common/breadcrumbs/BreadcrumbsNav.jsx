@@ -20,10 +20,11 @@ export default function BreadcrumbsNav({ breadCurmbs = true }) {
         <Box
             sx={{
                 position: "fixed",
-                top: 64,          // 👈 BELOW YOUR NAVBAR HEIGHT
-                left: 0,
+                top: 64,
+                left: 'var(--sidebar-offset, 0px)',
                 right: 0,
                 zIndex: 1000,
+                transition: 'left 0.3s ease',
                 bgcolor: "white",
                 // borderBottom: "1px solid #e0e0e0",
                 p: 1.5,

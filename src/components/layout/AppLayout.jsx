@@ -39,19 +39,14 @@ export default function AppLayout({
 
     return (
         <div className="app-root">
-            <SideBarWithHeader>
+            <SideBarWithHeader footer={<Footer />}>
                 {/* FIXED BREADCRUMB NAV */}
                 <BreadcrumbsNav breadCurmbs={breadCurmbs} />
                 <GlobalAlert />
                 {/* PAGE CONTENT */}
                 <LoadingScreen />
-
-                {/* Offset for sticky breadcrumb (avoids overlap) */}
                 {children}
-
             </SideBarWithHeader>
-
-            <Footer />
         </div>
     );
 }
