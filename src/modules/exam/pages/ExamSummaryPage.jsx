@@ -241,6 +241,7 @@ export default function ExamSummaryPage() {
 
     const [examData, setExamData] = useState(null);
     const [viewAttempt, setViewAttempt] = useState(null);
+    const [startConfirmOpen, setStartConfirmOpen] = useState(false);
     const [examApi, setExamApi] = useState(false);
     useEffect(() => {
         async function load() {
@@ -286,50 +287,71 @@ export default function ExamSummaryPage() {
         ? Math.min(100, (completedAttempts / maxAttempts) * 100)
         : 0;
 
+    const inProgressAttempt = user_attempts?.find(a => a.status === 'inprogress' || a.status === 'in_progress');
     const notStartedAttempt = user_attempts?.find(a => a.status === 'not_started');
-    const canStart = !!notStartedAttempt;
+    const activeAttempt = inProgressAttempt || notStartedAttempt;
+    const canStart = !!activeAttempt;
+    const isResume = !!inProgressAttempt;
+    const isNextAttempt = !inProgressAttempt && !!notStartedAttempt && completedAttempts > 0;
 
     function handleStartExam() {
-        if (!notStartedAttempt) return;
-        navigate(`/exam/${examid}/user/${userId}?attemptid=${notStartedAttempt.attempt_id}`);
+        if (!activeAttempt) return;
+        if (isResume) {
+            // Resume in-progress attempt — no confirmation needed
+            navigate(`/exam/${examid}/user/${userId}?attemptid=${activeAttempt.attempt_id}`);
+        } else {
+            // New attempt — show confirmation first
+            setStartConfirmOpen(true);
+        }
+    }
+
+    function handleConfirmStart() {
+        setStartConfirmOpen(false);
+        navigate(`/exam/${examid}/user/${userId}?attemptid=${activeAttempt.attempt_id}`);
     }
 
     const totalQuestions = sections?.reduce((s, x) => s + (x.question_count || 0), 0) ?? 0;
 
     return (
-        <Box sx={{ bgcolor: '#f0f2f5', py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3, md: 4 } }}>
+        <Box sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3, md: 4 } }}>
 
             {/* ── 1. Exam Info Card ─────────────────────────────────────── */}
             <Card sx={{ mb: 2.5, borderRadius: 2.5, boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }}>
                 <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2, flexWrap: 'wrap' }}>
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: { xs: 'column', md: 'row' },
+                        alignItems: { xs: 'stretch', md: 'flex-start' },
+                        gap: { xs: 2.5, md: 3 },
+                    }}>
 
-                        {/* Left */}
+                        {/* ── Left: exam info ── */}
                         <Box sx={{ flex: 1, minWidth: 0 }}>
-                            {/* Title */}
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1, flexWrap: 'wrap' }}>
-                                <Typography fontWeight={800} fontSize="1.75rem">
+
+                            {/* Title row */}
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.75, flexWrap: 'wrap' }}>
+                                <Typography fontWeight={800} fontSize={{ xs: '1.4rem', sm: '1.75rem' }} lineHeight={1.2}>
                                     {exam?.display_name || exam?.title}
                                 </Typography>
                                 {exam?.is_active && (
                                     <Tooltip title="This exam is currently active and accepting submissions" arrow>
                                         <Chip label="Available" size="small"
-                                            sx={{ bgcolor: '#dcfce7', color: '#166534', fontWeight: 700, fontSize: '0.85rem', cursor: 'default' }} />
+                                            sx={{ bgcolor: '#dcfce7', color: '#166534', fontWeight: 700, fontSize: '0.8rem', cursor: 'default' }} />
                                     </Tooltip>
                                 )}
                             </Box>
 
-                            {/* Subtitle */}
+                            {/* Subtitle row */}
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5, flexWrap: 'wrap' }}>
                                 <Tooltip title="Exam title" arrow>
-                                    <CheckCircleIcon sx={{ fontSize: 18, color: '#43a047', cursor: 'default' }} />
+                                    <CheckCircleIcon sx={{ fontSize: 17, color: '#43a047', cursor: 'default', flexShrink: 0 }} />
                                 </Tooltip>
-                                <Typography fontSize="1.125rem" fontWeight={600}>{exam?.title}</Typography>
+                                <Typography fontSize="1rem" fontWeight={600}>{exam?.title}</Typography>
                                 {maxAttempts && (
                                     <>
-                                        <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: '#d1d5db' }} />
-                                        <Tooltip title="Total number of attempts allowed for this exam" arrow>
-                                            <Typography fontSize="1.125rem" color="text.secondary" sx={{ cursor: 'default' }}>
+                                        <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: '#d1d5db', flexShrink: 0 }} />
+                                        <Tooltip title="Total attempts allowed for this exam" arrow>
+                                            <Typography fontSize="1rem" color="text.secondary" sx={{ cursor: 'default' }}>
                                                 {maxAttempts} Attempts
                                             </Typography>
                                         </Tooltip>
@@ -337,74 +359,135 @@ export default function ExamSummaryPage() {
                                 )}
                                 {exam?.duration_minutes && (
                                     <>
-                                        <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: '#d1d5db' }} />
-                                        <Tooltip title="Total allowed duration for each attempt" arrow>
+                                        <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: '#d1d5db', flexShrink: 0 }} />
+                                        <Tooltip title="Total allowed duration per attempt" arrow>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, cursor: 'default' }}>
-                                                <AccessTimeIcon sx={{ fontSize: 16, color: '#6b7280' }} />
-                                                <Typography fontSize="1.125rem" color="text.secondary">{exam.duration_minutes} min</Typography>
+                                                <AccessTimeIcon sx={{ fontSize: 15, color: '#6b7280' }} />
+                                                <Typography fontSize="1rem" color="text.secondary">{exam.duration_minutes} min</Typography>
                                             </Box>
                                         </Tooltip>
                                     </>
                                 )}
                             </Box>
 
-                            {/* Stat boxes */}
+                            {/* Stat boxes — 3 equal columns, wrap on small screens */}
                             <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
-                                <Box sx={{ flex: '1 1 0', minWidth: 180 }}>
-                                    <StatBox
-                                        icon={<ListAltOutlinedIcon fontSize="large" />}
-                                        label={`${sections?.length ?? 0} Sections`}
-                                        sub={`${totalQuestions} total questions`}
-                                        tooltip={`${sections?.length ?? 0} section(s) with ${totalQuestions} question(s) in total`}
-                                    />
-                                </Box>
-                                <Box sx={{ flex: '1 1 0', minWidth: 180 }}>
-                                    <StatBox
-                                        icon={<GppGoodOutlinedIcon fontSize="large" />}
-                                        label={`${exam?.total_marks ?? '—'} Marks`}
-                                        sub="Total marks"
-                                        tooltip="Maximum marks achievable in this exam"
-                                    />
-                                </Box>
-                                <Box sx={{ flex: '1 1 0', minWidth: 180 }}>
-                                    <StatBox
-                                        icon={<TimelapseIcon fontSize="large" />}
-                                        label={fmtHHMMSS(exam?.duration_minutes)}
-                                        sub="Total Duration"
-                                        tooltip={`Duration: ${fmtHHMMSS(exam?.duration_minutes)} (HH:MM:SS)`}
-                                    />
-                                </Box>
+                                {[
+                                    {
+                                        icon: <ListAltOutlinedIcon fontSize="small" />,
+                                        label: `${sections?.length ?? 0} Sections`,
+                                        sub: `${totalQuestions} total questions`,
+                                        tooltip: `${sections?.length ?? 0} section(s) with ${totalQuestions} question(s)`,
+                                    },
+                                    {
+                                        icon: <GppGoodOutlinedIcon fontSize="small" />,
+                                        label: `${exam?.total_marks ?? '—'} Marks`,
+                                        sub: 'Total marks',
+                                        tooltip: 'Maximum marks achievable in this exam',
+                                    },
+                                    {
+                                        icon: <TimelapseIcon fontSize="small" />,
+                                        label: fmtHHMMSS(exam?.duration_minutes),
+                                        sub: 'Total Duration',
+                                        tooltip: `Duration: ${fmtHHMMSS(exam?.duration_minutes)} (HH:MM:SS)`,
+                                    },
+                                ].map((s, i) => (
+                                    <Box key={i} sx={{ flex: '1 1 140px' }}>
+                                        <StatBox icon={s.icon} label={s.label} sub={s.sub} tooltip={s.tooltip} />
+                                    </Box>
+                                ))}
                             </Box>
                         </Box>
 
-                        {/* Start Exam */}
-                        <Tooltip
-                            title={canStart
-                                ? `Start attempt #${notStartedAttempt?.attempt_no}`
-                                : remainingAttempts === 0
-                                    ? 'You have used all available attempts'
-                                    : 'No attempts available to start'}
-                            arrow
-                        >
-                            <span>
-                                <Button
-                                    variant="contained"
-                                    startIcon={<PlayArrowIcon />}
-                                    onClick={handleStartExam}
-                                    disabled={!canStart}
-                                    sx={{
-                                        bgcolor: '#f59e0b', color: '#000', fontWeight: 800,
-                                        fontSize: '1.125rem', px: 3, py: 1.5, borderRadius: 2,
-                                        boxShadow: 'none', whiteSpace: 'nowrap', flexShrink: 0,
-                                        alignSelf: { xs: 'stretch', sm: 'flex-start' },
-                                        '&:hover': { bgcolor: '#d97706', boxShadow: 'none' },
-                                        '&.Mui-disabled': { bgcolor: '#e5e7eb', color: '#9ca3af' }
-                                    }}
-                                >
-                                    Start Exam
-                                </Button>
-                            </span>
-                        </Tooltip>
+                        {/* ── Right: start button + status card ── */}
+                        {(() => {
+                            let bg, border, icon, textColor, msg;
+                            if (isResume) {
+                                bg = '#fff8e1'; border = '#fcd34d';
+                                icon = <AccessTimeIcon sx={{ fontSize: 14, color: '#b45309' }} />;
+                                textColor = '#92400e';
+                                msg = `Attempt #${inProgressAttempt?.attempt_no} is in progress — resume where you left off`;
+                            } else if (isNextAttempt) {
+                                bg = '#eff6ff'; border = '#93c5fd';
+                                icon = <PlayArrowIcon sx={{ fontSize: 14, color: '#1d4ed8' }} />;
+                                textColor = '#1e40af';
+                                msg = `Attempt #${notStartedAttempt?.attempt_no} is ready — start your next attempt`;
+                            } else if (canStart) {
+                                bg = '#fffbeb'; border = '#fcd34d';
+                                icon = <CheckCircleIcon sx={{ fontSize: 14, color: '#d97706' }} />;
+                                textColor = '#92400e';
+                                msg = `Attempt #${notStartedAttempt?.attempt_no} is ready to start`;
+                            } else if (remainingAttempts === 0) {
+                                bg = '#fee2e2'; border = '#fca5a5';
+                                icon = <CancelIcon sx={{ fontSize: 14, color: '#dc2626' }} />;
+                                textColor = '#b91c1c';
+                                msg = 'All attempts have been used';
+                            } else {
+                                bg = '#f3f4f6'; border = '#e5e7eb';
+                                icon = <HourglassEmptyIcon sx={{ fontSize: 14, color: '#9ca3af' }} />;
+                                textColor = '#6b7280';
+                                msg = 'No attempts available';
+                            }
+                            return (
+                                <Box sx={{
+                                    display: 'flex', flexDirection: 'column', gap: 1,
+                                    flexShrink: 0,
+                                    width: { xs: '100%', md: '230px' },
+                                    alignItems: 'stretch',
+                                }}>
+                                    <Button
+                                        startIcon={<PlayArrowIcon />}
+                                        onClick={handleStartExam}
+                                        disabled={!canStart}
+                                        fullWidth
+                                        sx={{
+                                            bgcolor: 'var(--darkMedium)', color: '#fff', fontWeight: 800,
+                                            fontSize: '1rem', px: 2, py: 1.4, borderRadius: 2,
+                                            boxShadow: 'none',
+                                            '&:hover': { bgcolor: 'var(--primary)', boxShadow: 'none' },
+                                            '&.Mui-disabled': { bgcolor: '#e5e7eb', color: '#9ca3af' }
+                                        }}
+                                    >
+                                        {isResume
+                                            ? `Resume Attempt #${inProgressAttempt?.attempt_no}`
+                                            : isNextAttempt
+                                                ? `Start Attempt #${notStartedAttempt?.attempt_no}`
+                                                : canStart ? 'Start Exam' : 'No Attempts'}
+                                    </Button>
+
+                                    {/* Tooltip-style status card with upward arrow */}
+                                    <Box sx={{ position: 'relative', mt: 0.5 }}>
+                                        <Box sx={{
+                                            position: 'absolute', top: -8, left: '50%',
+                                            transform: 'translateX(-50%)',
+                                            width: 0, height: 0,
+                                            borderLeft: '8px solid transparent',
+                                            borderRight: '8px solid transparent',
+                                            borderBottom: `8px solid ${border}`,
+                                        }} />
+                                        <Box sx={{
+                                            position: 'absolute', top: -6, left: '50%',
+                                            transform: 'translateX(-50%)',
+                                            width: 0, height: 0,
+                                            borderLeft: '7px solid transparent',
+                                            borderRight: '7px solid transparent',
+                                            borderBottom: `7px solid ${bg}`,
+                                        }} />
+                                        <Box sx={{
+                                            display: 'flex', alignItems: 'flex-start', gap: 0.8,
+                                            px: 1.5, py: 1, borderRadius: 2,
+                                            bgcolor: bg, border: `1px solid ${border}`,
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                                        }}>
+                                            <Box sx={{ mt: '1px', flexShrink: 0 }}>{icon}</Box>
+                                            <Typography fontSize="0.8rem" fontWeight={600} color={textColor} lineHeight={1.4}>
+                                                {msg}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            );
+                        })()}
                     </Box>
                 </CardContent>
             </Card>
@@ -693,6 +776,76 @@ export default function ExamSummaryPage() {
                 attempt={viewAttempt}
                 totalMarks={exam?.total_marks}
             />
+
+            {/* ── Start Exam Confirmation Dialog ────────────────────────── */}
+            <Dialog
+                open={startConfirmOpen}
+                onClose={() => setStartConfirmOpen(false)}
+                maxWidth="xs" fullWidth
+                slotProps={{ paper: { sx: { borderRadius: 3 } } }}
+            >
+                <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pb: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <PlayArrowIcon sx={{ color: 'var(--darkMedium)', fontSize: 22 }} />
+                        <Typography fontWeight={700} fontSize="1.15rem">
+                            {isNextAttempt ? 'Start Next Attempt?' : 'Start Exam?'}
+                        </Typography>
+                    </Box>
+                    <IconButton size="small" onClick={() => setStartConfirmOpen(false)}>
+                        <CloseIcon fontSize="small" />
+                    </IconButton>
+                </DialogTitle>
+
+                <Divider />
+
+                <DialogContent sx={{ pt: 2 }}>
+                    {/* Attempt details */}
+                    <Box sx={{ bgcolor: '#f8fafc', borderRadius: 2, p: 2, mb: 2, border: '1px solid #e5e7eb' }}>
+                        <Typography fontSize="0.78rem" color="text.secondary" fontWeight={600} mb={1} textTransform="uppercase" letterSpacing={0.5}>
+                            Attempt Details
+                        </Typography>
+                        {[
+                            { label: 'Attempt No.', value: `#${notStartedAttempt?.attempt_no}` },
+                            { label: 'Total Marks', value: exam?.total_marks ?? '—' },
+                            // { label: 'Passing Marks', value: exam?.passing_marks ?? '—' },
+                            { label: 'Duration', value: fmtHHMMSS(exam?.duration_minutes) },
+                            { label: 'Attempts Used', value: `${completedAttempts} of ${maxAttempts ?? '—'}` },
+                            { label: 'Remaining', value: remainingAttempts !== null ? `${remainingAttempts} left` : '—' },
+                        ].map(({ label, value }) => (
+                            <Box key={label} sx={{ display: 'flex', justifyContent: 'space-between', py: 0.5 }}>
+                                <Typography fontSize="0.875rem" color="text.secondary">{label}</Typography>
+                                <Typography fontSize="0.875rem" fontWeight={600}>{value}</Typography>
+                            </Box>
+                        ))}
+                    </Box>
+
+                    <Typography fontSize="0.875rem" color="text.secondary">
+                        Once started, the timer will begin immediately. Make sure you are ready before proceeding.
+                    </Typography>
+                </DialogContent>
+
+                <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
+                    <Button
+                        onClick={() => setStartConfirmOpen(false)}
+                        variant="outlined"
+                        sx={{ borderRadius: 2, flex: 1 }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={handleConfirmStart}
+                        variant="contained"
+                        startIcon={<PlayArrowIcon />}
+                        sx={{
+                            borderRadius: 2, flex: 1,
+                            bgcolor: 'var(--darkMedium)',
+                            '&:hover': { bgcolor: 'var(--primary)' }
+                        }}
+                    >
+                        Yes, Start
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
         </Box>
     );

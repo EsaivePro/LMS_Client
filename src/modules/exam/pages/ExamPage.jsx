@@ -9,7 +9,8 @@ import ExamHeader from '../../../components/exam/ExamHeader';
 import QuestionCard from '../../../components/exam/QuestionCard';
 import ActionBar from '../../../components/exam/ActionBar';
 import SidebarPanel from '../../../components/exam/SidebarPanel';
-import { getExamQuestions, getUserExamDetails, upsertUserExamAnswer, submit_exam } from '../../../components/exam/handlers/Handler';
+import { getExamQuestions, getUserExamDetails, upsertUserExamAnswer, startExamAttempt, submit_exam } from '../../../components/exam/handlers/Handler';
+import { localNow } from '../../../utils/resolver.utils';
 
 export default function ExamPage() {
     const [current, setCurrent] = useState(0);
@@ -80,6 +81,7 @@ export default function ExamPage() {
     const userInitial = String(displayName).charAt(0).toUpperCase();
     const roleName = user?.role || user?.roleName || user?.roles?.[0]?.name || '';
     const [allowAccess, setAllowAccess] = useState(false);
+    const [startUpdated, setStartUpdated] = useState(false);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [successOpen, setSuccessOpen] = useState(false);
     const [getQuestions, setGetQuestions] = useState(false);
@@ -92,13 +94,6 @@ export default function ExamPage() {
             setAllowAccess(true);
         }
     }, []);
-
-    // useEffect(() => {
-    //     if (allowAccess) {
-    //         const t = setInterval(() => setTimeLeft((s) => Math.max(0, s - 1)), 1000);
-    //         return () => clearInterval(t);
-    //     }
-    // }, [allowAccess]);
 
     // load exam details and sections on mount; questions are loaded when sectionIndex changes
     useEffect(() => {
@@ -126,7 +121,7 @@ export default function ExamPage() {
                     // ✅ Find attempt
                     const attempt = data.user_attempts?.find(a => a.attempt_id === attemptId);
 
-                    if (!attempt || !["not_started", "inprogress"].includes(attempt.status)) {
+                    if (!attempt || !["not_started", "in_progress"].includes(attempt.status)) {
                         navigate(`/exam-summary/${urlParams.examId}?userid=${urlParams.userId}`);
                         return;
                     } else {
@@ -157,38 +152,53 @@ export default function ExamPage() {
     }, [allowAccess]);
 
     useEffect(() => {
-        if (allowAccess && examDetails && currentAttempt) {
+        if (!allowAccess || !examDetails || !currentAttempt) return;
 
-            const duration = examDetails.duration_minutes * 60;
+        const duration = examDetails.duration_minutes * 60;
+        let interval;
 
+        async function initTimer() {
             let startTime;
 
             if (currentAttempt.started_at) {
                 startTime = new Date(currentAttempt.started_at).getTime();
+                setStartUpdated(true);
             } else {
-                // If not started → start now
-                startTime = Date.now();
+                // Not started yet — record start time and call API
+                const { ms, iso: startedAt } = localNow();
+                startTime = ms;
+                try {
+                    const startRes = await startExamAttempt({
+                        attempt_id: urlParams.attemptId,
+                        user_id: urlParams.userId,
+                        exam_id: urlParams.examId,
+                        started_at: startedAt,
+                    });
+                    if (startRes?.error === false) {
+                        setStartUpdated(true);
+                    }
+
+                } catch (err) {
+                    console.error('Failed to record exam start time', err);
+                }
             }
 
-            const interval = setInterval(() => {
-                const now = Date.now();
-                const elapsed = Math.floor((now - startTime) / 1000);
+            interval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
                 const remaining = Math.max(0, duration - elapsed);
-
                 setTimeLeft(remaining);
 
-                // 🚨 AUTO SUBMIT
                 if (remaining <= 0) {
                     clearInterval(interval);
                     handleAutoSubmit();
                 }
-
             }, 1000);
-
-            return () => clearInterval(interval);
         }
 
-    }, [allowAccess, examDetails, currentAttempt]);
+        initTimer();
+        return () => clearInterval(interval);
+
+    }, [allowAccess, startUpdated, examDetails, currentAttempt]);
 
     // fetch questions whenever sectionIndex changes and update URL param
     useEffect(() => {
@@ -264,15 +274,15 @@ export default function ExamPage() {
                 setLoading(false);
             }
         }
-        if (allowAccess && getQuestions) {
+        if (allowAccess && startUpdated && getQuestions) {
             loadSectionQuestions();
         }
         return () => { mounted = false; };
-    }, [allowAccess, sectionIndex, getQuestions]);
+    }, [allowAccess, startUpdated, sectionIndex, getQuestions]);
 
 
     useEffect(() => {
-        if (allowAccess) {
+        if (allowAccess && startUpdated) {
             const interval = setInterval(async () => {
 
                 if (answerQueue.length === 0) return;
@@ -312,10 +322,10 @@ export default function ExamPage() {
 
             return () => clearInterval(interval);
         }
-    }, [allowAccess, answerQueue]);
+    }, [allowAccess, startUpdated, answerQueue]);
 
     useEffect(() => {
-        if (allowAccess) {
+        if (allowAccess && startUpdated) {
             const flushQueue = async () => {
 
                 if (answerQueue.length === 0) return;
@@ -348,7 +358,7 @@ export default function ExamPage() {
 
             return () => window.removeEventListener("beforeunload", flushQueue);
         }
-    }, [allowAccess, answerQueue]);
+    }, [allowAccess, startUpdated, answerQueue]);
 
     // const answeredSet = useMemo(() => new Set(Object.keys(selectedAnswers[sectionIndex] || {}).map((k) => Number(k) + 1)), [selectedAnswers, sectionIndex]);
     const answeredSet = useMemo(() =>
@@ -357,26 +367,43 @@ export default function ExamPage() {
     );
 
     function handleSelect(value) {
-
         const question = questions[current];
-        value = typeof value === 'string' && !isNaN(value) ? Number(value) : value;
+
+        // multiple_select passes an array; mcq/true_false passes a single number
+        let normalized;
+        if (Array.isArray(value)) {
+            normalized = value; // already array of option IDs
+        } else {
+            normalized = typeof value === 'string' && !isNaN(value) ? Number(value) : value;
+        }
+
         setSelectedAnswers((prev) => {
             const bySection = { ...(prev || {}) };
             const sectionAnswers = { ...(bySection[sectionIndex] || {}) };
-            sectionAnswers[current] = value;
+            sectionAnswers[current] = normalized;
             bySection[sectionIndex] = sectionAnswers;
             return bySection;
         });
 
-        const option = question?.rawOptions?.find(o => o.id === value);
+        const isMarked = getSetFrom(marked[sectionIndex]).has(current + 1);
 
-        if (option !== undefined && option !== null) {
+        if (Array.isArray(normalized)) {
+            // multiple_select: one queue entry per selected option (answer_id as int)
+            setAnswerQueue((prev) => [
+                ...prev,
+                ...normalized.map(optId => ({
+                    question_id: question?.id,
+                    answer_id: optId,
+                    marked: isMarked
+                }))
+            ]);
+        } else {
             setAnswerQueue((prev) => [
                 ...prev,
                 {
                     question_id: question?.id,
-                    answer_id: option?.id || null,
-                    marked: getSetFrom(marked[sectionIndex]).has(current + 1)
+                    answer_id: normalized ?? null,
+                    marked: isMarked
                 }
             ]);
         }
@@ -417,18 +444,29 @@ export default function ExamPage() {
             return bySection;
         });
 
-        var answer = selectedAnswers?.[sectionIndex]?.[current];
-        answer = typeof answer === 'string' && !isNaN(answer) ? Number(answer) : answer;
-        const option = question?.rawOptions?.find(o => o.id === answer);
+        const answer = selectedAnswers?.[sectionIndex]?.[current];
 
-        setAnswerQueue((prev) => [
-            ...prev,
-            {
-                question_id: question?.id,
-                answer_id: option?.id || null,
-                marked: newMarked
-            }
-        ]);
+        if (Array.isArray(answer)) {
+            // multiple_select: one queue entry per selected option (answer_id as int)
+            setAnswerQueue((prev) => [
+                ...prev,
+                ...answer.map(optId => ({
+                    question_id: question?.id,
+                    answer_id: optId,
+                    marked: newMarked
+                }))
+            ]);
+        } else {
+            const normalized = typeof answer === 'string' && !isNaN(answer) ? Number(answer) : answer;
+            setAnswerQueue((prev) => [
+                ...prev,
+                {
+                    question_id: question?.id,
+                    answer_id: normalized ?? null,
+                    marked: newMarked
+                }
+            ]);
+        }
     }
 
     function handleJump(index) {
@@ -462,7 +500,8 @@ export default function ExamPage() {
             );
         }
 
-        await submit_exam({ user_id: userId, exam_id: examId, attempt_id: attemptId });
+        const { iso: submitted_at } = localNow();
+        await submit_exam({ user_id: userId, exam_id: examId, attempt_id: attemptId, submitted_at });
 
         // show success dialog with countdown
         setCountdown(5);
@@ -520,7 +559,7 @@ export default function ExamPage() {
                 />
 
                 {/* BODY */}
-                {allowAccess && getQuestions && <Box sx={{ flex: 1, display: "flex", overflow: "hidden" }}>
+                {allowAccess && startUpdated && getQuestions && <Box sx={{ flex: 1, display: "flex", overflow: "hidden" }}>
                     {/* LEFT PANEL */}
                     <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
                         {/* SECTION HEADER */}
@@ -592,7 +631,7 @@ export default function ExamPage() {
                                                             flexShrink: 0,
                                                             fontWeight: active ? 700 : 400,
                                                             fontSize: '0.875rem',
-                                                            bgcolor: active ? 'primary.main' : '#eef2f7',
+                                                            bgcolor: active ? 'var(--darkMedium)' : '#eef2f7',
                                                             color: active ? '#fff' : '#333',
                                                             border: active ? '2px solid transparent' : '2px solid #e0e0e0',
                                                             transition: 'all 0.18s',
@@ -712,7 +751,7 @@ export default function ExamPage() {
                 </Box>}
 
                 {/* FOOTER */}
-                {allowAccess && getQuestions && <Box
+                {allowAccess && startUpdated && getQuestions && <Box
                     sx={{
                         position: "fixed",
                         bottom: 0,

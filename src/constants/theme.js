@@ -14,6 +14,8 @@ export const THEME = {
         background: "#ffffff",
         surface: "#fbfbfbff",
         surface2: "rgb(249, 249, 249)",
+        surface3: "#f0f2f5",
+        surface4: "#f0f2f5",
         lightgrey: "#f5f5f5ff",
         textPrimary: "#212121",
         textSecondary: "#616161",

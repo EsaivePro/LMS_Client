@@ -53,8 +53,13 @@ export async function upsertUserExamAnswer({
     return await callExecute('upsert_user_exam_answer', body, false);
 }
 
-export async function submit_exam({ exam_id, user_id, attempt_id }) {
-    const body = { params: { attempt_id, user_id, exam_id } };
+export async function startExamAttempt({ attempt_id, user_id, exam_id, started_at }) {
+    const body = { params: { attempt_id, user_id, exam_id, started_at } };
+    return await callExecute('start_exam_attempt', body, false);
+}
+
+export async function submit_exam({ exam_id, user_id, attempt_id, submitted_at }) {
+    const body = { params: { attempt_id, user_id, exam_id, submitted_at } };
     return await callExecute('submit_exam', body);
 }
 
@@ -62,5 +67,6 @@ export default {
     getUserExamDetails,
     getExamQuestions,
     upsertUserExamAnswer,
+    startExamAttempt,
     submit_exam
 };

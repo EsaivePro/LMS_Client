@@ -78,6 +78,18 @@ export function hasPermission(permissions, role) {
 }
 
 /**
+ * Returns the current local datetime as a timestamp (ms) and an ISO-like string
+ * in local time: "YYYY-MM-DDTHH:MM:SS.mmm" (no UTC offset).
+ */
+export function localNow() {
+    const ms = Date.now();
+    const d = new Date(ms);
+    const p = (n, l = 2) => String(n).padStart(l, '0');
+    const iso = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}.${p(d.getMilliseconds(), 3)}`;
+    return { ms, iso };
+}
+
+/**
  * Format a date/time value into a readable string including seconds and am/pm.
  * Example output: "Jan 18, 2026 7:26:50 am"
  */

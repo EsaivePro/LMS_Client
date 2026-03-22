@@ -490,7 +490,10 @@ export default function SideBarWithHeader({ children }) {
 
                 {/* MAIN CONTENT */}
                 {viewHeader ? <Main sx={{ m: 0, p: 0, maxWidth: '100%' }}>
-                    <Box sx={{ m: isMobile ? 1.8 : 4, mt: isMobile ? 9 : 9, mb: 0 }}>
+                    <Box sx={{
+                        m: 0, px: isMobile ? 1.8 : 4, mt: isMobile ? 9 : 9, mb: 0,
+                        background: "linear-gradient(135deg, #f8f9fb 0%, #fdfdff  50%, #ffffff 100%)",
+                    }}>
                         {viewContainerCard && <ContentContainer>{children}</ContentContainer>}
                         {(!viewContainerCard && !viewCourseCard) && <Box>{children}</Box>}
                     </Box>
