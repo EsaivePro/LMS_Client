@@ -161,6 +161,12 @@ export default function DetailsForm({ definition = {}, initialValues = {}, onSub
                 case 'exams':
                     res = await httpClient.fetchExams();
                     break;
+                case 'qb_topics':
+                    res = await httpClient.fetchQbTopics();
+                    break;
+                case 'qb_sections':
+                    res = await httpClient.fetchQbSections();
+                    break;
                 default:
                     try {
                         const fn = httpClient[`fetch${source.charAt(0).toUpperCase() + source.slice(1)}`];

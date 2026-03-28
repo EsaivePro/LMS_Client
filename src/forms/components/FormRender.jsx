@@ -548,6 +548,52 @@ export default function FormRender({
                     InputProps={{ endAdornment: invalidFields[field.name] ? <InputAdornment position="end"><Tooltip title="Required"><InfoOutlinedIcon color="error" fontSize="small" /></Tooltip></InputAdornment> : null }}
                 />
             );
+        case "select": {
+            const opts = field.optionsSource
+                ? (optionsCache[field.optionsSource] || [])
+                : (field.options || []);
+            return (
+                <Autocomplete
+                    options={opts}
+                    getOptionLabel={(o) => o.label || String(o.value)}
+                    value={opts.find((o) => o.value === value) || null}
+                    onChange={(_, v) => {
+                        onChange(field.name, v ? v.value : null);
+                        setInvalidFields((p) => ({ ...(p || {}), [field.name]: false }));
+                    }}
+                    onInputChange={(_, input) => {
+                        if (field.optionsSource) handleSearchInput(field.optionsSource, input);
+                    }}
+                    filterOptions={(o) => o}
+                    isOptionEqualToValue={(option, val) => option.value === (val && (val.value ?? val))}
+                    loading={!!(field.optionsSource && optionsLoading[field.optionsSource])}
+                    disabled={!editing || !!field.readOnly}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            fullWidth
+                            size="small"
+                            label={`${field.label}${field.required ? ' *' : ''}`}
+                            error={!!invalidFields[field.name]}
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        {invalidFields[field.name] && (
+                                            <Tooltip title="Required">
+                                                <InfoOutlinedIcon color="error" fontSize="small" sx={{ mr: 1 }} />
+                                            </Tooltip>
+                                        )}
+                                        {params.InputProps.endAdornment}
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    )}
+                    sx={{ minWidth: field.minWidth || 160 }}
+                />
+            );
+        }
         case "table":
             return renderTableField(field, value || [], (next) => onChange(field.name, next));
         default:

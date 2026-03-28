@@ -1,0 +1,50 @@
+{
+    "title": "Topic Details",
+    "tablename": "topics",
+    "sections": [
+        {
+            "key": "basic",
+            "title": "Basic Details",
+            "fields": [
+                {
+                    "name": "id",
+                    "label": "ID",
+                    "type": "number",
+                    "readOnly": true,
+                    "minWidth": 120
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "type": "text",
+                    "required": true,
+                    "minWidth": 320
+                },
+                {
+                    "name": "display_name",
+                    "label": "Display Name",
+                    "type": "text",
+                    "minWidth": 320
+                },
+                {
+                    "name": "description",
+                    "label": "Description",
+                    "type": "textarea",
+                    "minWidth": 640
+                }
+            ]
+        },
+        {
+            "key": "options",
+            "title": "Options",
+            "fields": [
+                {
+                    "name": "is_active",
+                    "label": "Active",
+                    "type": "checkbox",
+                    "default": true
+                }
+            ]
+        }
+    ]
+}

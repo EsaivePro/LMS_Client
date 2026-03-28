@@ -1,0 +1,136 @@
+{
+    "title": "Question Details",
+    "tablename": "lms.questions_master",
+    "sections": [
+        {
+            "key": "basic",
+            "title": "Basic Details",
+            "fields": [
+                {
+                    "name": "id",
+                    "label": "ID",
+                    "type": "number",
+                    "readOnly": true,
+                    "minWidth": 120
+                },
+                {
+                    "name": "title",
+                    "label": "Question Title",
+                    "type": "text",
+                    "required": true,
+                    "minWidth": 320
+                },
+                {
+                    "name": "description",
+                    "label": "Description / Explanation",
+                    "type": "textarea",
+                    "minWidth": 640
+                },
+                {
+                    "name": "question_type",
+                    "label": "Question Type",
+                    "type": "select",
+                    "required": true,
+                    "options": [
+                        { "value": "mcq", "label": "Multiple Choice (MCQ)" },
+                        { "value": "multiple_select", "label": "Multiple Select" },
+                        { "value": "true_false", "label": "True / False" }
+                    ],
+                    "minWidth": 240
+                },
+                {
+                    "name": "difficulty_level",
+                    "label": "Difficulty Level",
+                    "type": "select",
+                    "options": [
+                        { "value": "easy", "label": "Easy" },
+                        { "value": "medium", "label": "Medium" },
+                        { "value": "hard", "label": "Hard" }
+                    ],
+                    "minWidth": 200
+                },
+                {
+                    "name": "topic_id",
+                    "label": "Topic",
+                    "type": "select",
+                    "optionsSource": "qb_topics",
+                    "minWidth": 280
+                }
+            ]
+        },
+        {
+            "key": "settings",
+            "title": "Settings",
+            "fields": [
+                {
+                    "name": "marks",
+                    "label": "Marks",
+                    "type": "number",
+                    "required": true,
+                    "default": 1,
+                    "minWidth": 160
+                },
+                {
+                    "name": "negative_marks",
+                    "label": "Negative Marks",
+                    "type": "number",
+                    "default": 0,
+                    "minWidth": 160
+                }
+            ]
+        },
+        {
+            "key": "options",
+            "title": "Options",
+            "fields": [
+                {
+                    "name": "is_active",
+                    "label": "Active",
+                    "type": "checkbox",
+                    "default": true
+                }
+            ]
+        },
+        {
+            "key": "answers",
+            "title": "Answer Options",
+            "fields": [
+                {
+                    "name": "question_options",
+                    "label": "Answer Options",
+                    "type": "table",
+                    "table": {
+                        "columns": [
+                            {
+                                "name": "option_text",
+                                "label": "Option Text",
+                                "type": "text",
+                                "minWidth": 400,
+                                "required": true
+                            },
+                            {
+                                "name": "is_correct",
+                                "label": "Correct",
+                                "type": "checkbox",
+                                "minWidth": 80
+                            },
+                            {
+                                "name": "actions",
+                                "label": "",
+                                "type": "actions",
+                                "minWidth": 80
+                            }
+                        ],
+                        "addButton": {
+                            "label": "Add Option",
+                            "mode": "inline"
+                        },
+                        "layout": "cards",
+                        "allowDelete": true,
+                        "minRows": 0
+                    }
+                }
+            ]
+        }
+    ]
+}

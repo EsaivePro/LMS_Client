@@ -76,6 +76,19 @@ export const API_ENDPOINTS = {
     UPDATE_EXAM: "/exam-service/exams/", // append :id
     DELETE_EXAM: "/exam-service/exams/", // append :id
 
+    // Question bank - Topics & Sections
+    GET_QB_TOPICS: "/exam-service/qb-topics",
+    GET_QB_TOPIC: "/exam-service/qb-topics/", // append :id
+    CREATE_QB_TOPIC: "/exam-service/qb-topics",
+    UPDATE_QB_TOPIC: "/exam-service/qb-topics/", // append :id
+    DELETE_QB_TOPIC: "/exam-service/qb-topics/", // append :id
+
+    GET_QB_SECTIONS: "/exam-service/qb-sections",
+    GET_QB_SECTION: "/exam-service/qb-sections/", // append :id
+    CREATE_QB_SECTION: "/exam-service/qb-sections",
+    UPDATE_QB_SECTION: "/exam-service/qb-sections/", // append :id
+    DELETE_QB_SECTION: "/exam-service/qb-sections/", // append :id
+
     GET_QUESTIONS: "/exam-service/questions",
     GET_QUESTION: "/exam-service/questions/", // append :id
     CREATE_QUESTION: "/exam-service/questions",

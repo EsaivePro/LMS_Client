@@ -19,6 +19,9 @@ import examMaster from "../forms/master-forms/exam-master.json";
 import ExamManage from "../modules/exam/pages/ExamManage";
 import ExamPage from "../modules/exam/pages/ExamPage";
 import ExamSummaryPage from "../modules/exam/pages/ExamSummaryPage";
+import QuestionManage from "../modules/questionbank/pages/QuestionManage";
+import SectionManage from "../modules/questionbank/pages/SectionManage";
+import TopicManage from "../modules/questionbank/pages/TopicManage";
 
 export const protectedRoutes = [
     {
@@ -177,4 +180,25 @@ export const protectedRoutes = [
         permission: "user.management",
         element: <ExamSummaryPage />,
     },
+    {
+        path: "/questions/manage/:id",
+        title: "Manage question",
+        description: "Create questions, assign options and schedule them.",
+        permission: "user.management",
+        element: <QuestionManage />,
+    },
+    {
+        path: "/sections/manage/:id",
+        title: "Manage section",
+        description: "Create sections, assign questions and schedule them.",
+        permission: "user.management",
+        element: <SectionManage />,
+    },
+    {
+        path: "/topics/manage/:id",
+        title: "Manage topic",
+        description: "Create topics, assign questions and schedule them.",
+        permission: "user.management",
+        element: <TopicManage />,
+    }
 ];

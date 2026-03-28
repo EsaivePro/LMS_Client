@@ -200,67 +200,108 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
     }, [config.fields, navigate]);
 
     return (
-        <Box p={1}>
-            <Box sx={{ background: 'transparent', mb: 1 }}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ p: 1.5 }}>
-                    <Typography variant="h5" fontWeight={700}>{title}</Typography>
-                        <Stack direction="row" spacing={1} alignItems="center">
+        <Box
+            sx={{
+                flex: 1,
+                width: "100%",
+                minHeight: "100%",
+                minWidth: 0,
+                display: "flex",
+                flexDirection: "column",
+                borderRadius: 2,
+                boxShadow: "0 1px 5px rgba(0,0,0,0.08)",
+                mt: 3,
+                overflow: "hidden"
+            }}
+        >
+            {/* HEADER */}
+            <Box
+                sx={{
+                    bgcolor: "background.paper",
+                    px: 2,
+                    py: 1.5
+                }}
+            >
+                <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                >
+                    <Typography variant="h6" fontWeight={700}>
+                        {title}
+                    </Typography>
+
+                    <Stack direction="row" spacing={1}>
                         {(header.buttons || []).map((btn) => (
                             <Button
                                 key={btn.key}
-                                variant={btn.variant || 'contained'}
+                                variant={btn.variant || "contained"}
                                 onClick={() => handleButton(btn)}
+                                startIcon={
+                                    btn.key === "create" ? <AddIcon /> : null
+                                }
                                 sx={{
-                                    bgcolor: btn.variant === 'contained' ? 'var(--primary)' : undefined,
-                                    color: btn.variant === 'contained' ? 'var(--onPrimary)' : undefined,
-                                    textTransform: 'none',
-                                    borderRadius: 1,
+                                    textTransform: "none",
+                                    borderRadius: 2,
+                                    px: 2,
+                                    fontWeight: 500,
+                                    bgcolor:
+                                        btn.variant === "contained"
+                                            ? "var(--primary)"
+                                            : undefined,
+                                    color:
+                                        btn.variant === "contained"
+                                            ? "var(--onPrimary)"
+                                            : undefined,
+                                    "&:hover": {
+                                        opacity: 0.9,
+                                    },
                                 }}
-                                startIcon={btn.key === 'create' ? <AddIcon /> : undefined}
                             >
                                 {btn.label}
                             </Button>
                         ))}
                     </Stack>
                 </Stack>
-
-                {/* <Stack direction="row" alignItems="center" sx={{ background: '#fff', borderRadius: 1, p: 1, boxShadow: 'none', border: '1px solid rgba(0,0,0,0.04)' }}>
-                    <Typography sx={{ fontWeight: 700, px: 2 }}>{`${total} Records`}</Typography>
-                    <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 1, pr: 1 }}>
-                        <TextField
-                            size="small"
-                            placeholder="Search"
-                            value={quickSearch}
-                            onChange={(e) => setQuickSearch(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    // trigger fetch via built-in handler by changing externalSearch prop
-                                }
-                            }}
-                            sx={{ width: 320 }}
-                            InputProps={{ startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1 }} /> }}
-                        />
-                    </Box>
-                </Stack> */}
             </Box>
 
-            <DataTableV1
-                serverSide={true}
-                rows={rows}
-                totalCount={total}
-                columns={columns}
-                tableKey={tableKey || (config.tableKey || `${(config.tableName || 'table')}-table`)}
-                onFetchData={handleFetchData}
-                tableName={tableName || config.tableName}
-                onRowDoubleClick={onRowDoubleClick ? onRowDoubleClick : ((row) => {
-                    const route = config.routes?.rowDoubleClick;
-                    if (route) {
-                        const path = route.replace('{id}', row.id);
-                        navigate(path);
-                    }
-                })}
-                externalSearch={quickSearch}
-            />
+            {/* TABLE CONTAINER */}
+            <Box
+                sx={{
+                    flex: 1,
+                    bgcolor: "background.paper",
+                    // borderRadius: 2,
+                    overflow: "hidden",
+                    display: "flex",
+                    flexDirection: "column",
+                }}
+            >
+                <Box sx={{ flex: 1, overflow: "auto" }}>
+                    <DataTableV1
+                        serverSide
+                        rows={rows}
+                        totalCount={total}
+                        columns={columns}
+                        tableKey={
+                            tableKey ||
+                            config.tableKey ||
+                            `${config.tableName || "table"}-table`
+                        }
+                        onFetchData={handleFetchData}
+                        tableName={tableName || config.tableName}
+                        externalSearch={quickSearch}
+                        onRowDoubleClick={
+                            onRowDoubleClick ||
+                            ((row) => {
+                                const route = config.routes?.rowDoubleClick;
+                                if (route) {
+                                    navigate(route.replace("{id}", row.id));
+                                }
+                            })
+                        }
+                    />
+                </Box>
+            </Box>
         </Box>
     );
 }

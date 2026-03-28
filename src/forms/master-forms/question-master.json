@@ -1,0 +1,103 @@
+{
+    "baseRoute": "/questionbank/questions/manage",
+    "tableName": "questions_master",
+    "endpoint": "/common-service/search",
+    "readFrom": "response.data",
+    "serverSide": true,
+    "tableKey": "questions-table",
+    "header": {
+        "title": "Questions",
+        "showCount": true,
+        "buttons": [
+            {
+                "key": "create",
+                "label": "New Question",
+                "variant": "contained"
+            }
+        ]
+    },
+    "fields": [
+        {
+            "name": "id",
+            "label": "ID",
+            "type": "number",
+            "maxWidth": 80
+        },
+        {
+            "name": "title",
+            "label": "Question",
+            "type": "string",
+            "minWidth": 320,
+            "filterable": true,
+            "linkTemplate": "{id}"
+        },
+        {
+            "name": "question_type",
+            "label": "Type",
+            "type": "string",
+            "minWidth": 160,
+            "filterable": true,
+            "renderValues": {
+                "mcq": "MCQ",
+                "multiple_select": "Multiple Select",
+                "true_false": "True / False"
+            }
+        },
+        {
+            "name": "difficulty_level",
+            "label": "Difficulty",
+            "type": "string",
+            "minWidth": 120,
+            "filterable": true,
+            "renderValues": {
+                "easy": "Easy",
+                "medium": "Medium",
+                "hard": "Hard"
+            }
+        },
+        {
+            "name": "topic_id",
+            "label": "Topic",
+            "type": "number",
+            "minWidth": 160
+        },
+        {
+            "name": "marks",
+            "label": "Marks",
+            "type": "number",
+            "minWidth": 100
+        },
+        {
+            "name": "negative_marks",
+            "label": "Neg. Marks",
+            "type": "number",
+            "minWidth": 110
+        },
+        {
+            "name": "is_active",
+            "label": "Status",
+            "type": "boolean",
+            "minWidth": 120,
+            "valueOptions": [true, false],
+            "renderValues": {
+                "true": "Active",
+                "false": "Inactive"
+            }
+        },
+        {
+            "name": "created_at",
+            "label": "Created At",
+            "type": "string",
+            "minWidth": 180
+        },
+        {
+            "name": "actions",
+            "label": "Actions",
+            "type": "actions",
+            "maxWidth": 120,
+            "minWidth": 150,
+            "pinned": "right",
+            "sortable": false
+        }
+    ]
+}

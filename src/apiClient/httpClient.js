@@ -103,6 +103,20 @@ export const httpClient = {
     updateExam: async (id, data) => axiosInstance.put(API_ENDPOINTS.UPDATE_EXAM + id, data),
     deleteExam: async (id) => axiosInstance.delete(API_ENDPOINTS.DELETE_EXAM + id),
 
+    // Question bank - Topics
+    fetchQbTopics: async () => axiosInstance.get(API_ENDPOINTS.GET_QB_TOPICS),
+    fetchQbTopicById: async (id) => axiosInstance.get(API_ENDPOINTS.GET_QB_TOPIC + id),
+    createQbTopic: async (data) => axiosInstance.post(API_ENDPOINTS.CREATE_QB_TOPIC, data),
+    updateQbTopic: async (id, data) => axiosInstance.put(API_ENDPOINTS.UPDATE_QB_TOPIC + id, data),
+    deleteQbTopic: async (id) => axiosInstance.delete(API_ENDPOINTS.DELETE_QB_TOPIC + id),
+
+    // Question bank - Sections
+    fetchQbSections: async () => axiosInstance.get(API_ENDPOINTS.GET_QB_SECTIONS),
+    fetchQbSectionById: async (id) => axiosInstance.get(API_ENDPOINTS.GET_QB_SECTION + id),
+    createQbSection: async (data) => axiosInstance.post(API_ENDPOINTS.CREATE_QB_SECTION, data),
+    updateQbSection: async (id, data) => axiosInstance.put(API_ENDPOINTS.UPDATE_QB_SECTION + id, data),
+    deleteQbSection: async (id) => axiosInstance.delete(API_ENDPOINTS.DELETE_QB_SECTION + id),
+
     // Question bank
     fetchQuestions: async () => axiosInstance.get(API_ENDPOINTS.GET_QUESTIONS),
     fetchQuestionById: async (id) => axiosInstance.get(API_ENDPOINTS.GET_QUESTION + id),

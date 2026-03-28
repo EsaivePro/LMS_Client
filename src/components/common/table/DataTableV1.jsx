@@ -561,97 +561,144 @@ export default function DataTable({
             </Menu>
 
             {/* ================= TABLE ================= */}
-            <TableContainer sx={{ maxHeight }}>
-                <Table stickyHeader >
-                    <TableHead sx={{ backgroundColor: "var(--darkMedium)", color: "var(--onPrimary)" }}>
-                        <TableRow>
-                            {checkboxSelection && <TableCell padding="checkbox" />}
-                            {orderedColumns.map((col) => {
-                                const sx = {
-                                    fontWeight: 400,
-                                    background: "var(--darkMedium)",
-                                    color: "var(--onPrimary)",
-                                    cursor: col.sortable === false ? "default" : "pointer",
-                                };
-                                if (col.minWidth) sx.minWidth = col.minWidth;
-                                if (col.maxWidth) sx.maxWidth = col.maxWidth;
-                                if (isPinnedRight(col.field)) {
-                                    sx.position = 'sticky';
-                                    sx.right = 0;
-                                    sx.zIndex = 3;
-                                    sx.borderLeft = '1px solid var(--lightgrey)';
-                                }
-
-                                return (
-                                    <TableCell
-                                        key={col.field}
-                                        onClick={() => handleSort(col)}
-                                        sx={sx}
-                                    >
-                                        {col.headerName}
-                                        {sortModel.field === col.field &&
-                                            (sortModel.direction === "asc" ? " ▲" : " ▼")}
-                                    </TableCell>
-                                );
-                            })}
-                        </TableRow>
-                    </TableHead>
-
-                    <TableBody>
-                        {loading ? (
+            <Box
+                sx={{
+                    height: "100%",
+                    minHeight: 390, // 🔥 FIX: ensures table doesn't collapse
+                    display: "flex",
+                    flexDirection: "column",
+                    borderRadius: 2,
+                    overflow: "hidden",
+                    // background: "background.paper",
+                }}
+            >
+                <TableContainer
+                    sx={{
+                        flex: 1,
+                        // maxHeight: "65vh", // 🔥 controlled scroll area
+                        overflow: "auto",
+                    }}
+                >
+                    <Table stickyHeader>
+                        {/* HEADER */}
+                        <TableHead>
                             <TableRow>
-                                <TableCell colSpan={orderedColumns.length + 1} align="center">
-                                    <CircularProgress size={28} />
-                                </TableCell>
-                            </TableRow>
-                        ) : displayRows.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={orderedColumns.length + 1}>
-                                    <NoRowsOverlay />
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            displayRows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    hover
-                                    onDoubleClick={() => onRowDoubleClick?.(row)}
-                                    sx={{ '&:nth-of-type(even)': { backgroundColor: '#fbfbfb' } }}
-                                >
-                                    {checkboxSelection && (
-                                        <TableCell padding="checkbox">
-                                            <Checkbox
-                                                checked={selectedIds.includes(row.id)}
-                                                onChange={() => toggleRow(row.id)}
-                                            />
+                                {checkboxSelection && <TableCell padding="checkbox" />}
+                                {orderedColumns.map((col) => {
+                                    const sx = {
+                                        fontWeight: 500,
+                                        fontSize: "16px",
+                                        background: "var(--darkMedium)",
+                                        color: "var(--onPrimary)",
+                                        cursor: col.sortable === false ? "default" : "pointer",
+                                        whiteSpace: "nowrap",
+                                    };
+
+                                    if (col.minWidth) sx.minWidth = col.minWidth;
+                                    if (col.maxWidth) sx.maxWidth = col.maxWidth;
+
+                                    if (isPinnedRight(col.field)) {
+                                        sx.position = "sticky";
+                                        sx.right = 0;
+                                        sx.zIndex = 3;
+                                        sx.borderLeft = "1px solid var(--lightgrey)";
+                                    }
+
+                                    return (
+                                        <TableCell
+                                            key={col.field}
+                                            onClick={() => handleSort(col)}
+                                            sx={sx}
+                                        >
+                                            {col.headerName}
+                                            {sortModel.field === col.field &&
+                                                (sortModel.direction === "asc" ? " ▲" : " ▼")}
                                         </TableCell>
-                                    )}
-                                    {orderedColumns.map((col) => {
-                                        const cellSx = {};
-                                        if (col.minWidth) cellSx.minWidth = col.minWidth;
-                                        if (col.maxWidth) cellSx.maxWidth = col.maxWidth;
-                                        if (isPinnedRight(col.field)) {
-                                            cellSx.position = 'sticky';
-                                            cellSx.right = 0;
-                                            cellSx.background = 'var(--onPrimary)';
-                                            cellSx.zIndex = 2;
-                                            cellSx.borderLeft = '1px solid var(--lightgrey)';
-                                        }
+                                    );
+                                })}
+                            </TableRow>
+                        </TableHead>
 
-                                        return (
-                                            <TableCell key={col.field} sx={cellSx}>
-                                                {col.renderCell
-                                                    ? col.renderCell({ value: row[col.field], row })
-                                                    : row[col.field] ?? "-"}
-                                            </TableCell>
-                                        );
-                                    })}
+                        {/* BODY */}
+                        <TableBody>
+                            {loading ? (
+                                <TableRow>
+                                    {/* <TableCell
+                                        colSpan={orderedColumns.length + 1}
+                                        align="center"
+                                        sx={{ height: 300 }} // 🔥 center loader
+                                    >
+                                        <Box display="flex" justifyContent="center" alignItems="center">
+                                            <CircularProgress size={28} />
+                                        </Box>
+                                    </TableCell> */}
                                 </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                            ) : displayRows.length === 0 ? (
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={orderedColumns.length + 1}
+                                        sx={{ height: 300 }} // 🔥 center empty state
+                                    >
+                                        <NoRowsOverlay subtitle="No records found. Add new data to get started." />
+                                    </TableCell>
+                                </TableRow>
+                            ) : (
+                                displayRows.map((row, index) => (
+                                    <TableRow
+                                        key={row.id}
+                                        hover
+                                        onDoubleClick={() => onRowDoubleClick?.(row)}
+                                        sx={{
+                                            transition: "0.2s",
+                                            "&:nth-of-type(even)": {
+                                                backgroundColor: "#fafafa",
+                                            },
+                                            "&:hover": {
+                                                backgroundColor: "#f1f5ff",
+                                            },
+                                        }}
+                                    >
+                                        {checkboxSelection && (
+                                            <TableCell padding="checkbox">
+                                                <Checkbox
+                                                    checked={selectedIds.includes(row.id)}
+                                                    onChange={() => toggleRow(row.id)}
+                                                />
+                                            </TableCell>
+                                        )}
+
+                                        {orderedColumns.map((col) => {
+                                            const cellSx = {
+                                                fontSize: "15px",
+                                                py: 1.2,
+                                            };
+
+                                            if (col.minWidth) cellSx.minWidth = col.minWidth;
+                                            if (col.maxWidth) cellSx.maxWidth = col.maxWidth;
+
+                                            if (isPinnedRight(col.field)) {
+                                                cellSx.position = "sticky";
+                                                cellSx.right = 0;
+                                                cellSx.background = "#fff";
+                                                cellSx.zIndex = 2;
+                                                cellSx.borderLeft = "1px solid var(--lightgrey)";
+                                            }
+
+                                            return (
+                                                <TableCell key={col.field} sx={cellSx}>
+                                                    {col.renderCell
+                                                        ? col.renderCell({ value: row[col.field], row })
+                                                        : row[col.field] ?? "-"}
+                                                </TableCell>
+                                            );
+                                        })}
+                                    </TableRow>
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Box>
 
             {/* ================= PAGINATION ================= */}
             <TablePagination
