@@ -1,12 +1,12 @@
 {
-    "baseRoute": "/questionbank/questions/manage",
+    "baseRoute": "/questions/manage",
     "tableName": "questions_master",
     "endpoint": "/common-service/search",
     "readFrom": "response.data",
     "serverSide": true,
     "tableKey": "questions-table",
     "header": {
-        "title": "Questions",
+        "title": "Questions Bank",
         "showCount": true,
         "buttons": [
             {
@@ -65,20 +65,23 @@
             "name": "marks",
             "label": "Marks",
             "type": "number",
-            "minWidth": 100
+            "minWidth": 80
         },
         {
             "name": "negative_marks",
             "label": "Neg. Marks",
             "type": "number",
-            "minWidth": 110
+            "minWidth": 100
         },
         {
             "name": "is_active",
             "label": "Status",
             "type": "boolean",
-            "minWidth": 120,
-            "valueOptions": [true, false],
+            "minWidth": 100,
+            "valueOptions": [
+                true,
+                false
+            ],
             "renderValues": {
                 "true": "Active",
                 "false": "Inactive"
@@ -88,7 +91,7 @@
             "name": "created_at",
             "label": "Created At",
             "type": "string",
-            "minWidth": 180
+            "minWidth": 160
         },
         {
             "name": "actions",

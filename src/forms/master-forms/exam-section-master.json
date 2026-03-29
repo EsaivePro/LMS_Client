@@ -1,17 +1,17 @@
 {
-    "baseRoute": "/sections/manage",
-    "tableName": "sections",
+    "baseRoute": "/exam-sections/manage",
+    "tableName": "exams_section",
     "endpoint": "/common-service/search",
     "readFrom": "response.data",
     "serverSide": true,
-    "tableKey": "sections-table",
+    "tableKey": "exam-sections-table",
     "header": {
-        "title": "Sections",
+        "title": "Exam Sections",
         "showCount": true,
         "buttons": [
             {
                 "key": "create",
-                "label": "New Section",
+                "label": "New Exam Section",
                 "variant": "contained"
             }
         ]
@@ -38,20 +38,23 @@
             "minWidth": 200
         },
         {
-            "name": "description",
-            "label": "Description",
-            "type": "string",
-            "minWidth": 300
+            "name": "exam_id",
+            "label": "Exam",
+            "type": "number",
+            "minWidth": 120
+        },
+        {
+            "name": "order_no",
+            "label": "Order",
+            "type": "number",
+            "minWidth": 80
         },
         {
             "name": "is_active",
             "label": "Status",
             "type": "boolean",
-            "minWidth": 120,
-            "valueOptions": [
-                true,
-                false
-            ],
+            "minWidth": 100,
+            "valueOptions": [true, false],
             "renderValues": {
                 "true": "Active",
                 "false": "Inactive"
@@ -61,7 +64,7 @@
             "name": "created_at",
             "label": "Created At",
             "type": "string",
-            "minWidth": 180
+            "minWidth": 160
         },
         {
             "name": "actions",

@@ -1,6 +1,10 @@
 {
     "title": "Topic Details",
-    "tablename": "topics",
+    "fetchConfig": {
+        "endpoint": "/form-service/get",
+        "table": "topics",
+        "joins": []
+    },
     "sections": [
         {
             "key": "basic",

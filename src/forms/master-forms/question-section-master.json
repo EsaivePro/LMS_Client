@@ -1,12 +1,12 @@
 {
-    "baseRoute": "/sections/manage",
-    "tableName": "sections",
+    "baseRoute": "/question-sections/manage",
+    "tableName": "questions_section",
     "endpoint": "/common-service/search",
     "readFrom": "response.data",
     "serverSide": true,
-    "tableKey": "sections-table",
+    "tableKey": "question-sections-table",
     "header": {
-        "title": "Sections",
+        "title": "Question Sections",
         "showCount": true,
         "buttons": [
             {
@@ -38,20 +38,17 @@
             "minWidth": 200
         },
         {
-            "name": "description",
-            "label": "Description",
-            "type": "string",
-            "minWidth": 300
+            "name": "order_no",
+            "label": "Order",
+            "type": "number",
+            "minWidth": 80
         },
         {
             "name": "is_active",
             "label": "Status",
             "type": "boolean",
-            "minWidth": 120,
-            "valueOptions": [
-                true,
-                false
-            ],
+            "minWidth": 100,
+            "valueOptions": [true, false],
             "renderValues": {
                 "true": "Active",
                 "false": "Inactive"
@@ -61,7 +58,7 @@
             "name": "created_at",
             "label": "Created At",
             "type": "string",
-            "minWidth": 180
+            "minWidth": 160
         },
         {
             "name": "actions",

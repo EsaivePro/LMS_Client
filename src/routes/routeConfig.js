@@ -22,6 +22,8 @@ import ExamSummaryPage from "../modules/exam/pages/ExamSummaryPage";
 import QuestionManage from "../modules/questionbank/pages/QuestionManage";
 import SectionManage from "../modules/questionbank/pages/SectionManage";
 import TopicManage from "../modules/questionbank/pages/TopicManage";
+import QuestionSectionManage from "../modules/questionbank/pages/QuestionSectionManage";
+import ExamSectionManage from "../modules/questionbank/pages/ExamSectionManage";
 
 export const protectedRoutes = [
     {
@@ -200,5 +202,19 @@ export const protectedRoutes = [
         description: "Create topics, assign questions and schedule them.",
         permission: "user.management",
         element: <TopicManage />,
+    },
+    {
+        path: "/question-sections/manage/:id",
+        title: "Manage question section",
+        description: "Create and manage question sections.",
+        permission: "user.management",
+        element: <QuestionSectionManage />,
+    },
+    {
+        path: "/exam-sections/manage/:id",
+        title: "Manage exam section",
+        description: "Create and manage exam sections.",
+        permission: "user.management",
+        element: <ExamSectionManage />,
     }
 ];

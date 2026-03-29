@@ -1,0 +1,100 @@
+{
+    "title": "Question Section Details",
+    "tablename": "questions_section",
+    "fetchConfig": {
+        "endpoint": "/form-service/get",
+        "table": "questions_section",
+        "joins": []
+    },
+    "sections": [
+        {
+            "key": "basic",
+            "title": "Basic Details",
+            "fields": [
+                {
+                    "name": "id",
+                    "label": "ID",
+                    "type": "number",
+                    "readOnly": true
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "display_name",
+                    "label": "Display Name",
+                    "type": "text"
+                },
+                {
+                    "name": "description",
+                    "label": "Description",
+                    "type": "textarea",
+                    "fullWidth": true
+                }
+            ]
+        },
+        {
+            "key": "config",
+            "title": "Configuration",
+            "fields": [
+                {
+                    "name": "config_items",
+                    "label": "Question Assignments",
+                    "type": "table",
+                    "table": {
+                        "columns": [
+                            {
+                                "name": "section_id",
+                                "label": "Parent Section",
+                                "type": "number",
+                                "minWidth": 160
+                            },
+                            {
+                                "name": "question_id",
+                                "label": "Question",
+                                "type": "select",
+                                "optionsSource": "questions",
+                                "minWidth": 280,
+                                "required": true
+                            },
+                            {
+                                "name": "order_no",
+                                "label": "Order No",
+                                "type": "number",
+                                "minWidth": 100,
+                                "default": 1
+                            },
+                            {
+                                "name": "actions",
+                                "label": "",
+                                "type": "actions",
+                                "minWidth": 60
+                            }
+                        ],
+                        "addButton": {
+                            "label": "Add Question",
+                            "mode": "inline"
+                        },
+                        "allowDelete": true,
+                        "minRows": 0
+                    }
+                }
+            ]
+        },
+        {
+            "key": "status",
+            "title": "Status",
+            "fields": [
+                {
+                    "name": "is_active",
+                    "label": "Active",
+                    "type": "checkbox",
+                    "default": true
+                }
+            ]
+        }
+    ]
+}

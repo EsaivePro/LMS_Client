@@ -240,23 +240,6 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
                                 startIcon={
                                     btn.key === "create" ? <AddIcon /> : null
                                 }
-                                sx={{
-                                    textTransform: "none",
-                                    borderRadius: 2,
-                                    px: 2,
-                                    fontWeight: 500,
-                                    bgcolor:
-                                        btn.variant === "contained"
-                                            ? "var(--primary)"
-                                            : undefined,
-                                    color:
-                                        btn.variant === "contained"
-                                            ? "var(--onPrimary)"
-                                            : undefined,
-                                    "&:hover": {
-                                        opacity: 0.9,
-                                    },
-                                }}
                             >
                                 {btn.label}
                             </Button>

@@ -183,3 +183,149 @@ button.outlined,
     background-color: var(--darkMedium) !important;
     color: var(--onPrimary) !important;
 }
+
+/* ============================================================
+   Global MUI Form Field overrides — TextField, Select, Checkbox,
+   Radio, Switch, DatePicker, Autocomplete, Slider …
+   Default → var(--dark)  |  Hover/Focus → var(--primary)  |  Disabled → light-dark
+   ============================================================ */
+
+/* --- OutlinedInput border (TextField, Select, Autocomplete, DatePicker…) --- */
+.MuiOutlinedInput-notchedOutline {
+    border-color: var(--dark) !important;
+    transition: border-color 0.2s ease;
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: var(--primary) !important;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: var(--primary) !important;
+}
+
+.MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(0, 0, 0, 0.388) !important;
+}
+
+/* Disabled input text */
+.MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-input,
+.MuiInputBase-root.Mui-disabled .MuiInputBase-input {
+    color: rgba(0, 0, 0, 0.388) !important;
+    -webkit-text-fill-color: rgba(0, 0, 0, 0.388) !important;
+}
+
+/* --- InputLabel (floating label) --- */
+.MuiInputLabel-root {
+    /* color: var(--dark) !important; */
+}
+
+.MuiInputLabel-root.Mui-focused {
+    color: var(--primary) !important;
+}
+
+.MuiInputLabel-root.Mui-disabled {
+    /* color: rgba(0, 0, 0, 0.388) !important; */
+}
+
+/* --- Select dropdown arrow --- */
+.MuiSelect-icon {
+    color: var(--dark) !important;
+}
+
+.MuiOutlinedInput-root.Mui-disabled .MuiSelect-icon {
+    color: rgba(0, 0, 0, 0.388) !important;
+}
+
+/* --- Checkbox --- */
+.MuiCheckbox-root {
+    color: var(--dark) !important;
+}
+
+.MuiCheckbox-root.Mui-checked {
+    color: var(--primary) !important;
+}
+
+.MuiCheckbox-root.MuiCheckbox-indeterminate {
+    color: var(--primary) !important;
+}
+
+.MuiCheckbox-root.Mui-disabled {
+    color: rgba(0, 0, 0, 0.388) !important;
+}
+
+/* --- Radio --- */
+.MuiRadio-root {
+    color: var(--dark) !important;
+}
+
+.MuiRadio-root.Mui-checked {
+    color: var(--primary) !important;
+}
+
+.MuiRadio-root.Mui-disabled {
+    color: rgba(0, 0, 0, 0.388) !important;
+}
+
+/* --- Switch --- */
+.MuiSwitch-switchBase {
+    color: var(--dark) !important;
+}
+
+.MuiSwitch-switchBase+.MuiSwitch-track {
+    background-color: var(--dark) !important;
+}
+
+.MuiSwitch-switchBase.Mui-checked {
+    color: var(--primary) !important;
+}
+
+.MuiSwitch-switchBase.Mui-checked+.MuiSwitch-track {
+    background-color: var(--primary) !important;
+    opacity: 0.5 !important;
+}
+
+.MuiSwitch-switchBase.Mui-disabled {
+    color: rgba(0, 0, 0, 0.388) !important;
+}
+
+.MuiSwitch-switchBase.Mui-disabled+.MuiSwitch-track {
+    opacity: 0.15 !important;
+}
+
+/* --- Slider --- */
+.MuiSlider-root {
+    color: var(--dark) !important;
+}
+
+.MuiSlider-root:hover {
+    color: var(--primary) !important;
+}
+
+.MuiSlider-root.Mui-disabled {
+    color: rgba(0, 0, 0, 0.388) !important;
+}
+
+/* --- DatePicker / TimePicker adornment icon button (scoped to input) --- */
+.MuiOutlinedInput-root .MuiInputAdornment-root .MuiIconButton-root {
+    color: var(--dark) !important;
+}
+
+.MuiOutlinedInput-root:hover .MuiInputAdornment-root .MuiIconButton-root,
+.MuiOutlinedInput-root .MuiInputAdornment-root .MuiIconButton-root:hover {
+    color: var(--primary) !important;
+}
+
+.MuiOutlinedInput-root.Mui-disabled .MuiInputAdornment-root .MuiIconButton-root {
+    color: rgba(0, 0, 0, 0.388) !important;
+}
+
+/* --- FormControlLabel label text (next to Checkbox / Radio / Switch) --- */
+.MuiFormControlLabel-root.Mui-disabled .MuiFormControlLabel-label {
+    color: rgba(0, 0, 0, 0.388) !important;
+}
+
+/* --- FormHelperText --- */
+.MuiFormHelperText-root.Mui-disabled {
+    color: rgba(0, 0, 0, 0.388) !important;
+}

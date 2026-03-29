@@ -45,6 +45,8 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import LabelIcon from "@mui/icons-material/Label";
 import SegmentIcon from "@mui/icons-material/Segment";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
+import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 
 import { useSelector } from "react-redux";
 import { useAuth } from "../../hooks/useAuth";
@@ -149,9 +151,25 @@ const MENU = [
         role: "user.management",
     },
     {
+        label: "Question Sections",
+        icon: <FormatListNumberedIcon />,
+        to: "/question-sections/manage/list",
+        matchPath: "/question-sections/manage",
+        type: "item",
+        role: "user.management",
+    },
+    {
         label: "Exams",
         icon: <AssignmentIcon />,
         to: "/exams",
+        type: "item",
+        role: "user.management",
+    },
+    {
+        label: "Exam Sections",
+        icon: <PlaylistAddCheckIcon />,
+        to: "/exam-sections/manage/list",
+        matchPath: "/exam-sections/manage",
         type: "item",
         role: "user.management",
     },
@@ -665,7 +683,7 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                             transition: "margin-left 0.3s ease",
                             flex: 1,
                             minWidth: 0,   // 🔥 VERY IMPORTANT (prevents overflow)
-                            overflow: "hidden"
+                            overflowX: "clip"  // clip (not hidden) — overflow:hidden/auto creates a scroll container that breaks position:sticky
                         }}
                     >
                         <Box

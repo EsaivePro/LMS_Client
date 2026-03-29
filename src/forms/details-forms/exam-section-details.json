@@ -1,8 +1,9 @@
 {
-    "title": "Section Details",
+    "title": "Exam Section Details",
+    "tablename": "exams_section",
     "fetchConfig": {
         "endpoint": "/form-service/get",
-        "table": "sections",
+        "table": "exams_section",
         "joins": []
     },
     "sections": [
@@ -14,33 +15,54 @@
                     "name": "id",
                     "label": "ID",
                     "type": "number",
-                    "readOnly": true,
-                    "minWidth": 120
+                    "readOnly": true
                 },
                 {
                     "name": "title",
                     "label": "Title",
                     "type": "text",
-                    "required": true,
-                    "minWidth": 320
+                    "required": true
                 },
                 {
                     "name": "display_name",
                     "label": "Display Name",
-                    "type": "text",
-                    "minWidth": 320
+                    "type": "text"
                 },
                 {
                     "name": "description",
                     "label": "Description",
                     "type": "textarea",
-                    "minWidth": 640
+                    "fullWidth": true
                 }
             ]
         },
         {
-            "key": "options",
-            "title": "Options",
+            "key": "config",
+            "title": "Configuration",
+            "fields": [
+                {
+                    "name": "exam_id",
+                    "label": "Exam",
+                    "type": "select",
+                    "required": true,
+                    "optionsSource": "exams"
+                },
+                {
+                    "name": "questions_section_id",
+                    "label": "Question Section",
+                    "type": "number"
+                },
+                {
+                    "name": "order_no",
+                    "label": "Order No",
+                    "type": "number",
+                    "default": 1
+                }
+            ]
+        },
+        {
+            "key": "status",
+            "title": "Status",
             "fields": [
                 {
                     "name": "is_active",

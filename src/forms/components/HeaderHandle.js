@@ -16,6 +16,7 @@ export default function createHeaderHandlers({
     setInvalidFields,
     handleScrollTo,
     onSubmit,
+    setSubmitLabel,
 }) {
     const handleCancel = () => {
         if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
@@ -85,6 +86,18 @@ export default function createHeaderHandlers({
 
     const handleToggleEdit = () => setEditing((e) => !e);
 
+    const clearEditmodeParam = () => {
+        const params = new URLSearchParams(location?.search || '');
+        if (params.has('editmode')) {
+            params.delete('editmode');
+            const search = params.toString();
+            navigate(
+                { pathname: location.pathname, search: search ? `?${search}` : '' },
+                { replace: true }
+            );
+        }
+    };
+
     const handleSubmit = async (e) => {
         const validateForm = () => {
             const missing = [];
@@ -153,31 +166,47 @@ export default function createHeaderHandlers({
         };
 
         e?.preventDefault?.();
+
+        // Validate before showLoader — if we called showLoader() here and validation
+        // fails synchronously, hideLoader() would be dispatched in the same tick and
+        // React 18 batching would collapse both → loader never appears.
+        if (!validateForm()) return;
+
         showLoader();
         try {
-            if (!validateForm()) {
-                hideLoader();
+            if (onSubmit) {
+                await onSubmit(values);
                 return;
             }
 
-            if (onSubmit) return await onSubmit(values);
-
-            const payload = { table: definition.tablename, data: values };
+            const table = definition.fetchConfig?.table || definition.tablename;
+            const payload = { table, data: values };
             if (payload.data == null) throw new Error('No form data');
             if (payload.data.id === undefined || payload.data.id === null || (payload.data.id === "" || payload.data.id == 0)) {
                 delete payload.data.id;
                 const res = await httpClient.insertForm(payload);
-                if (res.data?.error === false && res.data?.statusCode === 200) showSuccess("Created successfully");
-                else showError(res.data?.message || "Failed to create");
+                if (res.data?.error === false && res.data?.statusCode === 200) {
+                    showSuccess("Created successfully");
+                    setEditing(false);
+                    if (setSubmitLabel) setSubmitLabel("Update");
+                    const newId = res.data?.data?.id ?? res.data?.response?.id ?? res.data?.data?.insertId ?? res.data?.insertId ?? null;
+                    if (newId) {
+                        const current = (location?.pathname || '').replace(/\/+$/, '');
+                        const newPath = current.replace(/\/[^/]*$/, `/${newId}`);
+                        navigate(newPath, { replace: true });
+                    }
+                } else showError(res.data?.message || "Failed to create");
             } else {
                 payload.id = parseInt(payload.data.id, 10);
                 const res = await httpClient.updateForm(payload);
-                if (res.data?.error === false && res.data?.statusCode === 200) showSuccess("Updated successfully");
-                else showError(res.data?.message || "Failed to update");
+                if (res.data?.error === false && res.data?.statusCode === 200) {
+                    showSuccess("Updated successfully");
+                    clearEditmodeParam();
+                    setEditing(false);
+                } else showError(res.data?.message || "Failed to update");
             }
         } catch (err) {
             showError(err?.response?.data?.message || err.message || "Failed to submit form");
-            throw err;
         } finally {
             hideLoader();
         }

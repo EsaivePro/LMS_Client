@@ -1,11 +1,11 @@
 import { Box, Paper } from "@mui/material";
 import { useParams } from "react-router-dom";
-import formDef from "../../../forms/details-forms/question-details.json";
-import masterConfig from "../../../forms/master-forms/question-master.json";
+import formDef from "../../../forms/details-forms/exam-section-details.json";
+import masterConfig from "../../../forms/master-forms/exam-section-master.json";
 import DetailsForm from "../../../forms/components/DetailsForm";
 import MasterForm from "../../../forms/components/MasterForm";
 
-const QuestionManage = () => {
+const ExamSectionManage = () => {
     const { id } = useParams();
 
     const submitLabel = id === "create" ? "Create" : "Update";
@@ -24,4 +24,4 @@ const QuestionManage = () => {
     );
 };
 
-export default QuestionManage;
+export default ExamSectionManage;

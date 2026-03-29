@@ -1,6 +1,13 @@
 {
     "title": "Question Details",
-    "tablename": "lms.questions_master",
+    "tablename": "questions_master",
+    "fetchConfig": {
+        "endpoint": "/form-service/get",
+        "table": "questions_master",
+        "joins": [
+            "question_options"
+        ]
+    },
     "sections": [
         {
             "key": "basic",
@@ -10,21 +17,20 @@
                     "name": "id",
                     "label": "ID",
                     "type": "number",
-                    "readOnly": true,
-                    "minWidth": 120
+                    "readOnly": true
                 },
                 {
                     "name": "title",
                     "label": "Question Title",
                     "type": "text",
                     "required": true,
-                    "minWidth": 320
+                    "fullWidth": true
                 },
                 {
                     "name": "description",
                     "label": "Description / Explanation",
                     "type": "textarea",
-                    "minWidth": 640
+                    "fullWidth": true
                 },
                 {
                     "name": "question_type",
@@ -32,67 +38,68 @@
                     "type": "select",
                     "required": true,
                     "options": [
-                        { "value": "mcq", "label": "Multiple Choice (MCQ)" },
-                        { "value": "multiple_select", "label": "Multiple Select" },
-                        { "value": "true_false", "label": "True / False" }
-                    ],
-                    "minWidth": 240
+                        {
+                            "value": "mcq",
+                            "label": "Multiple Choice (MCQ)"
+                        },
+                        {
+                            "value": "multiple_select",
+                            "label": "Multiple Select"
+                        },
+                        {
+                            "value": "true_false",
+                            "label": "True / False"
+                        }
+                    ]
                 },
                 {
                     "name": "difficulty_level",
                     "label": "Difficulty Level",
                     "type": "select",
                     "options": [
-                        { "value": "easy", "label": "Easy" },
-                        { "value": "medium", "label": "Medium" },
-                        { "value": "hard", "label": "Hard" }
-                    ],
-                    "minWidth": 200
+                        {
+                            "value": "easy",
+                            "label": "Easy"
+                        },
+                        {
+                            "value": "medium",
+                            "label": "Medium"
+                        },
+                        {
+                            "value": "hard",
+                            "label": "Hard"
+                        }
+                    ]
                 },
                 {
                     "name": "topic_id",
                     "label": "Topic",
                     "type": "select",
-                    "optionsSource": "qb_topics",
-                    "minWidth": 280
+                    "optionsSource": "qb_topics"
                 }
             ]
         },
         {
-            "key": "settings",
-            "title": "Settings",
+            "key": "scoring",
+            "title": "Scoring",
             "fields": [
                 {
                     "name": "marks",
                     "label": "Marks",
                     "type": "number",
                     "required": true,
-                    "default": 1,
-                    "minWidth": 160
+                    "default": 1
                 },
                 {
                     "name": "negative_marks",
                     "label": "Negative Marks",
                     "type": "number",
-                    "default": 0,
-                    "minWidth": 160
+                    "default": 0
                 }
             ]
         },
         {
-            "key": "options",
-            "title": "Options",
-            "fields": [
-                {
-                    "name": "is_active",
-                    "label": "Active",
-                    "type": "checkbox",
-                    "default": true
-                }
-            ]
-        },
-        {
-            "key": "answers",
+            "key": "answer_options",
             "title": "Answer Options",
             "fields": [
                 {
@@ -118,7 +125,7 @@
                                 "name": "actions",
                                 "label": "",
                                 "type": "actions",
-                                "minWidth": 80
+                                "minWidth": 60
                             }
                         ],
                         "addButton": {
@@ -129,6 +136,18 @@
                         "allowDelete": true,
                         "minRows": 0
                     }
+                }
+            ]
+        },
+        {
+            "key": "status",
+            "title": "Status",
+            "fields": [
+                {
+                    "name": "is_active",
+                    "label": "Active",
+                    "type": "checkbox",
+                    "default": true
                 }
             ]
         }

@@ -5,7 +5,9 @@ import {
     Paper,
     List,
     ListItemButton,
-    ListItemText
+    ListItemText,
+    Backdrop,
+    CircularProgress
 } from "@mui/material";
 import useCommon from "../../hooks/useCommon";
 import { httpClient } from "../../apiClient/httpClient";
@@ -14,14 +16,19 @@ import FormHeader from "./FormHeader";
 import createHeaderHandlers from "./HeaderHandle";
 import FormSection from "./FormSection";
 
-export default function DetailsForm({ definition = {}, initialValues = {}, onSubmit, submitLabel = "Save", initialEditing = false }) {
-    const { setTitleContainer, showSuccess, showError, showLoader, hideLoader } = useCommon();
+export default function DetailsForm({ definition = {}, initialValues = {}, id, onSubmit, submitLabel = "Save", initialEditing = false }) {
+    const { setTitleContainer, showSuccess, showError } = useCommon();
+    const [formLoading, setFormLoading] = useState(false);
+    const showLoader = () => setFormLoading(true);
+    const hideLoader = () => setFormLoading(false);
     const [values, setValues] = useState(initialValues || {});
+    const [resolvedInitialValues, setResolvedInitialValues] = useState(initialValues || {});
     const [invalidFields, setInvalidFields] = useState({});
     const [tableState, setTableState] = useState({});
     const [optionsCache, setOptionsCache] = useState({});
     const [optionsLoading, setOptionsLoading] = useState({});
     const searchTimers = useRef({});
+    const [currentSubmitLabel, setSubmitLabel] = useState(submitLabel);
     const [editing, setEditing] = useState(submitLabel === "Create" || !!initialEditing);
     const [activeSection, setActiveSection] = useState(definition.sections?.[0]?.key);
     const refs = useRef({});
@@ -30,8 +37,8 @@ export default function DetailsForm({ definition = {}, initialValues = {}, onSub
 
     useEffect(() => {
         setTitleContainer(definition.title || "Details");
-        if (submitLabel === "Create") setEditing(true);
-    }, [definition.title, setTitleContainer, submitLabel]);
+        if (currentSubmitLabel === "Create") setEditing(true);
+    }, [definition.title, setTitleContainer, currentSubmitLabel]);
 
     const buildInitialValues = (definition, data = {}) => {
         const defaults = {};
@@ -67,7 +74,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, onSub
             try { stored = sessionStorage.getItem('detailsFormPrefill'); stored = stored ? JSON.parse(stored) : null; } catch (e) { stored = null; }
 
             const sourceData = navPrefill || stored || initialValues || {};
-            setValues(buildInitialValues(definition, sourceData || {}));
+            // setValues(buildInitialValues(definition, sourceData || {}));
             // if we used sessionStorage prefill, clear it so it does not persist
             if (stored) { try { sessionStorage.removeItem('detailsFormPrefill'); } catch (e) { } }
         } finally {
@@ -258,7 +265,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, onSub
         const el = refs.current[key];
         if (el) {
             const header = document.querySelector('header, .app-header, .MuiAppBar-root');
-            const headerHeight = 117; //header ? header.getBoundingClientRect().height : 96;
+            const headerHeight = 185; //header ? header.getBoundingClientRect().height : 96;
             const rectTop = el.getBoundingClientRect().top + window.pageYOffset;
             const target = Math.max(0, rectTop - headerHeight - 8);
             window.scrollTo({ top: target, behavior: 'smooth' });
@@ -285,6 +292,38 @@ export default function DetailsForm({ definition = {}, initialValues = {}, onSub
         setActiveSection(key);
     };
 
+    /* ===== GENERIC FETCH via fetchConfig ===== */
+    useEffect(() => {
+        const fetchConfig = definition.fetchConfig;
+        if (!fetchConfig || !id || id === "create") return;
+
+        const load = async () => {
+            showLoader();
+            try {
+                const res = await axiosInstance.post(fetchConfig.endpoint, {
+                    table: fetchConfig.table,
+                    joins: fetchConfig.joins ?? [],
+                    where: { id: Number(id) },
+                });
+                const data =
+                    res?.data?.data ||
+                    res?.data?.response?.data?.[0] ||
+                    res?.data?.response?.data ||
+                    res?.data?.response ||
+                    {};
+                const record = Array.isArray(data) ? data[0] ?? {} : data;
+                setResolvedInitialValues(record);
+                setValues(buildInitialValues(definition, record));
+            } catch (err) {
+                showError(err?.message || "Failed to load data");
+            } finally {
+                hideLoader();
+            }
+        };
+
+        load();
+    }, [id, definition.fetchConfig]);
+
     const { handleCancel, handleCopy, handleToggleEdit, handleSubmit } = createHeaderHandlers({
         navigate,
         location,
@@ -297,23 +336,29 @@ export default function DetailsForm({ definition = {}, initialValues = {}, onSub
         showError,
         showSuccess,
         definition,
-        initialValues,
+        initialValues: resolvedInitialValues,
         setInvalidFields,
         handleScrollTo: scrollToSection,
         onSubmit,
+        setSubmitLabel,
     });
 
     return (
-        <Box>
-            <FormHeader
-                definition={definition}
-                submitLabel={submitLabel}
-                editing={editing}
-                onToggleEdit={handleToggleEdit}
-                onCancel={handleCancel}
-                onCopy={handleCopy}
-                onSubmit={handleSubmit}
-            />
+        <Box sx={{ position: "relative" }}>
+            <Backdrop open={formLoading} sx={{ position: "absolute", zIndex: 999, borderRadius: 1 }}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
+            <Box sx={{ position: "sticky", top: 112, zIndex: 100 }}>
+                <FormHeader
+                    definition={definition}
+                    submitLabel={currentSubmitLabel}
+                    editing={editing}
+                    onToggleEdit={handleToggleEdit}
+                    onCancel={handleCancel}
+                    onCopy={handleCopy}
+                    onSubmit={handleSubmit}
+                />
+            </Box>
 
             <Box sx={{ display: 'flex', gap: 2 }}>
                 <Box sx={{ flex: 1 }} component="form" onSubmit={handleSubmit}>
@@ -337,8 +382,8 @@ export default function DetailsForm({ definition = {}, initialValues = {}, onSub
                     ))}
                 </Box>
 
-                <Box sx={{ width: 220 }}>
-                    <Paper sx={{ position: "sticky", top: 125, p: 1 }}>
+                <Box sx={{ width: 220, position: "sticky", top: 185, alignSelf: "flex-start" }}>
+                    <Paper sx={{ p: 1 }}>
                         <List>
                             {(definition.sections || []).map((sec) => (
                                 <ListItemButton key={sec.key} selected={activeSection === sec.key} sx={{ p: 1 }} onClick={() => handleScrollTo(sec.key)}>

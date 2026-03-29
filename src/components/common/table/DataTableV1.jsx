@@ -23,6 +23,8 @@ import {
     Chip,
     ListItemText,
     CircularProgress,
+    Collapse,
+    Badge,
 } from "@mui/material";
 
 import TuneIcon from "@mui/icons-material/Tune";
@@ -31,6 +33,7 @@ import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import FilterListIcon from "@mui/icons-material/FilterList";
 import NoRowsOverlay from "./NoRowsOverlay";
 
 const STORAGE_KEY = "datatable_filters_v9";
@@ -79,6 +82,7 @@ export default function DataTable({
     const [filters, setFilters] = React.useState({});
     const [operators, setOperators] = React.useState({});
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [filterPanelOpen, setFilterPanelOpen] = React.useState(false);
     const [localExternalSearch, setLocalExternalSearch] = React.useState(externalSearchProp);
     const searchDebounceRef = React.useRef(null);
 
@@ -320,208 +324,360 @@ export default function DataTable({
 
     /* ========================================================= */
 
+    /* ================= ACTIVE FILTER COUNT ================= */
+    const activeFilterCount = React.useMemo(
+        () =>
+            Object.values(filters).filter(
+                (v) => v != null && v !== "" && (Array.isArray(v) ? v.length > 0 : true)
+            ).length,
+        [filters]
+    );
+
+    const hasFilterableColumns = columns.some((c) => c.filterable);
+
     return (
         <Paper sx={{ maxWidth: "100vw" }}>
-            {/* ================= FILTER BAR ================= */}
+            {/* ================= TOOLBAR ================= */}
             <Box
                 sx={{
                     display: "flex",
-                    flexWrap: "wrap",
-                    gap: 1,
                     alignItems: "center",
-                    p: 2,
-                    borderBottom: "1px solid var(--lightgrey)",
+                    gap: 1,
+                    px: 2,
+                    py: 1.25,
+                    pb: 2,
+                    borderBottom: "1px solid",
+                    borderColor: "divider",
+                    minHeight: 52,
                 }}
             >
-                {columns
-                    .filter((c) => c.filterable && !hiddenCols[c.field])
-                    .map((col) => {
-                        const raw = filters[col.field];
-                        const value = Array.isArray(raw)
-                            ? raw
-                            : raw != null && raw !== ""
-                                ? [raw]
-                                : [];
+                {/* Filter toggle button — Azure DevOps style */}
+                {hasFilterableColumns && (
+                    <Badge
+                        badgeContent={activeFilterCount}
+                        color="primary"
+                        sx={{
+                            "& .MuiBadge-badge": {
+                                fontSize: 10,
+                                height: 16,
+                                minWidth: 16,
+                                top: 4,
+                                right: 4,
+                            },
+                        }}
+                    >
+                        <Button
+                            size="small"
+                            variant={filterPanelOpen ? "contained" : "outlined"}
+                            startIcon={<FilterListIcon fontSize="medium" />}
+                            onClick={() => setFilterPanelOpen((p) => !p)}
+                        >
+                            Filter
+                        </Button>
+                    </Badge>
+                )}
 
-                        /* ---- SELECT FILTER ---- */
-                        if (col.type === "select") {
-                            return (
-                                <Box
-                                    key={col.field}
-                                    sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 260 }}
-                                >
-                                    <Typography
-                                        sx={{
-                                            minWidth: 90,
-                                            fontSize: 12,
-                                            textAlign: "center",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            backgroundColor: "var(--lightgrey)",
-                                            border: "1px solid var(--lightgrey)",
-                                            borderRadius: 1,
-                                            height: 40,
-                                        }}
-                                    >
-                                        {col.headerName}
-                                    </Typography>
-
-                                    <Select
-                                        size="small"
-                                        multiple
-                                        fullWidth
-                                        value={value}
-                                        onChange={(e) =>
-                                            setFilters((p) => ({
-                                                ...p,
-                                                [col.field]: e.target.value,
-                                            }))
-                                        }
-                                        renderValue={(selected) =>
-                                            selected.length === 0 ? (
-                                                <Typography sx={{ fontSize: 13 }}>All</Typography>
-                                            ) : (
-                                                <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-                                                    {selected.map((v) => (
-                                                        <Chip key={v} size="small" label={v} />
-                                                    ))}
-                                                </Box>
-                                            )
-                                        }
-                                    >
-                                        {col.valueOptions?.map((opt) => {
-                                            const val = typeof opt === "object" ? opt.value : opt;
-                                            const label = typeof opt === "object" ? opt.label : opt;
-                                            return (
-                                                <MenuItem key={val} value={val} sx={{ p: 0.3 }}>
-                                                    <Checkbox size="small" checked={value.includes(val)} />
-                                                    <ListItemText primary={label} />
-                                                </MenuItem>
-                                            );
-                                        })}
-                                    </Select>
-                                </Box>
-                            );
-                        }
-
-                        /* ---- TEXT / NUMBER FILTER ---- */
-                        return (
-                            <Box key={col.field} sx={{ display: "flex", gap: 0.5, minWidth: 220 }}>
-                                <Select
-                                    size="small"
-                                    value={operators[col.field] || "contains"}
-                                    onChange={(e) =>
-                                        setOperators((p) => ({
-                                            ...p,
-                                            [col.field]: e.target.value,
-                                        }))
-                                    }
-                                >
-                                    <MenuItem value="contains">contains</MenuItem>
-                                    <MenuItem value="=">equals</MenuItem>
-                                    {col.type === "number" && (
-                                        <>
-                                            <MenuItem value=">">&gt;</MenuItem>
-                                            <MenuItem value="<">&lt;</MenuItem>
-                                            <MenuItem value=">=">&gt;=</MenuItem>
-                                            <MenuItem value="<=">&lt;=</MenuItem>
-                                        </>
-                                    )}
-                                </Select>
-
-                                <TextField
-                                    size="small"
-                                    placeholder={col.headerName.charAt(0).toUpperCase() + col.headerName.slice(1).toLowerCase()}
-                                    value={filters[col.field] ?? ""}
-                                    onChange={(e) =>
-                                        setFilters((p) => ({
-                                            ...p,
-                                            [col.field]: e.target.value,
-                                        }))
-                                    }
-                                />
-                            </Box>
-                        );
-                    })}
-
-                {/* <Button
-                    size="small"
-                    variant="contained"
-                    startIcon={<SearchIcon />}
-                    onClick={() => {
-                        setPage(0);
-                        setSearchCounter((c) => c + 1);
-                    }}
-                >
-                    Search
-                </Button> */}
-
-                {columns.some((c) => c.filterable) && (
+                {/* Clear all — enabled only when filters are active */}
+                {hasFilterableColumns && (
                     <Button
                         size="small"
                         variant="outlined"
-                        startIcon={<ClearIcon />}
+                        startIcon={<ClearIcon fontSize="medium" />}
+                        disabled={activeFilterCount === 0}
                         onClick={() => {
                             clearFilters();
                             setSearchCounter((c) => c + 1);
                         }}
+                        sx={{
+                            display: activeFilterCount > 0 ? "flex" : "none",
+                        }}
                     >
-                        Clear
+                        Clear all
                     </Button>
                 )}
 
-                <IconButton size="small" onClick={(e) => setAnchorEl(e.currentTarget)}>
-                    <TuneIcon fontSize="small" />
-                </IconButton>
-                <Box sx={{ ml: 'auto', display: 'flex', gap: 1, alignItems: 'center' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <TextField
-                            size="small"
-                            placeholder="Search"
-                            value={localExternalSearch}
-                            onChange={(e) => {
-                                const v = e.target.value;
-                                setLocalExternalSearch(v);
-                                const trimmed = v.trim();
-                                // if parent provided a controller, notify it
-                                if (typeof onExternalSearchChange === "function") {
-                                    onExternalSearchChange(v);
-                                } else {
-                                    // if input is less than 3 chars, immediately trigger a fetch with empty q
-                                    if (trimmed.length < 3) {
-                                        if (searchDebounceRef.current) {
-                                            clearTimeout(searchDebounceRef.current);
-                                            searchDebounceRef.current = null;
-                                        }
-                                        setPage(0);
-                                        setSearchCounter((c) => c + 1);
-                                        return;
+                {/* Active filter chips — visible when panel is closed */}
+                {!filterPanelOpen &&
+                    columns
+                        .filter((c) => c.filterable && filters[c.field] != null && filters[c.field] !== "" && !(Array.isArray(filters[c.field]) && filters[c.field].length === 0))
+                        .map((col) => {
+                            const val = filters[col.field];
+                            const label = Array.isArray(val) ? val.join(", ") : val;
+                            return (
+                                <Chip
+                                    key={col.field}
+                                    size="medium"
+                                    label={
+                                        <Typography component="span" sx={{ fontSize: 15 }}>
+                                            <strong>{col.headerName}:</strong> {label}
+                                        </Typography>
                                     }
+                                    onDelete={() =>
+                                        setFilters((p) => {
+                                            const next = { ...p };
+                                            delete next[col.field];
+                                            return next;
+                                        })
+                                    }
+                                    sx={{
+                                        height: 31,
+                                        borderRadius: 1,
+                                        p: 1,
+                                        backgroundColor: "var(--surface2)",
+                                        border: "1px solid",
+                                        borderColor: "primary.200",
+                                        "& .MuiChip-deleteIcon": { fontSize: 19 },
+                                    }}
+                                />
+                            );
+                        })}
 
-                                    // otherwise debounce and trigger a search
-                                    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
-                                    searchDebounceRef.current = setTimeout(() => {
-                                        setPage(0);
-                                        setSearchCounter((c) => c + 1);
-                                    }, 350);
-                                }
-                            }}
-                            InputProps={{
-                                startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1 }} />,
-                                endAdornment: (
-                                    <Tooltip title={searchActive ? 'Search active' : 'Search activates when 3+ characters are entered'}>
-                                        <IconButton size="small" sx={{ p: 0.5 }} disableRipple>
-                                            <InfoOutlinedIcon sx={{ color: searchActive ? 'primary.main' : 'text.disabled' }} fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                ),
-                            }}
-                            sx={{ width: 260 }}
-                        />
-                    </Box>
-                </Box>
+                {/* Spacer */}
+                <Box sx={{ flex: 1 }} />
+
+                {/* Column visibility */}
+                <Tooltip title="Column settings">
+                    <IconButton
+                        size="small"
+                        onClick={(e) => setAnchorEl(e.currentTarget)}
+                        sx={{
+                            border: "1px solid",
+                            borderColor: "divider",
+                            borderRadius: 1,
+                            p: 0.6,
+                            color: "text.secondary",
+                            "&:hover": { borderColor: "var(--primary)", color: "var(--primary)" },
+                        }}
+                    >
+                        <TuneIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+
+                {/* Global search */}
+                <TextField
+                    size="small"
+                    placeholder="Search"
+                    value={localExternalSearch}
+                    onChange={(e) => {
+                        const v = e.target.value;
+                        setLocalExternalSearch(v);
+                        if (typeof onExternalSearchChange === "function") {
+                            onExternalSearchChange(v);
+                        } else {
+                            if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+                            searchDebounceRef.current = setTimeout(() => {
+                                setPage(0);
+                                setSearchCounter((c) => c + 1);
+                            }, 500);
+                        }
+                    }}
+                    InputProps={{
+                        startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: "text.disabled" }} />,
+                        endAdornment: (
+                            <Tooltip title={searchActive ? "Search active" : "Search activates when 3+ characters are entered"}>
+                                <IconButton size="small" sx={{ p: 0.5 }} disableRipple>
+                                    <InfoOutlinedIcon
+                                        sx={{ color: searchActive ? "var(--primary)" : "text.disabled" }}
+                                        fontSize="small"
+                                    />
+                                </IconButton>
+                            </Tooltip>
+                        ),
+                    }}
+                    sx={{
+                        width: 240,
+                        "& .MuiOutlinedInput-root": {
+                            borderRadius: 1,
+                            fontSize: 16,
+                        },
+                    }}
+                />
             </Box>
+
+            {/* ================= COLLAPSIBLE FILTER PANEL ================= */}
+            <Collapse in={filterPanelOpen} timeout={260}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 2,
+                        alignItems: "flex-end",
+                        px: 2,
+                        py: 2,
+                        // background: "linear-gradient(135deg, #f5f7ff 0%, #eef1f8 100%)",
+                        borderBottom: "1px solid",
+                        borderColor: "divider",
+                    }}
+                >
+                    {columns
+                        .filter((c) => c.filterable && !hiddenCols[c.field])
+                        .map((col) => {
+                            const raw = filters[col.field];
+                            const value = Array.isArray(raw)
+                                ? raw
+                                : raw != null && raw !== ""
+                                    ? [raw]
+                                    : [];
+
+                            const isActive = Array.isArray(raw)
+                                ? raw.length > 0
+                                : raw != null && raw !== "";
+
+                            /* shared card wrapper */
+                            const cardSx = {
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 0.6,
+                                minWidth: 220,
+                                backgroundColor: "#fff",
+                                border: "1.5px solid",
+                                borderColor: isActive ? "var(--primary)" : "#dde1ea",
+                                borderRadius: 0.5,
+                                px: 1.5,
+                                py: 1.2,
+                                boxShadow: isActive
+                                    ? "0 0 0 3px rgba(25,118,210,0.08)"
+                                    : "0 1px 4px rgba(0,0,0,0.06)",
+                                transition: "border-color 0.2s, box-shadow 0.2s",
+                                "&:hover": {
+                                    boxShadow: 2,
+                                },
+                            };
+
+                            /* ---- SELECT FILTER ---- */
+                            if (col.type === "select") {
+                                return (
+                                    <Box key={col.field} sx={cardSx}>
+                                        <Typography
+                                            sx={{
+                                                fontSize: 16,
+                                                fontWeight: 700,
+                                                color: isActive ? "var(--primary)" : "text.disabled",
+                                                textTransform: "uppercase",
+                                                letterSpacing: 0.6,
+                                                transition: "color 0.2s",
+                                            }}
+                                        >
+                                            {col.headerName}
+                                        </Typography>
+                                        <Select
+                                            size="small"
+                                            multiple
+                                            fullWidth
+                                            value={value}
+                                            onChange={(e) =>
+                                                setFilters((p) => ({
+                                                    ...p,
+                                                    [col.field]: e.target.value,
+                                                }))
+                                            }
+                                            renderValue={(selected) =>
+                                                selected.length === 0 ? (
+                                                    <Typography sx={{ fontSize: 16, color: "text.disabled" }}>All</Typography>
+                                                ) : (
+                                                    <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
+                                                        {selected.map((v) => (
+                                                            <Chip key={v} size="small" label={v} color="primary" variant="outlined" sx={{ height: 22, fontSize: 13 }} />
+                                                        ))}
+                                                    </Box>
+                                                )
+                                            }
+                                            sx={{
+                                                fontSize: 16,
+                                                "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+                                                "& .MuiSelect-select": { px: 0, py: 0.3 },
+                                                backgroundColor: "transparent",
+                                            }}
+                                        >
+                                            {col.valueOptions?.map((opt) => {
+                                                const val = typeof opt === "object" ? opt.value : opt;
+                                                const label = typeof opt === "object" ? opt.label : opt;
+                                                return (
+                                                    <MenuItem key={val} value={val} sx={{ p: 0.3 }}>
+                                                        <Checkbox size="small" checked={value.includes(val)} />
+                                                        <ListItemText primary={label} primaryTypographyProps={{ fontSize: 16 }} />
+                                                    </MenuItem>
+                                                );
+                                            })}
+                                        </Select>
+                                    </Box>
+                                );
+                            }
+
+                            /* ---- TEXT / NUMBER FILTER ---- */
+                            return (
+                                <Box key={col.field} sx={cardSx}>
+                                    <Typography
+                                        sx={{
+                                            fontSize: 13,
+                                            fontWeight: 700,
+                                            color: isActive ? "var(--primary)" : "text.disabled",
+                                            textTransform: "uppercase",
+                                            letterSpacing: 0.6,
+                                            transition: "color 0.2s",
+                                        }}
+                                    >
+                                        {col.headerName}
+                                    </Typography>
+                                    <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
+                                        <Select
+                                            size="small"
+                                            value={operators[col.field] || "contains"}
+                                            onChange={(e) =>
+                                                setOperators((p) => ({
+                                                    ...p,
+                                                    [col.field]: e.target.value,
+                                                }))
+                                            }
+                                            sx={{
+                                                fontSize: 14,
+                                                minWidth: 108,
+                                                color: "text.secondary",
+                                                "& .MuiOutlinedInput-notchedOutline": {
+                                                    borderColor: "#e0e3eb",
+                                                },
+                                                borderRadius: 1.5,
+                                                backgroundColor: "#f5f6fa",
+                                            }}
+                                        >
+                                            <MenuItem value="contains" sx={{ fontSize: 16 }}>contains</MenuItem>
+                                            <MenuItem value="=" sx={{ fontSize: 16 }}>equals</MenuItem>
+                                            {col.type === "number" && (
+                                                <>
+                                                    <MenuItem value=">" sx={{ fontSize: 16 }}>&gt;</MenuItem>
+                                                    <MenuItem value="<" sx={{ fontSize: 16 }}>&lt;</MenuItem>
+                                                    <MenuItem value=">=" sx={{ fontSize: 16 }}>&gt;=</MenuItem>
+                                                    <MenuItem value="<=" sx={{ fontSize: 16 }}>&lt;=</MenuItem>
+                                                </>
+                                            )}
+                                        </Select>
+                                        <TextField
+                                            size="small"
+                                            placeholder={col.headerName.charAt(0).toUpperCase() + col.headerName.slice(1).toLowerCase()}
+                                            value={filters[col.field] ?? ""}
+                                            onChange={(e) =>
+                                                setFilters((p) => ({
+                                                    ...p,
+                                                    [col.field]: e.target.value,
+                                                }))
+                                            }
+                                            sx={{
+                                                flex: 1,
+                                                "& .MuiOutlinedInput-root": {
+                                                    fontSize: 16,
+                                                    borderRadius: 1.5,
+                                                    "& fieldset": { borderColor: "#e0e3eb" },
+                                                    "&:hover fieldset": { borderColor: "var(--primary)" },
+                                                },
+                                            }}
+                                        />
+                                    </Box>
+                                </Box>
+                            );
+                        })}
+
+                </Box>
+            </Collapse>
 
             {/* ================= COLUMN VISIBILITY ================= */}
             <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)}>
@@ -567,7 +723,11 @@ export default function DataTable({
                     minHeight: 390, // 🔥 FIX: ensures table doesn't collapse
                     display: "flex",
                     flexDirection: "column",
-                    borderRadius: 2,
+                    // borderRadius: 1,
+                    // mx: 2,
+                    // my: 2,
+                    // borderRadius: 1,
+                    // boxShadow: 1,
                     overflow: "hidden",
                     // background: "background.paper",
                 }}
@@ -582,7 +742,7 @@ export default function DataTable({
                     <Table stickyHeader>
                         {/* HEADER */}
                         <TableHead>
-                            <TableRow>
+                            <TableRow >
                                 {checkboxSelection && <TableCell padding="checkbox" />}
                                 {orderedColumns.map((col) => {
                                     const sx = {
@@ -591,7 +751,7 @@ export default function DataTable({
                                         background: "var(--darkMedium)",
                                         color: "var(--onPrimary)",
                                         cursor: col.sortable === false ? "default" : "pointer",
-                                        whiteSpace: "nowrap",
+                                        whiteSpace: "nowrap"
                                     };
 
                                     if (col.minWidth) sx.minWidth = col.minWidth;
