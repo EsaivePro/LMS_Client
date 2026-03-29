@@ -5,6 +5,12 @@
     "readFrom": "response.data",
     "serverSide": true,
     "tableKey": "exams-table",
+    "rowDoubleClick": "/exams/manage/{id}",
+    "manageRoute": false,
+    "moreColumn": [
+        "Edit",
+        "Delete"
+    ],
     "header": {
         "title": "Exams",
         "showCount": true,
@@ -18,13 +24,13 @@
     },
     "fields": [
         {
-            "name": "id",
+            "key": "id",
             "label": "ID",
             "type": "number",
-            "maxWidth": 80
+            "maxWidth": 100
         },
         {
-            "name": "title",
+            "key": "title",
             "label": "Title",
             "type": "string",
             "minWidth": 240,
@@ -32,25 +38,25 @@
             "linkTemplate": "{id}"
         },
         {
-            "name": "description",
+            "key": "description",
             "label": "Description",
             "type": "string",
             "minWidth": 300
         },
         {
-            "name": "total_marks",
+            "key": "total_marks",
             "label": "Total Marks",
             "type": "number",
             "minWidth": 120
         },
         {
-            "name": "duration_minutes",
+            "key": "duration_minutes",
             "label": "Duration (mins)",
             "type": "number",
             "minWidth": 140
         },
         {
-            "name": "is_active",
+            "key": "is_active",
             "label": "Status",
             "type": "boolean",
             "minWidth": 120,
@@ -64,19 +70,10 @@
             }
         },
         {
-            "name": "created_at",
+            "key": "created_at",
             "label": "Created At",
-            "type": "string",
+            "type": "datetime",
             "minWidth": 180
-        },
-        {
-            "name": "actions",
-            "label": "Actions",
-            "type": "actions",
-            "maxWidth": 120,
-            "minWidth": 150,
-            "pinned": "right",
-            "sortable": false
         }
     ]
 }

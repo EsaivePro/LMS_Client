@@ -13,15 +13,12 @@ import UserCategoryPage from "../pages/user/CategoryPage";
 import QuestionManagement from "../modules/exam/pages/QuestionManagement";
 import QuestionsList from "../modules/exam/pages/QuestionsList";
 import QuestionCreate from "../modules/exam/pages/QuestionCreate";
-import ExamCreate from "../modules/exam/pages/ExamCreate";
-import ExamManage from "../modules/exam/pages/ExamManage";
+import ExamManage from "../modules/forms/pages/ExamManage";
 import ExamPage from "../modules/exam/pages/ExamPage";
 import ExamSummaryPage from "../modules/exam/pages/ExamSummaryPage";
-import QuestionManage from "../modules/questionbank/pages/QuestionManage";
-import SectionManage from "../modules/questionbank/pages/SectionManage";
-import TopicManage from "../modules/questionbank/pages/TopicManage";
-import QuestionSectionManage from "../modules/questionbank/pages/QuestionSectionManage";
-import ExamSectionManage from "../modules/questionbank/pages/ExamSectionManage";
+import QuestionManage from "../modules/forms/pages/QuestionManage";
+import SectionManage from "../modules/forms/pages/SectionManage";
+import TopicManage from "../modules/forms/pages/TopicManage";
 
 export const protectedRoutes = [
     {
@@ -179,19 +176,5 @@ export const protectedRoutes = [
         description: "Create exams, assign questions and schedule them.",
         permission: "user.management",
         element: <ExamManage />,
-    },
-    {
-        path: "/question-sections/manage/:id",
-        title: "Manage question section",
-        description: "Create and manage question sections.",
-        permission: "user.management",
-        element: <QuestionSectionManage />,
-    },
-    {
-        path: "/exam-sections/manage/:id",
-        title: "Manage exam section",
-        description: "Create and manage exam sections.",
-        permission: "user.management",
-        element: <ExamSectionManage />,
     }
 ];

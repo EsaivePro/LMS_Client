@@ -1,14 +1,60 @@
 import React, { useMemo, useState, useCallback, useEffect } from "react";
-import { Box, Stack, Typography, Button, IconButton, TextField, Tooltip } from "@mui/material";
+import { Box, Stack, Typography, Button, IconButton, TextField, Tooltip, Menu, MenuItem, ListItemIcon } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import SearchIcon from '@mui/icons-material/Search';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DataTableV1 from "../../components/common/table/DataTableV1";
+
+function ActionsCell({ items = [], onEdit, onCopy, onDelete }) {
+    const [anchor, setAnchor] = React.useState(null);
+    const open = Boolean(anchor);
+    const has = (name) => items.some((i) => i.toLowerCase() === name.toLowerCase());
+    return (
+        <>
+            <Tooltip title="More" placement="top" disableInteractive>
+                <IconButton size="small" onClick={(e) => setAnchor(e.currentTarget)} sx={{ color: 'var(--dark)' }}>
+                    <MoreVertIcon fontSize="small" />
+                </IconButton>
+            </Tooltip>
+            <Menu
+                anchorEl={anchor}
+                open={open}
+                onClose={() => setAnchor(null)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{ paper: { elevation: 2, sx: { minWidth: 120, borderRadius: 1.5 } } }}
+            >
+                {has('edit') && (
+                    <MenuItem onClick={() => { setAnchor(null); onEdit(); }} sx={{ gap: 0 }}>
+                        <ListItemIcon sx={{ minWidth: 0 }}><EditIcon fontSize="small" /></ListItemIcon>
+                        Edit
+                    </MenuItem>
+                )}
+                {has('copy') && (
+                    <MenuItem onClick={() => { setAnchor(null); onCopy(); }} sx={{ gap: 0 }}>
+                        <ListItemIcon sx={{ minWidth: 0 }}><ContentCopyIcon fontSize="small" /></ListItemIcon>
+                        Copy
+                    </MenuItem>
+                )}
+                {has('delete') && (
+                    <MenuItem onClick={() => { setAnchor(null); onDelete(); }} sx={{ gap: 0, color: 'error.main' }}>
+                        <ListItemIcon sx={{ minWidth: 0, color: 'error.main' }}><DeleteOutlineIcon fontSize="small" /></ListItemIcon>
+                        Delete
+                    </MenuItem>
+                )}
+            </Menu>
+        </>
+    );
+}
 import axiosInstance from "../../apiClient/axiosInstance";
 import useCommon from "../../hooks/useCommon";
+import { formatDateTimeWithSeconds } from "../../utils/resolver.utils";
 
 // MasterForm now builds columns from config.fields and renders DataTableV1
 
@@ -85,10 +131,17 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
 
     const columns = useMemo(() => {
         const cfgFields = (config.fields || []);
-        return cfgFields.map((f) => {
+
+        const moreItems = config.moreColumn || null;
+        const showManage = !!config.manageRoute;
+        // Exclude 'actions' from regular column mapping
+        const otherFields = cfgFields.filter((f) => f.type !== 'actions');
+
+        const mappedCols = otherFields.map((f) => {
+            const fieldKey = f.key ?? f.name;
             const col = {
-                field: f.name,
-                headerName: f.label || f.name,
+                field: fieldKey,
+                headerName: f.label != null ? f.label : fieldKey,
                 type: f.type || 'string'
             };
             if (f.maxWidth) col.maxWidth = f.maxWidth;
@@ -96,7 +149,7 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
             if (f.filterable) col.filterable = f.filterable;
             if (f.valueOptions) col.valueOptions = f.valueOptions;
 
-            if (f.name === 'title') {
+            if (fieldKey === 'title') {
                 const linkTpl = f.linkTemplate || (config.routes && config.routes.titleLink) || null;
                 const resolveRoute = (tpl) => {
                     if (!tpl) return null;
@@ -106,7 +159,7 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
                 };
 
                 col.renderCell = (params) => {
-                    const text = params.row[f.name];
+                    const text = params.row[fieldKey];
                     let tpl = linkTpl;
                     if (!tpl && config.baseRoute) tpl = '{id}';
                     if (tpl) {
@@ -137,86 +190,87 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
                 };
             }
 
-            if (f.name === 'is_active') {
+            if (fieldKey === 'is_active') {
                 col.renderCell = (params) => (
                     <Typography sx={{ fontWeight: 600, color: params.value ? 'success.main' : 'text.secondary' }}>{params.value ? 'Active' : 'Inactive'}</Typography>
                 );
             }
 
-            if (f.name === 'actions') {
-                col.align = 'center';
-                col.sortable = f.sortable === undefined ? false : f.sortable;
-                col.pinned = f.pinned || undefined;
-                col.renderCell = (params) => {
-                    const editTpl = f.editTemplate || (config.routes && config.routes.edit) || null;
-                    const copyTpl = f.copyTemplate || (config.routes && config.routes.copy) || null;
-                    const createTpl = (config.routes && config.routes.create) || null;
-
-                    const onEdit = () => {
-                        const template = editTpl || (config.routes && config.routes.titleLink) || (config.routes && config.routes.edit) || null;
-                        let raw;
-                        if (template) raw = template.replace('{id}', params.row.id);
-                        else if (config.baseRoute) raw = '{id}'.replace('{id}', params.row.id);
-                        if (raw) {
-                            const base = raw.startsWith('/') ? raw : `${config.baseRoute.replace(/\/+$/, '')}/${raw.replace(/^\/+/, '')}`;
-                            const to = `${base}${base.includes('?') ? '&' : '?'}editmode=true`;
-                            navigate(to);
-                        }
-                    };
-
-                    const onCopy = () => {
-                        const template = copyTpl || (config.routes && config.routes.titleLink) || (config.routes && config.routes.edit) || null;
-                        let raw;
-                        if (template) raw = template.replace('{id}', params.row.id);
-                        else if (config.baseRoute) raw = '{id}'.replace('{id}', params.row.id);
-                        if (raw) {
-                            const base = raw.startsWith('/') ? raw : `${config.baseRoute.replace(/\/+$/, '')}/${raw.replace(/^\/+/, '')}`;
-                            const to = `${base}${base.includes('?') ? '&' : '?'}copymode=true`;
-                            navigate(to);
-                            return;
-                        }
-                        const baseCreate = `${(config.baseRoute || '').replace(/\/+$/, '')}/create`;
-                        navigate(`${baseCreate}?copymode=true`);
-                    };
-
-                    const onDelete = async () => {
-                        if (typeof onDelete === 'function') {
-                            return onDelete(params.row);
-                        }
-                        const deleteEndpoint = config.deleteEndpoint;
-                        if (deleteEndpoint) {
-                            const url = deleteEndpoint.replace('{id}', params.row.id);
-                            try {
-                                await axiosInstance.delete(url);
-                                // refetch (blank query will trigger default load)
-                                handleFetchData('');
-                            } catch (err) {
-                                console.error('Delete failed', err);
-                            }
-                        } else {
-                            console.warn('No delete handler or deleteEndpoint configured');
-                        }
-                    };
-
-                    return (
-                        <>
-                            <IconButton size="small" onClick={onEdit} aria-label="edit" sx={{ color: 'var(--dark)' }}>
-                                <EditIcon fontSize="small" />
-                            </IconButton>
-                            <IconButton size="small" onClick={onCopy} aria-label="copy" sx={{ color: 'var(--dark)' }}>
-                                <ContentCopyIcon fontSize="small" />
-                            </IconButton>
-                            <IconButton size="small" onClick={onDelete} aria-label="delete" sx={{ color: 'var(--dark)' }}>
-                                <DeleteOutlineIcon fontSize="small" />
-                            </IconButton>
-                        </>
-                    );
-                };
+            if (f.type === 'datetime') {
+                col.renderCell = (params) => (
+                    <Typography variant="body2" color="text.secondary" noWrap>
+                        {formatDateTimeWithSeconds(params.value)}
+                    </Typography>
+                );
             }
 
             return col;
         });
-    }, [config.fields, navigate]);
+
+        // Append more column if moreColumn is configured in JSON
+        let moreCol = null;
+        if (moreItems && moreItems.length > 0) {
+            moreCol = {
+                field: '_more',
+                headerName: '',
+                maxWidth: 60,
+                minWidth: 60,
+                sortable: false,
+                pinned: 'right',
+                renderCell: (params) => {
+                    const onEdit = () => {
+                        const base = (config.baseRoute || '').replace(/\/+$/, '');
+                        const to = `${base}/${params.row.id}?editmode=true`;
+                        navigate(to);
+                    };
+                    const onCopy = () => {
+                        const base = (config.baseRoute || '').replace(/\/+$/, '');
+                        const to = `${base}/${params.row.id}?copymode=true`;
+                        navigate(to);
+                    };
+                    const onDelete = async () => {
+                        const deleteEndpoint = config.deleteEndpoint;
+                        if (deleteEndpoint) {
+                            try {
+                                await axiosInstance.delete(deleteEndpoint.replace('{id}', params.row.id));
+                                handleFetchData('');
+                            } catch (err) {
+                                console.error('Delete failed', err);
+                            }
+                        }
+                    };
+                    return <ActionsCell items={moreItems} onEdit={onEdit} onCopy={onCopy} onDelete={onDelete} />;
+                },
+            };
+        }
+
+        const withMore = moreCol ? [...mappedCols, moreCol] : mappedCols;
+
+        // Prepend manage column (pinned left) when manageRoute: true in JSON
+        if (!showManage) return withMore;
+
+        const manageCol = {
+            field: '_manage',
+            headerName: '',
+            maxWidth: 60,
+            minWidth: 60,
+            sortable: false,
+            pinned: 'left',
+            renderCell: (params) => {
+                const base = (config.baseRoute || '').replace(/\/+$/, '');
+                const to = `${base}/${params.row.id}`;
+                return (
+                    <Tooltip title="Manage" placement="top" disableInteractive>
+                        <IconButton size="small" onClick={() => navigate(to)} sx={{ color: 'var(--primary)' }}>
+                            <ManageAccountsIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                );
+            },
+        };
+
+        return [manageCol, ...withMore];
+    }, [config.fields, config.moreColumn, config.manageRoute, config.baseRoute, navigate]);
 
     return (
         <Box
@@ -300,7 +354,7 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
                             pickerMode ? undefined :
                                 (onRowDoubleClick ||
                                     ((row) => {
-                                        const route = config.routes?.rowDoubleClick;
+                                        const route = config.rowDoubleClick || config.routes?.rowDoubleClick;
                                         if (route) {
                                             navigate(route.replace("{id}", row.id));
                                         }

@@ -4,6 +4,12 @@
     "endpoint": "/common-service/search",
     "readFrom": "response.data",
     "serverSide": true,
+    "rowDoubleClick": "/questions/manage/{id}",
+    "manageRoute": false,
+    "moreColumn": [
+        "Edit",
+        "Delete"
+    ],
     "tableKey": "questions-table",
     "header": {
         "title": "Questions Bank",
@@ -18,13 +24,13 @@
     },
     "fields": [
         {
-            "name": "id",
+            "key": "id",
             "label": "ID",
             "type": "number",
             "maxWidth": 80
         },
         {
-            "name": "title",
+            "key": "title",
             "label": "Question",
             "type": "string",
             "minWidth": 600,
@@ -32,7 +38,7 @@
             "linkTemplate": "{id}"
         },
         {
-            "name": "question_type",
+            "key": "question_type",
             "label": "Type",
             "type": "string",
             "minWidth": 160,
@@ -44,7 +50,7 @@
             }
         },
         {
-            "name": "difficulty_level",
+            "key": "difficulty_level",
             "label": "Difficulty",
             "type": "string",
             "minWidth": 120,
@@ -56,25 +62,25 @@
             }
         },
         {
-            "name": "topic_id",
+            "key": "topic_id",
             "label": "Topic",
             "type": "number",
             "minWidth": 160
         },
         {
-            "name": "marks",
+            "key": "marks",
             "label": "Marks",
             "type": "number",
             "minWidth": 80
         },
         {
-            "name": "negative_marks",
+            "key": "negative_marks",
             "label": "Neg. Marks",
             "type": "number",
             "minWidth": 100
         },
         {
-            "name": "is_active",
+            "key": "is_active",
             "label": "Status",
             "type": "boolean",
             "minWidth": 100,
@@ -88,19 +94,10 @@
             }
         },
         {
-            "name": "created_at",
+            "key": "created_at",
             "label": "Created At",
-            "type": "string",
+            "type": "datetime",
             "minWidth": 160
-        },
-        {
-            "name": "actions",
-            "label": "Actions",
-            "type": "actions",
-            "maxWidth": 120,
-            "minWidth": 150,
-            "pinned": "right",
-            "sortable": false
         }
     ]
 }

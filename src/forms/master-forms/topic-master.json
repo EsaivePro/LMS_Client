@@ -4,6 +4,12 @@
     "endpoint": "/common-service/search",
     "readFrom": "response.data",
     "serverSide": true,
+    "rowDoubleClick": "/topics/manage/{id}",
+    "manageRoute": false,
+    "moreColumn": [
+        "Edit",
+        "Delete"
+    ],
     "tableKey": "topics-table",
     "header": {
         "title": "Topics",
@@ -18,13 +24,13 @@
     },
     "fields": [
         {
-            "name": "id",
+            "key": "id",
             "label": "ID",
             "type": "number",
             "maxWidth": 80
         },
         {
-            "name": "title",
+            "key": "title",
             "label": "Title",
             "type": "string",
             "minWidth": 240,
@@ -32,19 +38,19 @@
             "linkTemplate": "{id}"
         },
         {
-            "name": "display_name",
+            "key": "display_name",
             "label": "Display Name",
             "type": "string",
             "minWidth": 200
         },
         {
-            "name": "description",
+            "key": "description",
             "label": "Description",
             "type": "string",
             "minWidth": 300
         },
         {
-            "name": "is_active",
+            "key": "is_active",
             "label": "Status",
             "type": "boolean",
             "minWidth": 120,
@@ -58,19 +64,10 @@
             }
         },
         {
-            "name": "created_at",
+            "key": "created_at",
             "label": "Created At",
-            "type": "string",
+            "type": "datetime",
             "minWidth": 180
-        },
-        {
-            "name": "actions",
-            "label": "Actions",
-            "type": "actions",
-            "maxWidth": 120,
-            "minWidth": 150,
-            "pinned": "right",
-            "sortable": false
         }
     ]
 }
