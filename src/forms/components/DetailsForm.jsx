@@ -303,6 +303,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
                 const res = await axiosInstance.post(fetchConfig.endpoint, {
                     table: fetchConfig.table,
                     joins: fetchConfig.joins ?? [],
+                    subJoins: fetchConfig.subJoins ?? {},
                     where: { id: Number(id) },
                 });
                 const data =

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
     Box,
     Paper,
@@ -17,12 +17,17 @@ import {
     InputAdornment,
     Tooltip,
     IconButton,
+    Drawer,
 } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
 import CustomDateTimePicker from "../../components/common/datepicker/CustomDateTimePicker";
 import DataTableV1 from "../../components/common/table/DataTableV1";
+import MasterForm from "./MasterForm";
+import PickerSelectedTable from "./PickerSelectedTable";
 
 export default function FormRender({
     field,
@@ -57,6 +62,106 @@ export default function FormRender({
             return val || '';
         }
         return val ?? null;
+    };
+
+    const renderRecordPickerField = (field, value = [], onFieldChange) => {
+        const pickerCfg = field.pickerConfig || {};
+        const cols = field.table?.columns || [];
+
+        const pickerState = tableState[field.name] || {};
+        const pickerOpen = !!pickerState.pickerOpen;
+
+        const closePicker = () => setStateFor(field.name, { pickerOpen: false });
+        const openPicker = () => setStateFor(field.name, { pickerOpen: true });
+
+        const handlePickerSelect = (selectedRows) => {
+            const mapRow = pickerCfg.mapRow || {};
+            const currentLen = value?.length || 0;
+            const newRows = selectedRows.map((row, i) => {
+                const mapped = {};
+                for (const [targetKey, sourceKey] of Object.entries(mapRow)) {
+                    if (sourceKey === null) {
+                        mapped[targetKey] = targetKey === 'order_no' ? currentLen + i + 1 : null;
+                    } else {
+                        mapped[targetKey] = row[sourceKey] ?? null;
+                    }
+                }
+                return mapped;
+            });
+            onFieldChange([...(value || []), ...newRows]);
+            closePicker();
+        };
+
+        const removeRow = (idx) => {
+            const next = (value || []).filter((_, i) => i !== idx)
+                .map((r, i) => ({ ...r, ...(r.order_no !== undefined ? { order_no: i + 1 } : {}) }));
+            onFieldChange(next);
+        };
+
+        const tableColumns = cols.filter((c) => c.type !== 'actions');
+        // __rowKey is used as React key only — never overwrites the real DB `id` field
+        const prepared = (value || []).map((r, i) => ({ ...r, __idx: i, __rowKey: i }));
+
+        const handleReorder = (newRows) => {
+            // strip only the injected display helpers; preserve real DB fields including `id`
+            onFieldChange(newRows.map(({ __idx, __rowKey, ...rest }) => rest));
+        };
+
+        // Build MasterForm-compatible config from pickerConfig
+        const masterConfig = {
+            endpoint: pickerCfg.endpoint,
+            tableName: pickerCfg.tableName,
+            fields: (pickerCfg.displayColumns || []).map(c => ({
+                name: c.name,
+                label: c.label,
+                minWidth: c.minWidth,
+                ...(c.filterable ? { filterable: true, valueOptions: c.filterOptions } : {}),
+            })),
+            header: { title: pickerCfg.title || 'Browse & Select', buttons: [] },
+        };
+
+        return (
+            <Box sx={{ width: '100%' }}>
+                {/* field header */}
+                <Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography>{field.label}</Typography>
+                    <Button size="small" variant="contained" startIcon={<SearchIcon />} onClick={openPicker} disabled={!editing}>
+                        {pickerCfg.buttonLabel || 'Browse & Add'}
+                    </Button>
+                </Box>
+
+                {/* selected items table */}
+                <PickerSelectedTable
+                    columns={tableColumns}
+                    rows={prepared}
+                    onReorder={handleReorder}
+                    onRemove={removeRow}
+                    editing={editing}
+                    draggable={field.table?.draggable !== false}
+                />
+
+                {/* Picker Drawer */}
+                <Drawer
+                    anchor="right"
+                    open={pickerOpen}
+                    onClose={closePicker}
+                    PaperProps={{ sx: { width: { xs: '100%', sm: 960 }, display: 'flex', flexDirection: 'column' } }}
+                >
+                    <Box sx={{ px: 2.5, py: 1.5, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+                        <Typography variant="h6">{pickerCfg.title || 'Browse & Select'}</Typography>
+                        <IconButton size="small" onClick={closePicker}><CloseIcon /></IconButton>
+                    </Box>
+
+                    <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                        <MasterForm
+                            config={masterConfig}
+                            pickerMode
+                            onPickerSelect={handlePickerSelect}
+                        />
+                    </Box>
+                </Drawer>
+            </Box>
+        );
     };
 
     const renderTableField = (field, value = [], onFieldChange) => {
@@ -594,6 +699,8 @@ export default function FormRender({
                 />
             );
         }
+        case "record-picker":
+            return renderRecordPickerField(field, value || [], (next) => onChange(field.name, next));
         case "table":
             return renderTableField(field, value || [], (next) => onChange(field.name, next));
         default:

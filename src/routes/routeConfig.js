@@ -14,8 +14,6 @@ import QuestionManagement from "../modules/exam/pages/QuestionManagement";
 import QuestionsList from "../modules/exam/pages/QuestionsList";
 import QuestionCreate from "../modules/exam/pages/QuestionCreate";
 import ExamCreate from "../modules/exam/pages/ExamCreate";
-import MasterForm from "../forms/components/MasterForm";
-import examMaster from "../forms/master-forms/exam-master.json";
 import ExamManage from "../modules/exam/pages/ExamManage";
 import ExamPage from "../modules/exam/pages/ExamPage";
 import ExamSummaryPage from "../modules/exam/pages/ExamSummaryPage";
@@ -140,34 +138,6 @@ export const protectedRoutes = [
         element: <QuestionCreate />,
     },
     {
-        path: "/exams",
-        title: "Exams",
-        description: "View and manage exams.",
-        permission: "user.management",
-        element: <MasterForm config={examMaster} />,
-    },
-    {
-        path: "/exam/create",
-        title: "Create Exam",
-        description: "Create exams, assign questions and schedule them.",
-        permission: "user.management",
-        element: <ExamCreate />,
-    },
-    {
-        path: "/exam/edit/:id",
-        title: "Manage exam",
-        description: "Create exams, assign questions and schedule them.",
-        permission: "user.management",
-        element: <ExamManage />,
-    },
-    {
-        path: "/exams/manage/:id",
-        title: "Manage exam",
-        description: "Create exams, assign questions and schedule them.",
-        permission: "user.management",
-        element: <ExamManage />,
-    },
-    {
         path: "/exam/:examid/user/:userid",
         title: "Exam",
         description: "Live mock test view for candidates.",
@@ -202,6 +172,13 @@ export const protectedRoutes = [
         description: "Create topics, assign questions and schedule them.",
         permission: "user.management",
         element: <TopicManage />,
+    },
+    {
+        path: "/exams/manage/:id",
+        title: "Manage exam",
+        description: "Create exams, assign questions and schedule them.",
+        permission: "user.management",
+        element: <ExamManage />,
     },
     {
         path: "/question-sections/manage/:id",

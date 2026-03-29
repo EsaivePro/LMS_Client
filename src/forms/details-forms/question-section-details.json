@@ -4,7 +4,15 @@
     "fetchConfig": {
         "endpoint": "/form-service/get",
         "table": "questions_section",
-        "joins": []
+        "joins": [],
+        "subJoins": {
+            "questions_section": {
+                "key": "question_id",
+                "column": [
+                    "title"
+                ]
+            }
+        }
     },
     "sections": [
         {
@@ -43,41 +51,81 @@
                 {
                     "name": "config_items",
                     "label": "Question Assignments",
-                    "type": "table",
+                    "type": "record-picker",
+                    "pickerConfig": {
+                        "title": "Browse Questions",
+                        "buttonLabel": "Browse & Add Questions",
+                        "endpoint": "/common-service/search",
+                        "tableName": "questions_master",
+                        "mapRow": {
+                            "question_id": "id",
+                            "title": "title",
+                            "question_type": "question_type",
+                            "difficulty_level": "difficulty_level",
+                            "order_no": null
+                        },
+                        "displayColumns": [
+                            {
+                                "name": "id",
+                                "label": "ID",
+                                "minWidth": 70
+                            },
+                            {
+                                "name": "title",
+                                "label": "Question",
+                                "minWidth": 340
+                            },
+                            {
+                                "name": "question_type",
+                                "label": "Type",
+                                "minWidth": 160,
+                                "filterable": true,
+                                "filterOptions": [
+                                    "mcq",
+                                    "multiple_select",
+                                    "true_false"
+                                ]
+                            },
+                            {
+                                "name": "difficulty_level",
+                                "label": "Difficulty",
+                                "minWidth": 120,
+                                "filterable": true,
+                                "filterOptions": [
+                                    "easy",
+                                    "medium",
+                                    "hard"
+                                ]
+                            }
+                        ]
+                    },
                     "table": {
                         "columns": [
                             {
-                                "name": "section_id",
-                                "label": "Parent Section",
+                                "name": "question_id",
+                                "label": "ID",
                                 "type": "number",
-                                "minWidth": 160
+                                "minWidth": 70
                             },
                             {
-                                "name": "question_id",
+                                "name": "title",
                                 "label": "Question",
-                                "type": "select",
-                                "optionsSource": "questions",
-                                "minWidth": 280,
-                                "required": true
+                                "type": "text",
+                                "minWidth": 300
                             },
                             {
                                 "name": "order_no",
-                                "label": "Order No",
+                                "label": "Order",
                                 "type": "number",
-                                "minWidth": 100,
-                                "default": 1
+                                "minWidth": 80
                             },
                             {
                                 "name": "actions",
                                 "label": "",
                                 "type": "actions",
-                                "minWidth": 60
+                                "minWidth": 50
                             }
                         ],
-                        "addButton": {
-                            "label": "Add Question",
-                            "mode": "inline"
-                        },
                         "allowDelete": true,
                         "minRows": 0
                     }

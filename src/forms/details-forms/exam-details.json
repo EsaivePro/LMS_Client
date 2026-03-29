@@ -1,6 +1,21 @@
 {
     "title": "Exam Details",
-    "tablename": "exams",
+    "fetchConfig": {
+        "endpoint": "/form-service/get",
+        "table": "exams",
+        "joins": [
+            "exam_schedules",
+            "exam_sections"
+        ],
+        "subJoins": {
+            "exam_sections": {
+                "key": "section_id",
+                "column": [
+                    "title"
+                ]
+            }
+        }
+    },
     "sections": [
         {
             "key": "basic",
@@ -18,6 +33,12 @@
                     "label": "Title",
                     "type": "text",
                     "required": true,
+                    "minWidth": 320
+                },
+                {
+                    "name": "display_name",
+                    "label": "Display Name",
+                    "type": "text",
                     "minWidth": 320
                 },
                 {
@@ -59,24 +80,82 @@
             ]
         },
         {
-            "key": "options",
-            "title": "Options",
+            "key": "exam_sections",
+            "title": "Sections",
             "fields": [
                 {
-                    "name": "shuffle_questions",
-                    "label": "Shuffle Questions",
-                    "type": "checkbox"
-                },
-                {
-                    "name": "shuffle_options",
-                    "label": "Shuffle Options",
-                    "type": "checkbox"
-                },
-                {
-                    "name": "is_active",
-                    "label": "Active",
-                    "type": "checkbox",
-                    "default": true
+                    "name": "exam_sections",
+                    "label": "Section Assignments",
+                    "type": "record-picker",
+                    "pickerConfig": {
+                        "title": "Browse Sections",
+                        "buttonLabel": "Browse & Add Sections",
+                        "endpoint": "/common-service/search",
+                        "tableName": "sections",
+                        "mapRow": {
+                            "section_id": "id",
+                            "sections_title": "title",
+                            "order_no": null
+                        },
+                        "displayColumns": [
+                            {
+                                "name": "id",
+                                "label": "ID",
+                                "minWidth": 70
+                            },
+                            {
+                                "name": "title",
+                                "label": "Section",
+                                "minWidth": 340
+                            },
+                            {
+                                "name": "display_name",
+                                "label": "Display Name",
+                                "minWidth": 200
+                            },
+                            {
+                                "name": "is_active",
+                                "label": "Status",
+                                "minWidth": 120,
+                                "filterable": true,
+                                "filterOptions": [
+                                    "true",
+                                    "false"
+                                ]
+                            }
+                        ]
+                    },
+                    "table": {
+                        "columns": [
+                            {
+                                "name": "section_id",
+                                "label": "ID",
+                                "type": "number",
+                                "minWidth": 70
+                            },
+                            {
+                                "name": "sections_title",
+                                "label": "Section",
+                                "type": "text",
+                                "minWidth": 500
+                            },
+                            {
+                                "name": "order_no",
+                                "label": "Order",
+                                "type": "number",
+                                "minWidth": 80
+                            },
+                            {
+                                "name": "actions",
+                                "label": "",
+                                "type": "actions",
+                                "minWidth": 50
+                            }
+                        ],
+                        "allowDelete": true,
+                        "draggable": true,
+                        "minRows": 0
+                    }
                 }
             ]
         },
@@ -134,52 +213,24 @@
             ]
         },
         {
-            "key": "questions",
-            "title": "Questions",
+            "key": "options",
+            "title": "Options",
             "fields": [
                 {
-                    "name": "exam_questions",
-                    "label": "Assigned Questions",
-                    "type": "table",
-                    "table": {
-                        "columns": [
-                            {
-                                "name": "question_id",
-                                "label": "Question",
-                                "type": "select",
-                                "optionsSource": "question_bank",
-                                "minWidth": 320,
-                                "required": true
-                            },
-                            {
-                                "name": "marks",
-                                "label": "Marks",
-                                "type": "number",
-                                "minWidth": 120,
-                                "default": 1,
-                                "required": true
-                            },
-                            {
-                                "name": "order_no",
-                                "label": "Order",
-                                "type": "number",
-                                "minWidth": 100
-                            },
-                            {
-                                "name": "actions",
-                                "label": "",
-                                "type": "actions",
-                                "minWidth": 80
-                            }
-                        ],
-                        "addButton": {
-                            "label": "Add Question",
-                            "mode": "dialog"
-                        },
-                        "allowDelete": true,
-                        "allowReorder": true,
-                        "minRows": 0
-                    }
+                    "name": "shuffle_questions",
+                    "label": "Shuffle Questions",
+                    "type": "checkbox"
+                },
+                {
+                    "name": "shuffle_options",
+                    "label": "Shuffle Options",
+                    "type": "checkbox"
+                },
+                {
+                    "name": "is_active",
+                    "label": "Active",
+                    "type": "checkbox",
+                    "default": true
                 }
             ]
         }

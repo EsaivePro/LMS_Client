@@ -135,14 +135,6 @@ const MENU = [
         role: "user.management",
     },
     {
-        label: "Sections",
-        icon: <SegmentIcon />,
-        to: "/sections/manage/list",
-        matchPath: "/sections/manage",
-        type: "item",
-        role: "user.management",
-    },
-    {
         label: "Questions Bank",
         icon: <QuestionAnswerIcon />,
         to: "/questions/manage/list",
@@ -151,28 +143,20 @@ const MENU = [
         role: "user.management",
     },
     {
-        label: "Question Sections",
-        icon: <FormatListNumberedIcon />,
-        to: "/question-sections/manage/list",
-        matchPath: "/question-sections/manage",
+        label: "Sections",
+        icon: <SegmentIcon />,
+        to: "/sections/manage/list",
+        matchPath: "/sections/manage",
         type: "item",
         role: "user.management",
     },
     {
         label: "Exams",
         icon: <AssignmentIcon />,
-        to: "/exams",
+        to: "/exams/manage/list",
         type: "item",
         role: "user.management",
-    },
-    {
-        label: "Exam Sections",
-        icon: <PlaylistAddCheckIcon />,
-        to: "/exam-sections/manage/list",
-        matchPath: "/exam-sections/manage",
-        type: "item",
-        role: "user.management",
-    },
+    }
 ];
 
 export default function SideBarWithHeader({ children, fixed = true, footer = null }) {

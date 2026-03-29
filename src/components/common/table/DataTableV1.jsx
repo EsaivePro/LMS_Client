@@ -844,11 +844,34 @@ export default function DataTable({
                                                 cellSx.borderLeft = "1px solid var(--lightgrey)";
                                             }
 
+                                            const rawValue = row[col.field] ?? "-";
+                                            const cellContent = col.renderCell
+                                                ? col.renderCell({ value: row[col.field], row })
+                                                : (
+                                                    <Tooltip
+                                                        title={String(rawValue)}
+                                                        placement="top-start"
+                                                        disableInteractive
+                                                        enterDelay={300}
+                                                    >
+                                                        {/* style (not sx) is required — Emotion strips WebkitBoxOrient */}
+                                                        <Box
+                                                            style={{
+                                                                display: "-webkit-box",
+                                                                WebkitLineClamp: 1,
+                                                                WebkitBoxOrient: "vertical",
+                                                                overflow: "hidden",
+                                                                wordBreak: "break-word",
+                                                            }}
+                                                        >
+                                                            {rawValue}
+                                                        </Box>
+                                                    </Tooltip>
+                                                );
+
                                             return (
                                                 <TableCell key={col.field} sx={cellSx}>
-                                                    {col.renderCell
-                                                        ? col.renderCell({ value: row[col.field], row })
-                                                        : row[col.field] ?? "-"}
+                                                    {cellContent}
                                                 </TableCell>
                                             );
                                         })}

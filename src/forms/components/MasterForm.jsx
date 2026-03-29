@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback, useEffect } from "react";
-import { Box, Stack, Typography, Button, IconButton, TextField } from "@mui/material";
+import { Box, Stack, Typography, Button, IconButton, TextField, Tooltip } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
@@ -12,7 +12,7 @@ import useCommon from "../../hooks/useCommon";
 
 // MasterForm now builds columns from config.fields and renders DataTableV1
 
-export default function MasterForm({ config = {}, total: initialTotal = 0, onCreate, onDelete, tableKey, tableName, onRowDoubleClick }) {
+export default function MasterForm({ config = {}, total: initialTotal = 0, onCreate, onDelete, tableKey, tableName, onRowDoubleClick, pickerMode = false, onPickerSelect }) {
     const navigate = useNavigate();
     const header = config.header || {};
     const title = header.title || "";
@@ -22,6 +22,7 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
     const [rows, setRows] = useState([]);
     const [total, setTotal] = useState(initialTotal || 0);
     const [quickSearch, setQuickSearch] = useState('');
+    const [selectedIds, setSelectedIds] = useState([]);
 
     const getByPath = (obj, path) => {
         if (!path) return undefined;
@@ -61,10 +62,11 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
 
     // set container title from config so pages don't need to
     useEffect(() => {
+        if (pickerMode) return;
         const headerObj = config.header || {};
         const titleStr = typeof headerObj === 'string' ? headerObj : (headerObj.title || '');
         if (titleStr) setTitleContainer(titleStr);
-    }, [config.header, setTitleContainer]);
+    }, [config.header, setTitleContainer, pickerMode]);
 
     const handleButton = (btn) => {
         if (btn.key === 'create') {
@@ -111,10 +113,27 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
                         const raw = tpl.replace('{id}', params.row.id);
                         const to = resolveRoute(raw);
                         return (
-                            <Typography sx={{ cursor: 'pointer', color: 'var(--primary)', fontWeight: 400 }} onClick={() => { if (to) navigate(to); }}>{text}</Typography>
+                            <Tooltip title={text ?? ''} placement="top-start" disableInteractive enterDelay={300}>
+                                <Typography
+                                    style={{ display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden', wordBreak: 'break-word' }}
+                                    sx={{ cursor: 'pointer', color: 'var(--primary)', fontWeight: 400 }}
+                                    onClick={() => { if (to) navigate(to); }}
+                                >
+                                    {text}
+                                </Typography>
+                            </Tooltip>
                         );
                     }
-                    return <Typography sx={{ fontWeight: 500 }}>{text}</Typography>;
+                    return (
+                        <Tooltip title={text ?? ''} placement="top-start" disableInteractive enterDelay={300}>
+                            <Typography
+                                style={{ display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden', wordBreak: 'break-word' }}
+                                sx={{ fontWeight: 500 }}
+                            >
+                                {text}
+                            </Typography>
+                        </Tooltip>
+                    );
                 };
             }
 
@@ -204,49 +223,51 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
             sx={{
                 flex: 1,
                 width: "100%",
-                minHeight: "100%",
+                minHeight: pickerMode ? 'auto' : "100%",
                 minWidth: 0,
                 display: "flex",
                 flexDirection: "column",
-                borderRadius: 2,
-                boxShadow: "0 1px 5px rgba(0,0,0,0.08)",
-                mt: 3,
+                borderRadius: pickerMode ? 0 : 2,
+                boxShadow: pickerMode ? 'none' : "0 1px 5px rgba(0,0,0,0.08)",
+                mt: pickerMode ? 0 : 3,
                 overflow: "hidden"
             }}
         >
-            {/* HEADER */}
-            <Box
-                sx={{
-                    bgcolor: "background.paper",
-                    px: 2,
-                    py: 1.5
-                }}
-            >
-                <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
+            {/* HEADER — hidden in pickerMode (Drawer has its own header) */}
+            {!pickerMode && (
+                <Box
+                    sx={{
+                        bgcolor: "background.paper",
+                        px: 2,
+                        py: 1.5
+                    }}
                 >
-                    <Typography variant="h6" fontWeight={700}>
-                        {title}
-                    </Typography>
+                    <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                    >
+                        <Typography variant="h6" fontWeight={700}>
+                            {title}
+                        </Typography>
 
-                    <Stack direction="row" spacing={1}>
-                        {(header.buttons || []).map((btn) => (
-                            <Button
-                                key={btn.key}
-                                variant={btn.variant || "contained"}
-                                onClick={() => handleButton(btn)}
-                                startIcon={
-                                    btn.key === "create" ? <AddIcon /> : null
-                                }
-                            >
-                                {btn.label}
-                            </Button>
-                        ))}
+                        <Stack direction="row" spacing={1}>
+                            {(header.buttons || []).map((btn) => (
+                                <Button
+                                    key={btn.key}
+                                    variant={btn.variant || "contained"}
+                                    onClick={() => handleButton(btn)}
+                                    startIcon={
+                                        btn.key === "create" ? <AddIcon /> : null
+                                    }
+                                >
+                                    {btn.label}
+                                </Button>
+                            ))}
+                        </Stack>
                     </Stack>
-                </Stack>
-            </Box>
+                </Box>
+            )}
 
             {/* TABLE CONTAINER */}
             <Box
@@ -273,18 +294,37 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
                         onFetchData={handleFetchData}
                         tableName={tableName || config.tableName}
                         externalSearch={quickSearch}
+                        checkboxSelection={pickerMode}
+                        onSelectionChange={pickerMode ? (ids) => setSelectedIds(ids) : undefined}
                         onRowDoubleClick={
-                            onRowDoubleClick ||
-                            ((row) => {
-                                const route = config.routes?.rowDoubleClick;
-                                if (route) {
-                                    navigate(route.replace("{id}", row.id));
-                                }
-                            })
+                            pickerMode ? undefined :
+                                (onRowDoubleClick ||
+                                    ((row) => {
+                                        const route = config.routes?.rowDoubleClick;
+                                        if (route) {
+                                            navigate(route.replace("{id}", row.id));
+                                        }
+                                    }))
                         }
                     />
                 </Box>
             </Box>
+
+            {/* PICKER FOOTER */}
+            {pickerMode && (
+                <Box sx={{ px: 2, py: 1.5, borderTop: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, bgcolor: 'background.paper' }}>
+                    <Typography variant="body2" color="text.secondary">
+                        {selectedIds.length} selected
+                    </Typography>
+                    <Button
+                        variant="contained"
+                        disabled={!selectedIds.length}
+                        onClick={() => onPickerSelect?.(rows.filter(r => selectedIds.includes(r.id)))}
+                    >
+                        Add Selected ({selectedIds.length})
+                    </Button>
+                </Box>
+            )}
         </Box>
     );
 }

@@ -27,7 +27,7 @@
             "name": "title",
             "label": "Question",
             "type": "string",
-            "minWidth": 320,
+            "minWidth": 600,
             "filterable": true,
             "linkTemplate": "{id}"
         },

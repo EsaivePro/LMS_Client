@@ -3,7 +3,17 @@
     "fetchConfig": {
         "endpoint": "/form-service/get",
         "table": "sections",
-        "joins": []
+        "joins": [
+            "questions_section"
+        ],
+        "subJoins": {
+            "questions_section": {
+                "key": "question_id",
+                "column": [
+                    "title"
+                ]
+            }
+        }
     },
     "sections": [
         {
@@ -35,6 +45,93 @@
                     "label": "Description",
                     "type": "textarea",
                     "minWidth": 640
+                }
+            ]
+        },
+        {
+            "key": "questions_section",
+            "title": "Configuration",
+            "fields": [
+                {
+                    "name": "questions_section",
+                    "label": "Question Assignments",
+                    "type": "record-picker",
+                    "pickerConfig": {
+                        "title": "Browse Questions",
+                        "buttonLabel": "Browse & Add Questions",
+                        "endpoint": "/common-service/search",
+                        "tableName": "questions_master",
+                        "mapRow": {
+                            "question_id": "id",
+                            "questions_master_title": "title",
+                            "order_no": null
+                        },
+                        "displayColumns": [
+                            {
+                                "name": "id",
+                                "label": "ID",
+                                "minWidth": 70
+                            },
+                            {
+                                "name": "title",
+                                "label": "Question",
+                                "minWidth": 340
+                            },
+                            {
+                                "name": "question_type",
+                                "label": "Type",
+                                "minWidth": 160,
+                                "filterable": true,
+                                "filterOptions": [
+                                    "mcq",
+                                    "multiple_select",
+                                    "true_false"
+                                ]
+                            },
+                            {
+                                "name": "difficulty_level",
+                                "label": "Difficulty",
+                                "minWidth": 120,
+                                "filterable": true,
+                                "filterOptions": [
+                                    "easy",
+                                    "medium",
+                                    "hard"
+                                ]
+                            }
+                        ]
+                    },
+                    "table": {
+                        "columns": [
+                            {
+                                "name": "question_id",
+                                "label": "ID",
+                                "type": "number",
+                                "minWidth": 70
+                            },
+                            {
+                                "name": "questions_master_title",
+                                "label": "Question",
+                                "type": "text",
+                                "minWidth": 600
+                            },
+                            {
+                                "name": "order_no",
+                                "label": "Order",
+                                "type": "number",
+                                "minWidth": 80
+                            },
+                            {
+                                "name": "actions",
+                                "label": "",
+                                "type": "actions",
+                                "minWidth": 50
+                            }
+                        ],
+                        "allowDelete": true,
+                        "draggable": true,
+                        "minRows": 0
+                    }
                 }
             ]
         },
