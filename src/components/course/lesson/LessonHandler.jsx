@@ -23,7 +23,7 @@ import { errorValidation, secondsToTime } from "../../../utils/resolver.utils";
 import useCommon from "../../../hooks/useCommon";
 import { CONSTANTS } from "../../../constants";
 
-const MAX_VIDEO_SIZE = 1024 * 1024 * 1024; // 1GB
+const MAX_VIDEO_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
 const MAX_PDF_SIZE = 50 * 1024 * 1024; // 50MB
 
 const formatFileSize = (bytes) => {
@@ -144,7 +144,7 @@ export default function LessonHandler({
             return;
         }
         if (lessonForm.type === "Video" && file.size > MAX_VIDEO_SIZE) {
-            setFileError("Video must be less than 1 GB.");
+            setFileError("Video must be less than 2 GB.");
             setSelectedFile(null);
             setSelectedFileSize("");
             return;
