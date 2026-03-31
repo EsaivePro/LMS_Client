@@ -127,6 +127,14 @@ const MENU = [
 
     { type: "section", label: "Manage Configurations" },
     {
+        label: "Groups",
+        icon: <GroupsIcon />,
+        to: "/groups/manage/list",
+        matchPath: "/groups/manage",
+        type: "item",
+        role: "group.management",
+    },
+    {
         label: "Topics",
         icon: <LabelIcon />,
         to: "/topics/manage/list",

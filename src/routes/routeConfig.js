@@ -14,6 +14,7 @@ import QuestionManagement from "../modules/exam/pages/QuestionManagement";
 import QuestionsList from "../modules/exam/pages/QuestionsList";
 import QuestionCreate from "../modules/exam/pages/QuestionCreate";
 import ExamManage from "../modules/forms/pages/ExamManage";
+import GroupManage from "../modules/forms/pages/GroupManage";
 import ExamPage from "../modules/exam/pages/ExamPage";
 import ExamSummaryPage from "../modules/exam/pages/ExamSummaryPage";
 import QuestionManage from "../modules/forms/pages/QuestionManage";
@@ -176,5 +177,12 @@ export const protectedRoutes = [
         description: "Create exams, assign questions and schedule them.",
         permission: "user.management",
         element: <ExamManage />,
+    },
+    {
+        path: "/groups/manage/:id",
+        title: "Manage group",
+        description: "Create groups and assign course categories.",
+        permission: "group.management",
+        element: <GroupManage />,
     }
 ];

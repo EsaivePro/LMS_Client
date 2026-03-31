@@ -1,0 +1,53 @@
+{
+    "baseRoute": "/groups/manage",
+    "tableName": "groups",
+    "endpoint": "/common-service/search",
+    "readFrom": "response.data",
+    "serverSide": true,
+    "rowDoubleClick": "/groups/manage/{id}",
+    "manageRoute": false,
+    "moreColumn": [
+        "Edit",
+        "Delete"
+    ],
+    "tableKey": "groups-table",
+    "header": {
+        "title": "Groups",
+        "showCount": true,
+        "buttons": [
+            {
+                "key": "create",
+                "label": "New Group",
+                "variant": "contained"
+            }
+        ]
+    },
+    "fields": [
+        {
+            "key": "id",
+            "label": "ID",
+            "type": "number",
+            "maxWidth": 80
+        },
+        {
+            "key": "name",
+            "label": "Name",
+            "type": "string",
+            "minWidth": 240,
+            "filterable": true,
+            "linkTemplate": "{id}"
+        },
+        {
+            "key": "description",
+            "label": "Description",
+            "type": "string",
+            "minWidth": 300
+        },
+        {
+            "key": "created_at",
+            "label": "Created At",
+            "type": "datetime",
+            "minWidth": 180
+        }
+    ]
+}

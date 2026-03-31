@@ -1,0 +1,104 @@
+{
+    "title": "Group Details",
+    "fetchConfig": {
+        "endpoint": "/form-service/get",
+        "table": "groups",
+        "joins": [
+            "groups_category"
+        ],
+        "subJoins": {
+            "groups_category": {
+                "key": "course_category_id",
+                "column": [
+                    "title"
+                ]
+            }
+        }
+    },
+    "sections": [
+        {
+            "key": "basic",
+            "title": "Basic Details",
+            "fields": [
+                {
+                    "name": "id",
+                    "label": "ID",
+                    "type": "number",
+                    "readOnly": true,
+                    "minWidth": 120
+                },
+                {
+                    "name": "name",
+                    "label": "Name",
+                    "type": "text",
+                    "required": true,
+                    "minWidth": 320
+                },
+                {
+                    "name": "description",
+                    "label": "Description",
+                    "type": "textarea",
+                    "minWidth": 640
+                }
+            ]
+        },
+        {
+            "key": "groups_category",
+            "title": "Category Assignment",
+            "fields": [
+                {
+                    "name": "groups_category",
+                    "label": "Course Categories",
+                    "type": "record-picker",
+                    "pickerConfig": {
+                        "title": "Browse Course Categories",
+                        "buttonLabel": "Browse & Add Categories",
+                        "endpoint": "/common-service/search",
+                        "tableName": "course_category",
+                        "mapRow": {
+                            "course_category_id": "id",
+                            "course_category_title": "title"
+                        },
+                        "displayColumns": [
+                            {
+                                "name": "id",
+                                "label": "ID",
+                                "minWidth": 70
+                            },
+                            {
+                                "name": "title",
+                                "label": "Category title",
+                                "minWidth": 300
+                            }
+                        ]
+                    },
+                    "table": {
+                        "columns": [
+                            {
+                                "name": "course_category_id",
+                                "label": "ID",
+                                "type": "number",
+                                "minWidth": 70
+                            },
+                            {
+                                "name": "course_category_title",
+                                "label": "Category title",
+                                "type": "text",
+                                "minWidth": 400
+                            },
+                            {
+                                "name": "actions",
+                                "label": "",
+                                "type": "actions",
+                                "minWidth": 50
+                            }
+                        ],
+                        "allowDelete": true,
+                        "draggable": false,
+                        "minRows": 0
+                    }
+                }
+            ]
+        }
+    ]
+}
