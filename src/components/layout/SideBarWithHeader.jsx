@@ -28,25 +28,12 @@ import ContentContainer from "./ContentContainer";
 import CourseContainer from "./CourseContainer";
 
 // Icons
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import FeedIcon from "@mui/icons-material/Feed";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import Person2Icon from "@mui/icons-material/Person2";
-import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import GroupsIcon from "@mui/icons-material/Groups";
-import CategoryIcon from "@mui/icons-material/Category";
-import AssignmentAddIcon from "@mui/icons-material/AssignmentAdd";
-import InsightsIcon from "@mui/icons-material/Insights";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import LabelIcon from "@mui/icons-material/Label";
-import SegmentIcon from "@mui/icons-material/Segment";
-import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
-import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
-import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 
 import { useSelector } from "react-redux";
 import { useAuth } from "../../hooks/useAuth";
@@ -55,6 +42,7 @@ import useCommon from "../../hooks/useCommon";
 import { useAdmin } from "../../hooks/useAdmin";
 import { httpClient } from "../../apiClient/httpClient";
 import { tokenStorage } from "../../utils/tokenStorage.utils";
+import { getMenuFromRoutes } from "../../routes/routeConfig";
 
 const drawerWidth = 240;
 
@@ -66,114 +54,6 @@ const Main = styled("main")(({ theme }) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
 }));
-
-// ==============================
-// MENU CONFIG  (type: "section" = group header label; type: "item" = nav link; type: "group" = collapsible)
-// ==============================
-const MENU = [
-    {
-        label: "Dashboard",
-        icon: <DashboardIcon />,
-        to: "/",
-        type: "item",
-        role: "dashboard.view",
-    },
-
-    { type: "section", label: "Learning" },
-    {
-        label: "Courses",
-        icon: <FeedIcon />,
-        to: "/courses",
-        type: "item",
-        role: "course.list",
-    },
-    {
-        label: "Category",
-        icon: <CategoryIcon />,
-        to: "/coursecategory",
-        type: "item",
-        role: "coursecategory.manage",
-    },
-
-    { type: "section", label: "People" },
-    {
-        label: "Learning Insights",
-        icon: <InsightsIcon />,
-        to: "/users/learing-insights",
-        type: "item",
-        role: "user.management",
-    },
-    {
-        label: "Groups",
-        icon: <GroupsIcon />,
-        to: "/groups",
-        type: "item",
-        role: "group.management",
-    },
-    {
-        label: "Group Assign",
-        icon: <AssignmentAddIcon />,
-        to: "/groups/assign",
-        type: "item",
-        role: "group.management",
-    },
-    {
-        label: "User Management",
-        icon: <ManageAccountsIcon />,
-        to: "/usermanagement/users",
-        type: "item",
-        role: "user.management",
-    },
-
-    { type: "section", label: "Manage Configurations" },
-    {
-        label: "Groups",
-        icon: <GroupsIcon />,
-        to: "/groups/manage/list",
-        matchPath: "/groups/manage",
-        type: "item",
-        role: "group.management",
-    },
-    {
-        label: "Topics",
-        icon: <LabelIcon />,
-        to: "/topics/manage/list",
-        matchPath: "/topics/manage",
-        type: "item",
-        role: "user.management",
-    },
-    {
-        label: "Questions Bank",
-        icon: <QuestionAnswerIcon />,
-        to: "/questions/manage/list",
-        matchPath: "/questions/manage",
-        type: "item",
-        role: "user.management",
-    },
-    {
-        label: "Sections",
-        icon: <SegmentIcon />,
-        to: "/sections/manage/list",
-        matchPath: "/sections/manage",
-        type: "item",
-        role: "user.management",
-    },
-    {
-        label: "Exams",
-        icon: <AssignmentIcon />,
-        to: "/exams/manage/list",
-        type: "item",
-        role: "user.management",
-    },
-    {
-        label: "User Group Assign",
-        icon: <PlaylistAddCheckIcon />,
-        to: "/user-group-assign/manage/list",
-        matchPath: "/user-group-assign/manage",
-        type: "item",
-        role: "group.management",
-    }
-];
 
 export default function SideBarWithHeader({ children, fixed = true, footer = null }) {
     const theme = useTheme();
@@ -189,6 +69,9 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
     const { viewContainerCard, viewCourseCard, viewHeader } = useCommon();
     const { permissions } = useAdmin();
     const navigate = useNavigate();
+
+    // Get menu from route config
+    const MENU = React.useMemo(() => getMenuFromRoutes(), []);
 
     // ── Logout ─────────────────────────────────────────────────
     const handleLogout = async (e) => {

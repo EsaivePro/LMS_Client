@@ -4,13 +4,26 @@
         "endpoint": "/form-service/get",
         "table": "groups",
         "joins": [
-            "groups_category"
+            "groups_category",
+            "user_groups_assign"
         ],
         "subJoins": {
             "groups_category": {
                 "key": "course_category_id",
                 "column": [
                     "title"
+                ]
+            },
+            "user_groups_assign": {
+                "key": "user_id",
+                "column": [
+                    "user_id",
+                    "username",
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "phonenumber",
+                    "status"
                 ]
             }
         }
@@ -85,6 +98,128 @@
                                 "label": "Category title",
                                 "type": "text",
                                 "minWidth": 400
+                            },
+                            {
+                                "name": "actions",
+                                "label": "",
+                                "type": "actions",
+                                "minWidth": 50
+                            }
+                        ],
+                        "allowDelete": true,
+                        "draggable": false,
+                        "minRows": 0
+                    }
+                }
+            ]
+        },
+        {
+            "key": "user_groups_assign",
+            "title": "User Assignments",
+            "fields": [
+                {
+                    "name": "user_groups_assign",
+                    "label": "Assigned Users",
+                    "type": "record-picker",
+                    "pickerConfig": {
+                        "title": "Browse Users",
+                        "buttonLabel": "Browse & Add Users",
+                        "endpoint": "/common-service/search",
+                        "tableName": "users",
+                        "mapRow": {
+                            "user_id": "id",
+                            "users_username": "username",
+                            "users_first_name": "first_name",
+                            "users_last_name": "last_name",
+                            "users_email": "email",
+                            "users_status": "status"
+                        },
+                        "displayColumns": [
+                            {
+                                "name": "id",
+                                "label": "ID",
+                                "minWidth": 70
+                            },
+                            {
+                                "name": "username",
+                                "label": "Username",
+                                "minWidth": 180,
+                                "filterable": true
+                            },
+                            {
+                                "name": "first_name",
+                                "label": "First Name",
+                                "minWidth": 160
+                            },
+                            {
+                                "name": "last_name",
+                                "label": "Last Name",
+                                "minWidth": 160
+                            },
+                            {
+                                "name": "email",
+                                "label": "Email",
+                                "minWidth": 240
+                            },
+                            {
+                                "name": "phonenumber",
+                                "label": "Phone",
+                                "minWidth": 140
+                            }
+                        ]
+                    },
+                    "table": {
+                        "columns": [
+                            {
+                                "name": "user_id",
+                                "label": "ID",
+                                "type": "number",
+                                "minWidth": 70
+                            },
+                            {
+                                "name": "users_username",
+                                "label": "Username",
+                                "type": "text",
+                                "minWidth": 180
+                            },
+                            {
+                                "name": "users_first_name",
+                                "label": "First Name",
+                                "type": "text",
+                                "minWidth": 160
+                            },
+                            {
+                                "name": "users_last_name",
+                                "label": "Last Name",
+                                "type": "text",
+                                "minWidth": 160
+                            },
+                            {
+                                "name": "users_email",
+                                "label": "Email",
+                                "type": "text",
+                                "minWidth": 240
+                            },
+                            {
+                                "name": "users_status",
+                                "label": "Status",
+                                "type": "select",
+                                "default": "active",
+                                "options": [
+                                    {
+                                        "value": "active",
+                                        "label": "Active"
+                                    },
+                                    {
+                                        "value": "inactive",
+                                        "label": "Inactive"
+                                    },
+                                    {
+                                        "value": "suspended",
+                                        "label": "Suspended"
+                                    }
+                                ],
+                                "minWidth": 140
                             },
                             {
                                 "name": "actions",
