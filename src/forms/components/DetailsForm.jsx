@@ -6,8 +6,7 @@ import {
     List,
     ListItemButton,
     ListItemText,
-    Backdrop,
-    CircularProgress
+    Typography
 } from "@mui/material";
 import useCommon from "../../hooks/useCommon";
 import { httpClient } from "../../apiClient/httpClient";
@@ -15,12 +14,11 @@ import axiosInstance from "../../apiClient/axiosInstance";
 import FormHeader from "./FormHeader";
 import createHeaderHandlers from "./HeaderHandle";
 import FormSection from "./FormSection";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 export default function DetailsForm({ definition = {}, initialValues = {}, id, onSubmit, submitLabel = "Save", initialEditing = false }) {
-    const { setTitleContainer, showSuccess, showError } = useCommon();
-    const [formLoading, setFormLoading] = useState(false);
-    const showLoader = () => setFormLoading(true);
-    const hideLoader = () => setFormLoading(false);
+    const { setTitleContainer, showSuccess, showError, showLoader, hideLoader } = useCommon();
     const [values, setValues] = useState(initialValues || {});
     const [resolvedInitialValues, setResolvedInitialValues] = useState(initialValues || {});
     const [invalidFields, setInvalidFields] = useState({});
@@ -67,7 +65,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
 
     useEffect(() => {
         try {
-            showLoader();
+            // showLoader();
             // prefer navigation state prefill or sessionStorage if present (create from copy)
             const navPrefill = (location && location.state && location.state.prefill) ? location.state.prefill : null;
             let stored = null;
@@ -78,7 +76,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
             // if we used sessionStorage prefill, clear it so it does not persist
             if (stored) { try { sessionStorage.removeItem('detailsFormPrefill'); } catch (e) { } }
         } finally {
-            hideLoader();
+            // hideLoader();
         }
     }, [initialValues, definition]);
 
@@ -345,11 +343,8 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
     });
 
     return (
-        <Box sx={{ position: "relative" }}>
-            <Backdrop open={formLoading} sx={{ position: "absolute", zIndex: 999, borderRadius: 1 }}>
-                <CircularProgress color="inherit" />
-            </Backdrop>
-            <Box sx={{ position: "sticky", top: 112, zIndex: 100 }}>
+        <Box sx={{ mt: 0 }}>
+            <Box sx={{ position: "sticky", top: 110, zIndex: 100, boxShadow: '0 2px 0px rgba(0,0,0,0.15)' }}>
                 <FormHeader
                     definition={definition}
                     submitLabel={currentSubmitLabel}
@@ -361,7 +356,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
                 />
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 2 }}>
+            <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
                 <Box sx={{ flex: 1 }} component="form" onSubmit={handleSubmit}>
                     {(definition.sections || []).map((sec) => (
                         <FormSection
@@ -383,18 +378,83 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
                     ))}
                 </Box>
 
-                <Box sx={{ width: 220, position: "sticky", top: 185, alignSelf: "flex-start" }}>
-                    <Paper sx={{ p: 1 }}>
-                        <List>
-                            {(definition.sections || []).map((sec) => (
-                                <ListItemButton key={sec.key} selected={activeSection === sec.key} sx={{ p: 1 }} onClick={() => handleScrollTo(sec.key)}>
-                                    <ListItemText primary={sec.title} />
-                                </ListItemButton>
-                            ))}
-                        </List>
-                    </Paper>
+                <Box
+                    sx={{
+                        width: 240,
+                        position: "sticky",
+                        top: 185,
+                        alignSelf: "flex-start",
+                    }}
+                >
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                        {(definition.sections || []).map((sec) => {
+                            const isActive = activeSection === sec.key;
+
+                            return (
+                                <Paper
+                                    key={sec.key}
+                                    onClick={() => handleScrollTo(sec.key)}
+                                    elevation={isActive ? 3 : 0}
+                                    sx={{
+                                        p: 1.2,
+                                        borderRadius: 2.5,
+                                        cursor: "pointer",
+                                        border: isActive
+                                            ? "1px solid var(--primary)"
+                                            : "1px solid #eee",
+                                        background: isActive ? "var(--primaryLight)" : "#fff",
+
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+
+                                        // ✨ Hover
+                                        "&:hover": {
+                                            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                                            transform: "translateY(-2px)",
+                                        },
+
+                                        transition: "all 0.25s ease",
+                                    }}
+                                >
+                                    {/* Title */}
+                                    <Box>
+                                        <Typography
+                                            sx={{
+                                                fontSize: 13.5,
+                                                fontWeight: isActive ? 600 : 500,
+                                                color: isActive
+                                                    ? "var(--primary)"
+                                                    : "text.primary",
+                                            }}
+                                        >
+                                            {sec.title}
+                                        </Typography>
+                                    </Box>
+
+                                    {/* Arrow */}
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            color: isActive
+                                                ? "var(--primary)"
+                                                : "text.secondary",
+                                            transition: "all 0.2s ease",
+                                        }}
+                                    >
+                                        {isActive ? (
+                                            <ExpandLessIcon fontSize="small" />
+                                        ) : (
+                                            <ExpandMoreIcon fontSize="small" />
+                                        )}
+                                    </Box>
+                                </Paper>
+                            );
+                        })}
+                    </Box>
                 </Box>
             </Box>
-        </Box>
+        </Box >
     );
 }

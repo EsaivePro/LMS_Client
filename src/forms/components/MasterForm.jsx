@@ -292,8 +292,8 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
                 <Box
                     sx={{
                         bgcolor: "background.paper",
-                        px: 2,
-                        py: 1.5
+                        px: 3,
+                        py: 2.5
                     }}
                 >
                     <Stack
@@ -301,7 +301,7 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
                         justifyContent="space-between"
                         alignItems="center"
                     >
-                        <Typography variant="h6" fontWeight={700}>
+                        <Typography variant="h5" fontWeight={700}>
                             {title}
                         </Typography>
 

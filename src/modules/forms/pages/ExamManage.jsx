@@ -1,4 +1,3 @@
-import { Box, Paper } from "@mui/material";
 import { useParams } from "react-router-dom";
 import formDef from "../../../forms/details-forms/exam-details.json";
 import masterConfig from "../../../forms/master-forms/exam-master.json";
@@ -14,13 +13,7 @@ const ExamManage = () => {
         return <MasterForm config={masterConfig} />;
     }
     return (
-        <Box sx={{ mx: "auto", width: "100%" }}>
-            <Paper elevation={0} sx={{ borderRadius: 2, border: "1px solid", borderColor: "grey.300", mb: 2 }}>
-                <Box sx={{ p: 3 }}>
-                    <DetailsForm definition={formDef} id={id} submitLabel={submitLabel} />
-                </Box>
-            </Paper>
-        </Box>
+        <DetailsForm definition={formDef} id={id} submitLabel={submitLabel} />
     );
 };
 

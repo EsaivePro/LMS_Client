@@ -1,0 +1,46 @@
+{
+    "baseRoute": "/user-group-assign/manage",
+    "tableName": "groups",
+    "endpoint": "/common-service/search",
+    "readFrom": "response.data",
+    "serverSide": true,
+    "rowDoubleClick": "/user-group-assign/manage/{id}",
+    "manageRoute": false,
+    "moreColumn": [
+        "Edit"
+    ],
+    "tableKey": "user-group-assign-table",
+    "header": {
+        "title": "User Group Assignments",
+        "showCount": true,
+        "buttons": []
+    },
+    "fields": [
+        {
+            "key": "id",
+            "label": "ID",
+            "type": "number",
+            "maxWidth": 80
+        },
+        {
+            "key": "name",
+            "label": "Group Name",
+            "type": "string",
+            "minWidth": 240,
+            "filterable": true,
+            "linkTemplate": "{id}"
+        },
+        {
+            "key": "description",
+            "label": "Description",
+            "type": "string",
+            "minWidth": 340
+        },
+        {
+            "key": "created_at",
+            "label": "Created At",
+            "type": "datetime",
+            "minWidth": 180
+        }
+    ]
+}

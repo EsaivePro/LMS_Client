@@ -20,6 +20,7 @@ import ExamSummaryPage from "../modules/exam/pages/ExamSummaryPage";
 import QuestionManage from "../modules/forms/pages/QuestionManage";
 import SectionManage from "../modules/forms/pages/SectionManage";
 import TopicManage from "../modules/forms/pages/TopicManage";
+import UserGroupAssignManage from "../modules/forms/pages/UserGroupAssignManage";
 
 export const protectedRoutes = [
     {
@@ -184,5 +185,12 @@ export const protectedRoutes = [
         description: "Create groups and assign course categories.",
         permission: "group.management",
         element: <GroupManage />,
+    },
+    {
+        path: "/user-group-assign/manage/:id",
+        title: "Manage user group assign",
+        description: "Assign users to groups and manage their status.",
+        permission: "group.management",
+        element: <UserGroupAssignManage />,
     }
 ];

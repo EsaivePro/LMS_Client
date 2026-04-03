@@ -343,9 +343,9 @@ export default function DataTable({
                     display: "flex",
                     alignItems: "center",
                     gap: 1,
-                    px: 2,
-                    py: 1.25,
-                    pb: 2,
+                    px: 3,
+                    py: 2.5,
+                    pt: 0,
                     borderBottom: "1px solid",
                     borderColor: "divider",
                     minHeight: 52,
@@ -724,10 +724,10 @@ export default function DataTable({
                     display: "flex",
                     flexDirection: "column",
                     // borderRadius: 1,
-                    // mx: 2,
-                    // my: 2,
+                    px: 3,
+                    py: 2.5,
                     // borderRadius: 1,
-                    // boxShadow: 1,
+                    // boxShadow: 2,
                     overflow: "hidden",
                     // background: "background.paper",
                 }}
@@ -735,7 +735,7 @@ export default function DataTable({
                 <TableContainer
                     sx={{
                         flex: 1,
-                        // maxHeight: "65vh", // 🔥 controlled scroll area
+                        maxHeight: "65vh", // 🔥 controlled scroll area
                         overflow: "auto",
                     }}
                 >
@@ -746,12 +746,14 @@ export default function DataTable({
                                 {checkboxSelection && <TableCell padding="checkbox" />}
                                 {orderedColumns.map((col) => {
                                     const sx = {
-                                        fontWeight: 500,
+                                        fontWeight: 600,
                                         fontSize: "16px",
-                                        background: "var(--darkMedium)",
-                                        color: "var(--onPrimary)",
+                                        background: "var(--primaryLight)",
+                                        color: "#333333",
                                         cursor: col.sortable === false ? "default" : "pointer",
-                                        whiteSpace: "nowrap"
+                                        whiteSpace: "nowrap",
+                                        py: 1,
+                                        userSelect: "none",
                                     };
 
                                     if (col.minWidth) sx.minWidth = col.minWidth;
@@ -770,9 +772,16 @@ export default function DataTable({
                                             onClick={() => handleSort(col)}
                                             sx={sx}
                                         >
-                                            {col.headerName}
-                                            {sortModel.field === col.field &&
-                                                (sortModel.direction === "asc" ? " ▲" : " ▼")}
+                                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                                {col.headerName}
+                                                {col.sortable !== false && (
+                                                    <Box component="span" sx={{ fontSize: "11px", lineHeight: 1, color: sortModel.field === col.field ? "#333" : "#bbb" }}>
+                                                        {sortModel.field === col.field
+                                                            ? (sortModel.direction === "asc" ? "▲" : "▼")
+                                                            : "↕"}
+                                                    </Box>
+                                                )}
+                                            </Box>
                                         </TableCell>
                                     );
                                 })}
@@ -814,7 +823,7 @@ export default function DataTable({
                                                 backgroundColor: "#fafafa",
                                             },
                                             "&:hover": {
-                                                backgroundColor: "#f1f5ff",
+                                                backgroundColor: "#dbeafe",
                                             },
                                         }}
                                     >
@@ -829,8 +838,8 @@ export default function DataTable({
 
                                         {orderedColumns.map((col) => {
                                             const cellSx = {
-                                                fontSize: "15px",
-                                                py: 1.2,
+                                                fontSize: "14px",
+                                                py: 0.6,
                                             };
 
                                             if (col.minWidth) cellSx.minWidth = col.minWidth;

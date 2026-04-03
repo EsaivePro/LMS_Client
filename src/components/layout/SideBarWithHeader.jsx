@@ -164,6 +164,14 @@ const MENU = [
         to: "/exams/manage/list",
         type: "item",
         role: "user.management",
+    },
+    {
+        label: "User Group Assign",
+        icon: <PlaylistAddCheckIcon />,
+        to: "/user-group-assign/manage/list",
+        matchPath: "/user-group-assign/manage",
+        type: "item",
+        role: "group.management",
     }
 ];
 

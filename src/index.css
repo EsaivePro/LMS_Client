@@ -211,8 +211,9 @@ button.outlined,
 /* Disabled input text */
 .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-input,
 .MuiInputBase-root.Mui-disabled .MuiInputBase-input {
-    color: rgba(0, 0, 0, 0.388) !important;
-    -webkit-text-fill-color: rgba(0, 0, 0, 0.388) !important;
+    color: rgba(0, 0, 0, 0.822) !important;
+    font-weight: 500;
+    -webkit-text-fill-color: rgba(0, 0, 0, 0.584) !important;
 }
 
 /* --- InputLabel (floating label) --- */
