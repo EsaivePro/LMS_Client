@@ -46,14 +46,14 @@ export const THEME = {
         card20: "#f6fff0ff",
     },
     manifest: {
-        name: "Impulse",
-        short_name: "impulse",
-        description: "Build yourself learning platform with Impulse.",
+        name: "Esai",
+        short_name: "esai",
+        description: "Learning platform with Esai.",
         theme_color: "#aa2c44",
         background_color: "#ffffff",
         icons: [
-            { src: "logo/ImpulseLogo.png", sizes: "192x192", type: "image/png" },
-            { src: "logo/ImpulseLogo-512.png", sizes: "512x512", type: "image/png" }
+            { src: "logo/Esai-new-logo.png", sizes: "192x192", type: "image/png" },
+            { src: "logo/Esai-new-logo.png", sizes: "512x512", type: "image/png" }
         ],
         contact: {
             email: "support@impulsecoachinginstitute.com",

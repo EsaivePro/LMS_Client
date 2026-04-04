@@ -3,7 +3,9 @@ import { tokenStorage } from "../utils/tokenStorage.utils"; // your sessionStora
 import deviceUtils from "../utils/device.utils";
 import { API_ENDPOINTS } from "../constants/apiEndPoints";
 
-const BASE_URL = "http://localhost:3003/api-gateway";
+let BASE_URL = "http://localhost:3003/api-gateway";
+
+BASE_URL = "https://lmsapi-production-3541.up.railway.app/api-gateway";
 
 const api = axios.create({
     baseURL: BASE_URL,
