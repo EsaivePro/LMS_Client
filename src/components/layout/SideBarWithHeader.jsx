@@ -63,6 +63,7 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
     const [open, setOpen] = React.useState(fixed ? true : false);
     const [expandedGroup, setExpandedGroup] = React.useState(null);
     const [search, setSearch] = React.useState("");
+    const [collapsedSections, setCollapsedSections] = React.useState(new Set());
 
     const sidebarRef = React.useRef(null);
     const { user, isAuthenticated } = useAuth();
@@ -158,6 +159,15 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
 
     const closeSidebarOnNav = () => {
         if (!fixed || isMobile) setOpen(false);
+    };
+
+    const toggleSection = (sectionLabel) => {
+        setCollapsedSections((prev) => {
+            const next = new Set(prev);
+            if (next.has(sectionLabel)) next.delete(sectionLabel);
+            else next.add(sectionLabel);
+            return next;
+        });
     };
 
     return (
@@ -266,11 +276,29 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                     {/* ── MENU LIST ── */}
                     <Box sx={{ flex: 1, overflowY: "auto", px: 1, pb: 1 }}>
                         <List disablePadding>
-                            {visibleMenu.map((item, index) => {
+                            {(() => {
+                                let currentSection = null;
+                                return visibleMenu.map((item, index) => {
                                 // Section header
                                 if (item.type === "section") {
+                                    currentSection = item.label;
+                                    const isSectionOpen = !collapsedSections.has(item.label);
                                     return (
-                                        <Box key={`sec-${index}`} sx={{ mt: index === 0 ? 0.5 : 2, mb: 0.5 }}>
+                                        <Box
+                                            key={`sec-${index}`}
+                                            onClick={() => toggleSection(item.label)}
+                                            sx={{
+                                                mt: index === 0 ? 0.5 : 2,
+                                                mb: 0.5,
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "space-between",
+                                                px: 1.5,
+                                                cursor: "pointer",
+                                                borderRadius: 1,
+                                                "&:hover": { background: "rgba(255,255,255,0.04)" },
+                                            }}
+                                        >
                                             <Typography
                                                 sx={{
                                                     fontSize: 11,
@@ -278,14 +306,21 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                                                     letterSpacing: 1.8,
                                                     color: "rgba(255,255,255,0.28)",
                                                     textTransform: "uppercase",
-                                                    px: 1.5,
                                                 }}
                                             >
                                                 {item.label}
                                             </Typography>
+                                            {isSectionOpen ? (
+                                                <ExpandLess sx={{ fontSize: 14, color: "rgba(255,255,255,0.25)" }} />
+                                            ) : (
+                                                <ExpandMore sx={{ fontSize: 14, color: "rgba(255,255,255,0.25)" }} />
+                                            )}
                                         </Box>
                                     );
                                 }
+
+                                // Hide items if their section is collapsed
+                                if (currentSection && collapsedSections.has(currentSection)) return null;
 
                                 const isActive = item.matchPath
                                     ? location.pathname.startsWith(item.matchPath)
@@ -475,7 +510,8 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                                 }
 
                                 return null;
-                            })}
+                            });
+                            })()}
 
                             {/* Empty search state */}
                             {search && visibleMenu.length === 0 && (
