@@ -17,6 +17,7 @@ export default function createHeaderHandlers({
     handleScrollTo,
     onSubmit,
     setSubmitLabel,
+    onAfterSave,
 }) {
     const handleCancel = () => {
         if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
@@ -188,6 +189,7 @@ export default function createHeaderHandlers({
                 if (res.data?.error === false && res.data?.statusCode === 200) {
                     showSuccess("Created successfully");
                     setEditing(false);
+                    onAfterSave?.();
                     if (setSubmitLabel) setSubmitLabel("Update");
                     const newId = res.data?.data?.id ?? res.data?.response?.id ?? res.data?.data?.insertId ?? res.data?.insertId ?? null;
                     if (newId) {
@@ -201,6 +203,7 @@ export default function createHeaderHandlers({
                 const res = await httpClient.updateForm(payload);
                 if (res.data?.error === false && res.data?.statusCode === 200) {
                     showSuccess("Updated successfully");
+                    onAfterSave?.();
                     clearEditmodeParam();
                     setEditing(false);
                 } else showError(res.data?.message || "Failed to update");

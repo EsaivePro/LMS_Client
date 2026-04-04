@@ -58,19 +58,6 @@ export const protectedRoutes = [
     // Learning Section
     // ─────────────────────────────────────────────
     {
-        path: "/courses",
-        title: "Course Management",
-        description: "View, create, and manage courses and their content.",
-        permission: "course.list",
-        element: <CoursesList />,
-        sideMenu: true,
-        section: "Learning",
-        label: "Courses",
-        icon: <FeedIcon />,
-        type: "item",
-    },
-
-    {
         path: "/course/view/:id",
         title: "Course Details",
         description: "View course information, lessons, and learning progress.",
@@ -89,22 +76,19 @@ export const protectedRoutes = [
         sideMenu: false,
     },
 
+    // User management
     {
-        path: "/coursecategory",
-        title: "Course Categories",
-        description: "Manage course categories and assign courses to categories.",
-        permission: "coursecategory.manage",
-        element: <CourseCategory />,
+        path: "/usermanagement/*",
+        title: "User Management",
+        description: "Create users, assign roles, and manage access.",
+        permission: "user.management",
+        element: <UserManagement />,
         sideMenu: true,
-        section: "Learning",
-        label: "Category",
-        icon: <CategoryIcon />,
+        section: "Users & Groups",
+        label: "User Management",
+        icon: <ManageAccountsIcon />,
         type: "item",
     },
-
-    // ─────────────────────────────────────────────
-    // People Section
-    // ─────────────────────────────────────────────
     {
         path: "/groups/manage/:id",
         title: "Manage group",
@@ -113,35 +97,11 @@ export const protectedRoutes = [
         element: <GroupManage />,
         sideMenu: true,
         sidePath: "/groups/manage/list",
-        section: "People",
+        section: "Users & Groups",
         label: "Groups",
         icon: <GroupsIcon />,
         type: "item",
         matchPath: "/groups/manage",
-    },
-    {
-        path: "/users/learing-insights",
-        title: "User Learning Insights",
-        description: "View enrollment and progress summary for users.",
-        permission: "user.management",
-        element: <UsersProgress />,
-        sideMenu: true,
-        section: "People",
-        label: "Learning Insights",
-        icon: <InsightsIcon />,
-        type: "item",
-    },
-    {
-        path: "/usermanagement/*",
-        title: "User Management",
-        description: "Create users, assign roles, and manage access.",
-        permission: "user.management",
-        element: <UserManagement />,
-        sideMenu: true,
-        section: "People",
-        label: "User Management",
-        icon: <ManageAccountsIcon />,
-        type: "item",
     },
     {
         path: "/user/profile/:id",
@@ -159,16 +119,32 @@ export const protectedRoutes = [
         element: <EnrollmentBase />,
         sideMenu: false,
     },
-
+    // Report and analytics
     {
-        path: "/user/category/:categoryId",
-        title: "Category Details",
-        description: "View category enrollment and course progress for the current user.",
-        permission: "course.view",
-        element: <UserCategoryPage />,
-        sideMenu: false,
+        path: "/users/learing-insights",
+        title: "User Learning Insights",
+        description: "View enrollment and progress summary for users.",
+        permission: "user.management",
+        element: <UsersProgress />,
+        sideMenu: true,
+        section: "Reports & Analytics",
+        label: "Learning Insights",
+        icon: <InsightsIcon />,
+        type: "item",
     },
-
+    // Category management
+    {
+        path: "/coursecategory",
+        title: "Course Categories",
+        description: "Manage course categories and assign courses to categories.",
+        permission: "coursecategory.manage",
+        element: <CourseCategory />,
+        sideMenu: true,
+        section: "Category management",
+        label: "Category",
+        icon: <CategoryIcon />,
+        type: "item",
+    },
     // ─────────────────────────────────────────────
     // Manage Configurations Section
     // ─────────────────────────────────────────────
@@ -186,7 +162,18 @@ export const protectedRoutes = [
         type: "item",
         matchPath: "/topics/manage",
     },
-
+    {
+        path: "/courses",
+        title: "Course Management",
+        description: "View, create, and manage courses and their content.",
+        permission: "course.list",
+        element: <CoursesList />,
+        sideMenu: true,
+        section: "Manage Configurations",
+        label: "Courses",
+        icon: <FeedIcon />,
+        type: "item",
+    },
     {
         path: "/questions/manage/:id",
         title: "Manage question",

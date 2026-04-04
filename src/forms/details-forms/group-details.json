@@ -13,18 +13,6 @@
                 "column": [
                     "title"
                 ]
-            },
-            "user_groups_assign": {
-                "key": "user_id",
-                "column": [
-                    "user_id",
-                    "username",
-                    "first_name",
-                    "last_name",
-                    "email",
-                    "phonenumber",
-                    "status"
-                ]
             }
         }
     },
@@ -62,53 +50,47 @@
                 {
                     "name": "groups_category",
                     "label": "Course Categories",
-                    "type": "record-picker",
-                    "pickerConfig": {
-                        "title": "Browse Course Categories",
-                        "buttonLabel": "Browse & Add Categories",
-                        "endpoint": "/common-service/search",
-                        "tableName": "course_category",
-                        "mapRow": {
-                            "course_category_id": "id",
-                            "course_category_title": "title"
+                    "type": "record-assigned",
+                    "assignedConfig": {
+                        "endpoint": "/form-service/advanced-search",
+                        "table": "course_category",
+                        "identityKey": "id",
+                        "columns": [
+                            "id",
+                            "title",
+                            "created_at"
+                        ],
+                        "orderby": [
+                            {
+                                "table": "groups_category",
+                                "where": {
+                                    "group_id": "{recordId}"
+                                },
+                                "on": "course_category_id"
+                            }
+                        ],
+                        "sortby": "created_at",
+                        "order": "desc",
+                        "mapData": {
+                            "id": "{groups_category_id}",
+                            "course_category_id": "{id}",
+                            "is_deleted": "{is_deleted}",
+                            "assigned": true
                         },
                         "displayColumns": [
                             {
-                                "name": "id",
-                                "label": "ID",
-                                "minWidth": 70
+                                "field": "id",
+                                "headerName": "ID",
+                                "type": "number",
+                                "minWidth": 80
                             },
                             {
-                                "name": "title",
-                                "label": "Category title",
-                                "minWidth": 300
+                                "field": "title",
+                                "headerName": "Category Title",
+                                "type": "text",
+                                "minWidth": 800
                             }
                         ]
-                    },
-                    "table": {
-                        "columns": [
-                            {
-                                "name": "course_category_id",
-                                "label": "ID",
-                                "type": "number",
-                                "minWidth": 70
-                            },
-                            {
-                                "name": "course_category_title",
-                                "label": "Category title",
-                                "type": "text",
-                                "minWidth": 400
-                            },
-                            {
-                                "name": "actions",
-                                "label": "",
-                                "type": "actions",
-                                "minWidth": 50
-                            }
-                        ],
-                        "allowDelete": true,
-                        "draggable": false,
-                        "minRows": 0
                     }
                 }
             ]
@@ -120,117 +102,68 @@
                 {
                     "name": "user_groups_assign",
                     "label": "Assigned Users",
-                    "type": "record-picker",
-                    "pickerConfig": {
-                        "title": "Browse Users",
-                        "buttonLabel": "Browse & Add Users",
-                        "endpoint": "/common-service/search",
-                        "tableName": "users",
-                        "mapRow": {
-                            "user_id": "id",
-                            "users_username": "username",
-                            "users_first_name": "first_name",
-                            "users_last_name": "last_name",
-                            "users_email": "email",
-                            "users_status": "status"
+                    "type": "record-assigned",
+                    "assignedConfig": {
+                        "endpoint": "/form-service/advanced-search",
+                        "table": "users",
+                        "identityKey": "id",
+                        "columns": [
+                            "id",
+                            "email",
+                            "first_name",
+                            "last_name",
+                            "status",
+                            "created_at"
+                        ],
+                        "orderby": [
+                            {
+                                "table": "user_groups_assign",
+                                "where": {
+                                    "group_id": "{recordId}"
+                                },
+                                "on": "user_id"
+                            }
+                        ],
+                        "sortby": "created_at",
+                        "order": "desc",
+                        "mapData": {
+                            "id": "{user_groups_assign_id}",
+                            "user_id": "{id}",
+                            "is_deleted": "{is_deleted}",
+                            "assigned": true
                         },
                         "displayColumns": [
                             {
-                                "name": "id",
-                                "label": "ID",
-                                "minWidth": 70
+                                "field": "id",
+                                "headerName": "ID",
+                                "type": "number",
+                                "minWidth": 80
                             },
                             {
-                                "name": "username",
-                                "label": "Username",
-                                "minWidth": 180,
-                                "filterable": true
+                                "field": "email",
+                                "headerName": "Email",
+                                "type": "text",
+                                "minWidth": 200
                             },
                             {
-                                "name": "first_name",
-                                "label": "First Name",
-                                "minWidth": 160
-                            },
-                            {
-                                "name": "last_name",
-                                "label": "Last Name",
-                                "minWidth": 160
-                            },
-                            {
-                                "name": "email",
-                                "label": "Email",
-                                "minWidth": 240
-                            },
-                            {
-                                "name": "phonenumber",
-                                "label": "Phone",
+                                "field": "first_name",
+                                "headerName": "First Name",
+                                "type": "text",
                                 "minWidth": 140
+                            },
+                            {
+                                "field": "last_name",
+                                "headerName": "Last Name",
+                                "type": "text",
+                                "minWidth": 140
+                            },
+                            {
+                                "field": "status",
+                                "headerName": "Status",
+                                "type": "text",
+                                "minWidth": 110
                             }
                         ]
-                    },
-                    "table": {
-                        "columns": [
-                            {
-                                "name": "user_id",
-                                "label": "ID",
-                                "type": "number",
-                                "minWidth": 70
-                            },
-                            {
-                                "name": "users_username",
-                                "label": "Username",
-                                "type": "text",
-                                "minWidth": 180
-                            },
-                            {
-                                "name": "users_first_name",
-                                "label": "First Name",
-                                "type": "text",
-                                "minWidth": 160
-                            },
-                            {
-                                "name": "users_last_name",
-                                "label": "Last Name",
-                                "type": "text",
-                                "minWidth": 160
-                            },
-                            {
-                                "name": "users_email",
-                                "label": "Email",
-                                "type": "text",
-                                "minWidth": 240
-                            },
-                            {
-                                "name": "users_status",
-                                "label": "Status",
-                                "type": "select",
-                                "default": "active",
-                                "options": [
-                                    {
-                                        "value": "active",
-                                        "label": "Active"
-                                    },
-                                    {
-                                        "value": "inactive",
-                                        "label": "Inactive"
-                                    },
-                                    {
-                                        "value": "suspended",
-                                        "label": "Suspended"
-                                    }
-                                ],
-                                "minWidth": 140
-                            },
-                            {
-                                "name": "actions",
-                                "label": "",
-                                "type": "actions",
-                                "minWidth": 50
-                            }
-                        ],
-                        "allowDelete": true,
-                        "draggable": false,
-                        "minRows": 0
                     }
                 }
             ]

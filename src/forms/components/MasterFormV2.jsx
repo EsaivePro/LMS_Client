@@ -9,7 +9,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import DataTableV1 from "../../components/common/table/DataTableV1";
+import DataTableV2 from "../../components/common/table/DataTableV2";
 
 function ActionsCell({ items = [], onEdit, onCopy, onDelete }) {
     const [anchor, setAnchor] = React.useState(null);
@@ -367,7 +367,7 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
                 }}
             >
                 <Box sx={{ flex: 1, overflow: "auto" }}>
-                    <DataTableV1
+                    <DataTableV2
                         serverSide
                         rows={rows}
                         totalCount={total}

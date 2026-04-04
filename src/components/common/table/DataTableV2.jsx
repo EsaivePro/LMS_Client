@@ -70,6 +70,9 @@ export default function DataTable({
     infiniteScroll = false,
     infiniteScrollHasMore,
     endOfResultsMessage = "No more data",
+    checkboxDisabled = false,
+    hideColumnSettings = false,
+    preselectedIds = [],
     tableName,
     tableKey = "default",
 }) {
@@ -239,6 +242,14 @@ export default function DataTable({
         [visibleColumns, pinnedLeft, pinnedRight]
     );
 
+    // Pixel minWidth for the table — allows horizontal scroll when columns exceed the container.
+    // Using a pixel value (not "100%") avoids the CSS trap where minWidth: 100% inside
+    // an overflow:auto container resolves to the container's clientWidth, preventing scroll.
+    const totalMinWidth = React.useMemo(() => {
+        const colsTotal = orderedColumns.reduce((sum, col) => sum + (col.minWidth || 120), 0);
+        return colsTotal + (checkboxSelection ? 48 : 0);
+    }, [orderedColumns, checkboxSelection]);
+
     /* ================= LOCAL PROCESSING (filters / sort / paginate) ================= */
     const processedRows = React.useMemo(() => {
         if (serverSide) return rows || [];
@@ -368,6 +379,18 @@ export default function DataTable({
         });
     };
 
+    const toggleAllRows = () => {
+        const pageIds = displayRows.map((r) => r.id);
+        const allChecked = pageIds.every((id) => selectedIds.includes(id));
+        setSelectedIds((prev) => {
+            const updated = allChecked
+                ? prev.filter((id) => !pageIds.includes(id))
+                : Array.from(new Set([...prev, ...pageIds]));
+            onSelectionChange?.(updated);
+            return updated;
+        });
+    };
+
     /* ================= CLEAR FILTERS ================= */
     const clearFilters = () => {
         setFilters({});
@@ -387,6 +410,21 @@ export default function DataTable({
         }
         prevLoadingRef.current = loading;
     }, [loading]);
+
+    // Merge externally provided pre-selected IDs into internal checkbox state.
+    // Tracked by ref so user deselections are not overridden on subsequent fetches.
+    const preselectedAppliedRef = React.useRef(new Set());
+    React.useEffect(() => {
+        if (!preselectedIds || preselectedIds.length === 0) return;
+        const newIds = preselectedIds.filter((id) => !preselectedAppliedRef.current.has(id));
+        if (newIds.length === 0) return;
+        newIds.forEach((id) => preselectedAppliedRef.current.add(id));
+        setSelectedIds((prev) => {
+            const merged = Array.from(new Set([...prev, ...newIds]));
+            onSelectionChange?.(merged);
+            return merged;
+        });
+    }, [preselectedIds]); // eslint-disable-line
 
     /* ========================================================= */
 
@@ -439,7 +477,7 @@ export default function DataTable({
                     display: "flex",
                     alignItems: "center",
                     gap: 1,
-                    px: pickerSelected ? 0 : 3,
+                    // px: pickerSelected ? 0 : 3,
                     py: pickerSelected ? 1.5 : 2.5,
                     pt: 0,
                     borderBottom: "1px solid",
@@ -532,7 +570,7 @@ export default function DataTable({
                 <Box sx={{ flex: 1 }} />
 
                 {/* Column visibility */}
-                {!pickerSelected && <Tooltip title="Column settings">
+                {!pickerSelected && !hideColumnSettings && <Tooltip title="Column settings">
                     <IconButton
                         size="small"
                         onClick={(e) => setAnchorEl(e.currentTarget)}
@@ -819,7 +857,7 @@ export default function DataTable({
                     minHeight,
                     display: "flex",
                     flexDirection: "column",
-                    px: pickerSelected ? 0 : 3,
+                    // px: pickerSelected ? 0 : 3,
                     py: pickerSelected ? 1.5 : 2.5,
                     // borderRadius: 1,
                     // boxShadow: 2,
@@ -830,16 +868,32 @@ export default function DataTable({
                 <TableContainer
                     sx={{
                         flex: 1,
+                        width: "100%",
                         maxHeight,
                         overflow: "auto",
                     }}
                     onScroll={handleInfiniteScroll}
                 >
-                    <Table stickyHeader>
+                    <Table
+                        stickyHeader
+                        sx={{ minWidth: totalMinWidth }}
+                    >
                         {/* HEADER */}
                         <TableHead>
                             <TableRow >
-                                {checkboxSelection && <TableCell padding="checkbox" />}
+                                {checkboxSelection && (
+                                    <TableCell padding="checkbox" sx={{ background: "var(--primaryLight)" }}>
+                                        <Checkbox
+                                            checked={displayRows.length > 0 && displayRows.every((r) => selectedIds.includes(r.id))}
+                                            indeterminate={
+                                                displayRows.some((r) => selectedIds.includes(r.id)) &&
+                                                !displayRows.every((r) => selectedIds.includes(r.id))
+                                            }
+                                            onChange={toggleAllRows}
+                                            disabled={checkboxDisabled}
+                                        />
+                                    </TableCell>
+                                )}
                                 {orderedColumns.map((col) => {
                                     const sx = {
                                         fontWeight: 600,
@@ -927,7 +981,8 @@ export default function DataTable({
                                             <TableCell padding="checkbox">
                                                 <Checkbox
                                                     checked={selectedIds.includes(row.id)}
-                                                    onChange={() => toggleRow(row.id)}
+                                                    onChange={() => !checkboxDisabled && toggleRow(row.id)}
+                                                    disabled={checkboxDisabled}
                                                 />
                                             </TableCell>
                                         )}

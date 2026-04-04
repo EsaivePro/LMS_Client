@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find 'd:\\\\Selvaraj\\\\LMS Product\\\\LMS_UI_v1\\\\src' -type f -name *route* -o -type d -name *route*)"
+    ]
+  }
+}

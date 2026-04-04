@@ -6,6 +6,7 @@ const FormSection = React.forwardRef(function FormSection(props, ref) {
     const {
         section,
         values,
+        recordId,
         handleChange,
         editing,
         invalidFields,
@@ -16,6 +17,7 @@ const FormSection = React.forwardRef(function FormSection(props, ref) {
         fetchOptionsForSource,
         resolveOptionLabel,
         showError,
+        saveKey,
     } = props;
 
     const rows = [];
@@ -23,7 +25,7 @@ const FormSection = React.forwardRef(function FormSection(props, ref) {
     let currentSum = 0;
     const fields = section.fields || [];
     for (const f of fields) {
-        const isFull = f.fullWidth || f.type === 'textarea' || f.type === 'table' || f.type === 'record-picker';
+        const isFull = f.fullWidth || f.type === 'textarea' || f.type === 'table' || f.type === 'record-picker' || f.type === 'record-assigned';
         const mdUnits = isFull ? 12 : (f.col || 4);
         if (isFull) {
             if (current.length) {
@@ -65,6 +67,8 @@ const FormSection = React.forwardRef(function FormSection(props, ref) {
                             <FormRender
                                 field={cell.field}
                                 value={values[cell.field.name]}
+                                formValues={values}
+                                recordId={recordId}
                                 onChange={handleChange}
                                 editing={editing}
                                 invalidFields={invalidFields}
@@ -75,6 +79,7 @@ const FormSection = React.forwardRef(function FormSection(props, ref) {
                                 fetchOptionsForSource={fetchOptionsForSource}
                                 resolveOptionLabel={resolveOptionLabel}
                                 showError={showError}
+                                saveKey={saveKey}
                             />
                         </Box>
                     ))}

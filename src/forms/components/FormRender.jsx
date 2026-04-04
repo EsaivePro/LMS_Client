@@ -27,11 +27,15 @@ import CloseIcon from '@mui/icons-material/Close';
 import CustomDateTimePicker from "../../components/common/datepicker/CustomDateTimePicker";
 import DataTableV1 from "../../components/common/table/DataTableV1";
 import MasterForm from "./MasterForm";
+import PickerMasterPage from "./PickerMasterPage";
 import PickerSelectedTable from "./PickerSelectedTable";
+import RecordAssignedForm from "./RecordAssignedForm";
 
 export default function FormRender({
     field,
     value,
+    formValues,
+    recordId,
     onChange,
     editing,
     invalidFields,
@@ -42,6 +46,7 @@ export default function FormRender({
     fetchOptionsForSource,
     resolveOptionLabel,
     showError,
+    saveKey,
 }) {
     const [tableState, setTableState] = useState({});
 
@@ -64,19 +69,110 @@ export default function FormRender({
         return val ?? null;
     };
 
-    const renderRecordPickerField = (field, value = [], onFieldChange) => {
+    const getRecordPickerIdentityKey = (field, tableColumns = []) => {
+        return field.table?.identityKey || tableColumns[0]?.name || 'id';
+    };
+
+    const mergeRecordPickerRows = (field, tableColumns = [], existingRows = [], incomingRows = []) => {
+        const identityKey = getRecordPickerIdentityKey(field, tableColumns);
+        const merged = [];
+        const seen = new Set();
+
+        [...(existingRows || []), ...(incomingRows || [])].forEach((row, idx) => {
+            const key = row?.[identityKey] ?? row?.id ?? idx;
+            if (seen.has(key)) return;
+            seen.add(key);
+            merged.push(row);
+        });
+
+        return merged.map((row, idx) => ({
+            ...row,
+            ...(row?.order_no !== undefined ? { order_no: idx + 1 } : {}),
+        }));
+    };
+
+    const buildRecordPickerConfig = (field) => {
         const pickerCfg = field.pickerConfig || {};
-        const cols = field.table?.columns || [];
+        const pickerColumns = Array.isArray(pickerCfg.columns) ? pickerCfg.columns : null;
+        const legacyTableColumns = (field.table?.columns || []).filter((column) => column.type !== 'actions');
+
+        if (!pickerColumns?.length) {
+            return {
+                pickerCfg,
+                mapRow: pickerCfg.mapRow || {},
+                displayColumns: pickerCfg.displayColumns || [],
+                tableColumns: legacyTableColumns,
+                normalizedColumns: [],
+            };
+        }
+
+        const normalizedColumns = pickerColumns.map((column) => {
+            const hasSource = Object.prototype.hasOwnProperty.call(column, 'source');
+            const source = hasSource ? column.source : (column.name ?? null);
+            const target = Object.prototype.hasOwnProperty.call(column, 'target')
+                ? column.target
+                : (column.selected === false ? null : source);
+
+            return {
+                ...column,
+                source,
+                target,
+                includeInPicker: column.picker !== false && source !== null && source !== undefined,
+                includeInSelected: column.selected !== false && target !== null && target !== undefined,
+            };
+        });
+
+        const mapRow = normalizedColumns.reduce((acc, column) => {
+            if (!column.includeInSelected || column.map === false) return acc;
+            acc[column.target] = column.source ?? null;
+            return acc;
+        }, {});
+
+        const displayColumns = normalizedColumns
+            .filter((column) => column.includeInPicker)
+            .map((column) => ({
+                name: column.source,
+                label: column.pickerLabel || column.label,
+                minWidth: column.pickerMinWidth ?? column.displayMinWidth ?? column.minWidth,
+                ...(column.filterable ? { filterable: true, filterOptions: column.filterOptions } : {}),
+            }));
+
+        const tableColumns = normalizedColumns
+            .filter((column) => column.includeInSelected)
+            .map((column) => ({
+                name: column.target,
+                label: column.tableLabel || column.label,
+                type: column.type || 'text',
+                minWidth: column.tableMinWidth ?? column.selectedMinWidth ?? column.minWidth,
+                ...(column.options ? { options: column.options } : {}),
+            }));
+
+        return {
+            pickerCfg,
+            mapRow,
+            displayColumns,
+            tableColumns,
+            normalizedColumns,
+        };
+    };
+
+    const renderRecordPickerField = (field, value = [], onFieldChange) => {
+        const { pickerCfg, mapRow, displayColumns, tableColumns, normalizedColumns } = buildRecordPickerConfig(field);
 
         const pickerState = tableState[field.name] || {};
         const pickerOpen = !!pickerState.pickerOpen;
+        const currentRows = pickerState.hydratedRows || value || [];
 
         const closePicker = () => setStateFor(field.name, { pickerOpen: false });
         const openPicker = () => setStateFor(field.name, { pickerOpen: true });
 
+        const syncRows = (nextRows) => {
+            setStateFor(field.name, { hydratedRows: nextRows });
+            onFieldChange(nextRows);
+        };
+
         const handlePickerSelect = (selectedRows) => {
-            const mapRow = pickerCfg.mapRow || {};
-            const currentLen = value?.length || 0;
+            const currentLen = currentRows.length || 0;
             const newRows = selectedRows.map((row, i) => {
                 const mapped = {};
                 for (const [targetKey, sourceKey] of Object.entries(mapRow)) {
@@ -88,30 +184,32 @@ export default function FormRender({
                 }
                 return mapped;
             });
-            onFieldChange([...(value || []), ...newRows]);
-            closePicker();
+
+            const mergedRows = mergeRecordPickerRows(field, tableColumns, currentRows, newRows);
+            syncRows(mergedRows);
+            setStateFor(field.name, { pickerOpen: false, hydratedRows: mergedRows });
         };
 
         const removeRow = (idx) => {
-            const next = (value || []).filter((_, i) => i !== idx)
+            const next = currentRows.filter((_, i) => i !== idx)
                 .map((r, i) => ({ ...r, ...(r.order_no !== undefined ? { order_no: i + 1 } : {}) }));
-            onFieldChange(next);
+            syncRows(next);
         };
 
-        const tableColumns = cols.filter((c) => c.type !== 'actions');
         // __rowKey is used as React key only — never overwrites the real DB `id` field
-        const prepared = (value || []).map((r, i) => ({ ...r, __idx: i, __rowKey: i }));
+        const prepared = currentRows.map((r, i) => ({ ...r, __idx: i, __rowKey: i }));
+        const useMasterTable = field.table?.useMaster === true;
 
         const handleReorder = (newRows) => {
             // strip only the injected display helpers; preserve real DB fields including `id`
-            onFieldChange(newRows.map(({ __idx, __rowKey, ...rest }) => rest));
+            syncRows(newRows.map(({ __idx, __rowKey, ...rest }) => rest));
         };
 
         // Build MasterForm-compatible config from pickerConfig
         const masterConfig = {
             endpoint: pickerCfg.endpoint,
             tableName: pickerCfg.tableName,
-            fields: (pickerCfg.displayColumns || []).map(c => ({
+            fields: displayColumns.map(c => ({
                 name: c.name,
                 label: c.label,
                 minWidth: c.minWidth,
@@ -131,14 +229,33 @@ export default function FormRender({
                 </Box>
 
                 {/* selected items table */}
-                <PickerSelectedTable
-                    columns={tableColumns}
-                    rows={prepared}
-                    onReorder={handleReorder}
-                    onRemove={removeRow}
-                    editing={editing}
-                    draggable={field.table?.draggable !== false}
-                />
+                {useMasterTable ? (
+                    <PickerMasterPage
+                        columns={tableColumns}
+                        pickerColumns={normalizedColumns}
+                        rows={prepared}
+                        value={currentRows}
+                        onSyncRows={syncRows}
+                        onReorder={handleReorder}
+                        onRemove={removeRow}
+                        editing={editing}
+                        draggable={field.table?.draggable !== false}
+                        pickerLabel={field.label || field.name || 'item'}
+                        tableConfig={field.table || {}}
+                        pickerCfg={pickerCfg}
+                        formValues={formValues || {}}
+                        recordId={recordId}
+                    />
+                ) : (
+                    <PickerSelectedTable
+                        columns={tableColumns}
+                        rows={prepared}
+                        onReorder={handleReorder}
+                        onRemove={removeRow}
+                        editing={editing}
+                        draggable={field.table?.draggable !== false}
+                    />
+                )}
 
                 {/* Picker Drawer */}
                 <Drawer
@@ -699,6 +816,19 @@ export default function FormRender({
                 />
             );
         }
+        case "record-assigned":
+            return (
+                <RecordAssignedForm
+                    key={`${field.name}-${saveKey}`}
+                    field={field}
+                    value={value}
+                    formValues={formValues}
+                    recordId={recordId}
+                    editing={editing}
+                    onChange={onChange}
+                    saveKey={saveKey}
+                />
+            );
         case "record-picker":
             return renderRecordPickerField(field, value || [], (next) => onChange(field.name, next));
         case "table":

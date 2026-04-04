@@ -28,6 +28,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
     const searchTimers = useRef({});
     const [currentSubmitLabel, setSubmitLabel] = useState(submitLabel);
     const [editing, setEditing] = useState(submitLabel === "Create" || !!initialEditing);
+    const [saveKey, setSaveKey] = useState(0);
     const [activeSection, setActiveSection] = useState(definition.sections?.[0]?.key);
     const refs = useRef({});
     const navigate = useNavigate();
@@ -263,7 +264,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
         const el = refs.current[key];
         if (el) {
             const header = document.querySelector('header, .app-header, .MuiAppBar-root');
-            const headerHeight = 185; //header ? header.getBoundingClientRect().height : 96;
+            const headerHeight = 175; //header ? header.getBoundingClientRect().height : 96;
             const rectTop = el.getBoundingClientRect().top + window.pageYOffset;
             const target = Math.max(0, rectTop - headerHeight - 8);
             window.scrollTo({ top: target, behavior: 'smooth' });
@@ -340,6 +341,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
         handleScrollTo: scrollToSection,
         onSubmit,
         setSubmitLabel,
+        onAfterSave: () => setSaveKey((k) => k + 1),
     });
 
     return (
@@ -364,6 +366,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
                             ref={(el) => (refs.current[sec.key] = el)}
                             section={sec}
                             values={values}
+                            recordId={id}
                             handleChange={handleChange}
                             editing={editing}
                             invalidFields={invalidFields}
@@ -374,6 +377,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
                             fetchOptionsForSource={fetchOptionsForSource}
                             resolveOptionLabel={resolveOptionLabel}
                             showError={showError}
+                            saveKey={saveKey}
                         />
                     ))}
                 </Box>
