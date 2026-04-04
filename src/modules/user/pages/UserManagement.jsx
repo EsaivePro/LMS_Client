@@ -65,97 +65,10 @@ export default function UserManagement() {
     /* ---------- CONTENT ---------- */
     const renderContent = () => {
         if (currentTab === "roles") return <RolesList />;
-        return <UserList />;
+
     };
 
     /* ===================================================== */
 
-    return (
-        <Box sx={{ minHeight: "100vh", pt: 0, pb: 0 }}>
-            {/* ================= STICKY HEADER ================= */}
-            <Paper
-                elevation={0}
-                sx={{
-                    position: "sticky",
-                    top: 64,
-                    zIndex: 10,
-                    borderBottom: `1px solid ${THEME.colors.darkMedium}`,
-                    backgroundColor: THEME.colors.surface,
-                }}
-            >
-                <Box sx={{ px: { xs: 2, md: 3 }, py: 1.5 }}>
-                    {/* ---------- Breadcrumb ---------- */}
-                    {/* <Breadcrumbs sx={{ mb: 1 }}>
-                        <Link
-                            underline="hover"
-                            color="inherit"
-                            sx={{ cursor: "pointer" }}
-                            onClick={() =>
-                                navigate("/usermanagement/users")
-                            }
-                        >
-                            User Management
-                        </Link>
-                        <Typography color="text.primary">
-                            {tabs.find((t) => t.value === currentTab)?.label}
-                        </Typography>
-                    </Breadcrumbs> */}
-
-                    {/* ---------- Tabs / Dropdown ---------- */}
-                    {!isMobile ? (
-                        <Tabs
-                            value={currentTab}
-                            onChange={handleChange}
-                            sx={{
-                                backgroundColor: THEME.colors.surface,
-                                borderRadius: 0,
-                                minHeight: 0,
-                                "& .MuiTab-root": {
-                                    textTransform: "none",
-                                    fontWeight: 600,
-                                    px: 3,
-                                    py: 1,
-                                    minHeight: 0,
-                                    border: 0,
-                                    color: THEME.colors.darkMedium,
-                                },
-                                "& .Mui-selected": {
-                                    color: THEME.colors.dark,
-                                },
-                                "& .MuiTabs-indicator": { backgroundColor: THEME.colors.dark, height: 2 }
-                            }}
-                            aria-label="User management tabs"
-                        >
-                            {tabs.map((tab) => (
-                                <Tab key={tab.value} label={tab.label} value={tab.value} />
-                            ))}
-                        </Tabs>
-                    ) : (
-                        <Select
-                            fullWidth
-                            size="small"
-                            value={currentTab}
-                            onChange={handleMobileChange}
-                        >
-                            {tabs.map((tab) => (
-                                <MenuItem
-                                    key={tab.value}
-                                    value={tab.value}
-                                >
-                                    {tab.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    )}
-                </Box>
-            </Paper>
-
-            {/* ================= CONTENT ================= */}
-            <Box sx={{ px: { xs: 1.5, md: 3 }, py: 2 }}>
-                <Fade key={currentTab} in timeout={250}>
-                    <Box>{renderContent()}</Box>
-                </Fade>
-            </Box>
-        </Box>
-    );
+    return <UserList />;
 }

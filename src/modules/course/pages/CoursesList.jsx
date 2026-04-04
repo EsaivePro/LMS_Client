@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCourses } from "../../../redux/slices/coursesSlice";
-import DataTable from "../../../components/common/table/DataTable";
+import DataTableV1 from "../../../components/common/table/DataTableV1";
 import CourseCreate from "../../../components/course/CourseCreate";
 import CourseUpdate from "../../../components/course/CourseUpdate";
 import CourseDelete from "../../../components/course/CourseDelete";
@@ -246,7 +246,7 @@ export default function CoursesList() {
             Add Course
           </Button>
         </Box>
-
+        {/* 
         <TextField
           size="medium"
           fullWidth
@@ -268,7 +268,7 @@ export default function CoursesList() {
               </InputAdornment>
             ),
           }}
-        />
+        /> */}
       </Box>
 
       {/* Dialogs */}
@@ -293,7 +293,7 @@ export default function CoursesList() {
       <GlobalAlert alert={alert} setAlert={setAlert} />
 
       {/* DATATABLE */}
-      <DataTable
+      <DataTableV1
         rows={filteredCourses}
         columns={columns}
         noRowsContent={defaultNoRows}

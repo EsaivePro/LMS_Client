@@ -56,9 +56,9 @@ export const THEME = {
             { src: "logo/Esai-new-logo.png", sizes: "512x512", type: "image/png" }
         ],
         contact: {
-            email: "support@impulsecoachinginstitute.com",
-            phone: "+91 9600899507",
-            location: "Coimbatore, India",
+            email: "support@esailms.com",
+            phone: "+91 7530078007",
+            location: "Chennai, India",
         },
     },
 };

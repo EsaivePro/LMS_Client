@@ -1,0 +1,72 @@
+{
+    "baseRoute": "/users/manage",
+    "tableName": "users",
+    "endpoint": "/common-service/search",
+    "readFrom": "response.data",
+    "serverSide": true,
+    "rowDoubleClick": "/users/manage/{id}",
+    "manageRoute": false,
+    "moreColumn": [
+        "Edit",
+        "Delete"
+    ],
+    "tableKey": "users-table",
+    "header": {
+        "title": "Users",
+        "showCount": true,
+        "buttons": [
+            {
+                "key": "create",
+                "label": "New User",
+                "variant": "contained"
+            }
+        ]
+    },
+    "fields": [
+        {
+            "key": "id",
+            "label": "ID",
+            "type": "number",
+            "maxWidth": 80
+        },
+        {
+            "key": "username",
+            "label": "Username",
+            "type": "string",
+            "minWidth": 160,
+            "filterable": true,
+            "linkTemplate": "{id}"
+        },
+        {
+            "key": "email",
+            "label": "Email",
+            "type": "string",
+            "minWidth": 220,
+            "filterable": true
+        },
+        {
+            "key": "first_name",
+            "label": "First Name",
+            "type": "string",
+            "minWidth": 140
+        },
+        {
+            "key": "last_name",
+            "label": "Last Name",
+            "type": "string",
+            "minWidth": 140
+        },
+        {
+            "key": "status",
+            "label": "Status",
+            "type": "string",
+            "minWidth": 110
+        },
+        {
+            "key": "created_at",
+            "label": "Created At",
+            "type": "datetime",
+            "minWidth": 180
+        }
+    ]
+}

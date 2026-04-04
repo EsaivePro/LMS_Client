@@ -21,6 +21,8 @@ import QuestionManage from "../modules/forms/pages/QuestionManage";
 import SectionManage from "../modules/forms/pages/SectionManage";
 import TopicManage from "../modules/forms/pages/TopicManage";
 import UserGroupAssignManage from "../modules/forms/pages/UserGroupAssignManage";
+import RoleManage from "../modules/forms/pages/RoleManage";
+import UserManage from "../modules/forms/pages/UserManage";
 
 // Icons for sidebar menu
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -35,6 +37,9 @@ import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import SegmentIcon from "@mui/icons-material/Segment";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import PeopleIcon from "@mui/icons-material/People";
+import UserList from "../modules/user/pages/UsersList";
 
 export const protectedRoutes = [
     // ─────────────────────────────────────────────
@@ -78,11 +83,11 @@ export const protectedRoutes = [
 
     // User management
     {
-        path: "/usermanagement/*",
+        path: "/users/list",
         title: "User Management",
         description: "Create users, assign roles, and manage access.",
         permission: "user.management",
-        element: <UserManagement />,
+        element: <UserList />,
         sideMenu: true,
         section: "Users & Groups",
         label: "User Management",
@@ -119,6 +124,21 @@ export const protectedRoutes = [
         element: <EnrollmentBase />,
         sideMenu: false,
     },
+    // Role management
+    {
+        path: "/roles/manage/:id",
+        title: "Manage role",
+        description: "Create roles and assign permissions.",
+        permission: "user.management",
+        element: <RoleManage />,
+        sideMenu: true,
+        sidePath: "/roles/manage/list",
+        section: "Roles & Permissions",
+        label: "Roles",
+        icon: <AdminPanelSettingsIcon />,
+        type: "item",
+        matchPath: "/roles/manage",
+    },
     // Report and analytics
     {
         path: "/users/learing-insights",
@@ -127,7 +147,7 @@ export const protectedRoutes = [
         permission: "user.management",
         element: <UsersProgress />,
         sideMenu: true,
-        section: "Reports & Analytics",
+        section: "Reports/Analytics",
         label: "Learning Insights",
         icon: <InsightsIcon />,
         type: "item",

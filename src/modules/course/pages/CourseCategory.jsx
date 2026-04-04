@@ -14,7 +14,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import useCommon from "../../../hooks/useCommon";
 import { presignAndUploadFile } from "../../../services/awscloud/S3Services";
-import DataTable from "../../../components/common/table/DataTable";
+import DataTableV1 from "../../../components/common/table/DataTableV1";
 import ShowPopup from "../../../components/common/dialog/ShowPopup";
 import SlideDialog from "../../../components/common/dialog/SlideDialog";
 import Drawer from "@mui/material/Drawer";
@@ -241,7 +241,7 @@ export default function CourseCategory() {
                 </Grid>
             </Grid>
 
-            <DataTable
+            <DataTableV1
                 rows={categories}
                 columns={categoryColumns}
                 serverSide={false}

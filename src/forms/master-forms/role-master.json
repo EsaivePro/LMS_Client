@@ -1,0 +1,53 @@
+{
+    "baseRoute": "/roles/manage",
+    "tableName": "roles",
+    "endpoint": "/common-service/search",
+    "readFrom": "response.data",
+    "serverSide": true,
+    "rowDoubleClick": "/roles/manage/{id}",
+    "manageRoute": false,
+    "moreColumn": [
+        "Edit",
+        "Delete"
+    ],
+    "tableKey": "roles-table",
+    "header": {
+        "title": "Roles",
+        "showCount": true,
+        "buttons": [
+            {
+                "key": "create",
+                "label": "New Role",
+                "variant": "contained"
+            }
+        ]
+    },
+    "fields": [
+        {
+            "key": "id",
+            "label": "ID",
+            "type": "number",
+            "maxWidth": 80
+        },
+        {
+            "key": "name",
+            "label": "Name",
+            "type": "string",
+            "minWidth": 200,
+            "filterable": true,
+            "linkTemplate": "{id}"
+        },
+        {
+            "key": "description",
+            "label": "Description",
+            "type": "string",
+            "minWidth": 360
+        },
+        {
+            "key": "created_at",
+            "label": "Created At",
+            "type": "datetime",
+            "minWidth": 180
+        }
+    ]
+}

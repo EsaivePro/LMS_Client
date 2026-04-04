@@ -15,6 +15,8 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { useNavigate } from "react-router-dom";
 
 import DataTable from "../../../components/common/table/DataTable";
+import DatatableV1 from "../../../components/common/table/DataTableV1";
+
 import UserDrawer from "../../../components/user/UserDrawer";
 import useCommon from "../../../hooks/useCommon";
 import useUser from "../../../hooks/useUser";
@@ -236,7 +238,7 @@ export default function UserList() {
     /* ========================================================= */
 
     return (
-        <Box p={1}>
+        <Box p={1} mt={1.5}>
             {/* ---------- HEADER ---------- */}
             <Stack direction="row" justifyContent="space-between" mb={3}>
                 <Typography variant="h5" fontWeight={500}>
@@ -252,18 +254,19 @@ export default function UserList() {
                 </Button>
             </Stack>
 
-            {/* ---------- DATA TABLE ---------- */}
-            <DataTable
-                serverSide={true}
-                rows={rows}
-                totalCount={total}
-                loading={loading}
-                columns={columns}
-                tableKey="users-table"
-                checkboxSelection
-                onFetchData={fetchUsers}
-                onRowDoubleClick={(row) => openEdit(row)}
-            />
+            <Box>
+                {/* ---------- DATA TABLE ---------- */}
+                <DatatableV1
+                    serverSide={true}
+                    rows={rows}
+                    totalCount={total}
+                    loading={loading}
+                    columns={columns}
+                    tableKey="users-table"
+                    onFetchData={fetchUsers}
+                    onRowDoubleClick={(row) => openEdit(row)}
+                />
+            </Box>
 
             {/* ---------- DRAWER ---------- */}
             <Drawer

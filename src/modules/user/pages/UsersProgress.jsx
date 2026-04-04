@@ -15,7 +15,7 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 
 import { useNavigate } from "react-router-dom";
 
-import DataTable from "../../../components/common/table/DataTable";
+import DataTableV1 from "../../../components/common/table/DataTableV1";
 import UserDrawer from "../../../components/user/UserDrawer";
 import useCommon from "../../../hooks/useCommon";
 import useRole from "../../../hooks/useRole";
@@ -173,14 +173,13 @@ export default function UsersProgress() {
                 </Box>
             </Stack>
 
-            <DataTable
+            <DataTableV1
                 serverSide
                 rows={rows}
                 totalCount={total}
                 loading={loading}
                 columns={columns}
                 // tableKey="users-progress-table"
-                checkboxSelection
                 onFetchData={fetchUsers}
             // onRowDoubleClick={(row) => openEdit(row)}
             />

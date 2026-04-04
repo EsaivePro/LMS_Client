@@ -441,7 +441,6 @@ export default function DataTable({
                     gap: 1,
                     px: pickerSelected ? 0 : 3,
                     py: pickerSelected ? 1.5 : 2.5,
-                    pt: 0,
                     borderBottom: "1px solid",
                     borderColor: "divider",
                     // minHeight: 52,

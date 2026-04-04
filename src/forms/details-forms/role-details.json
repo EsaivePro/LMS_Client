@@ -1,0 +1,98 @@
+{
+    "title": "Role Details",
+    "fetchConfig": {
+        "endpoint": "/form-service/get",
+        "table": "roles",
+        "joins": [
+            "role_permissions"
+        ],
+        "subJoins": {}
+    },
+    "sections": [
+        {
+            "key": "basic",
+            "title": "Basic Details",
+            "fields": [
+                {
+                    "name": "id",
+                    "label": "ID",
+                    "type": "number",
+                    "readOnly": true,
+                    "minWidth": 120
+                },
+                {
+                    "name": "name",
+                    "label": "Role Name",
+                    "type": "text",
+                    "required": true,
+                    "minWidth": 320
+                },
+                {
+                    "name": "description",
+                    "label": "Description",
+                    "type": "textarea",
+                    "minWidth": 640
+                }
+            ]
+        },
+        {
+            "key": "role_permissions",
+            "title": "Permission Assignment",
+            "fields": [
+                {
+                    "name": "role_permissions",
+                    "label": "Permissions",
+                    "type": "record-assigned",
+                    "assignedConfig": {
+                        "endpoint": "/form-service/advanced-search",
+                        "table": "permissions",
+                        "identityKey": "id",
+                        "columns": [
+                            "id",
+                            "key",
+                            "description",
+                            "created_at"
+                        ],
+                        "orderby": [
+                            {
+                                "table": "role_permissions",
+                                "where": {
+                                    "role_id": "{recordId}"
+                                },
+                                "on": "permission_id"
+                            }
+                        ],
+                        "sortby": "created_at",
+                        "order": "desc",
+                        "mapData": {
+                            "id": "{role_permissions_id}",
+                            "permission_id": "{id}",
+                            "is_deleted": "{is_deleted}",
+                            "assigned": true
+                        },
+                        "displayColumns": [
+                            {
+                                "field": "id",
+                                "headerName": "ID",
+                                "type": "number",
+                                "minWidth": 80
+                            },
+                            {
+                                "field": "key",
+                                "headerName": "Permission Key",
+                                "type": "text",
+                                "minWidth": 280
+                            },
+                            {
+                                "field": "description",
+                                "headerName": "Description",
+                                "type": "text",
+                                "minWidth": 400
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
