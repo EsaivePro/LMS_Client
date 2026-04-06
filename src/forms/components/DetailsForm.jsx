@@ -17,7 +17,7 @@ import FormSection from "./FormSection";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
-export default function DetailsForm({ definition = {}, initialValues = {}, id, onSubmit, submitLabel = "Save", initialEditing = false }) {
+export default function DetailsForm({ definition = {}, initialValues = {}, id, onSubmit, submitLabel = "Save", initialEditing = false, onFieldChange, onLoad }) {
     const { setTitleContainer, showSuccess, showError, showLoader, hideLoader } = useCommon();
     const [values, setValues] = useState(initialValues || {});
     const [resolvedInitialValues, setResolvedInitialValues] = useState(initialValues || {});
@@ -139,7 +139,8 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
     }, [initialValues, definition, location?.search]);
 
     const handleChange = (name, value) => {
-        setValues((v) => ({ ...v, [name]: value }))
+        setValues((v) => ({ ...v, [name]: value }));
+        onFieldChange?.(name, value);
     };
 
     // Generic options loader: fetch options for named sources and cache them
@@ -313,7 +314,9 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
                     {};
                 const record = Array.isArray(data) ? data[0] ?? {} : data;
                 setResolvedInitialValues(record);
-                setValues(buildInitialValues(definition, record));
+                const built = buildInitialValues(definition, record);
+                setValues(built);
+                onLoad?.(built);
             } catch (err) {
                 showError(err?.message || "Failed to load data");
             } finally {
@@ -358,8 +361,8 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
                 />
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-                <Box sx={{ flex: 1 }} component="form" onSubmit={handleSubmit}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: { xs: 1, sm: 2 }, mt: { xs: 0.25, sm: 1.25 }, width: '100%', minWidth: 0 }}>
+                <Box sx={{ flex: 1, minWidth: 0, width: '100%' }} component="form" onSubmit={handleSubmit}>
                     {(definition.sections || []).map((sec) => (
                         <FormSection
                             key={sec.key}
@@ -384,13 +387,15 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
 
                 <Box
                     sx={{
-                        width: 240,
-                        position: "sticky",
-                        top: 185,
+                        width: { xs: '100%', lg: 240 },
+                        minWidth: 0,
+                        position: { xs: 'static', lg: 'sticky' },
+                        top: { lg: 185 },
                         alignSelf: "flex-start",
+                        order: { xs: -1, lg: 0 },
                     }}
                 >
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                    <Box sx={{ display: { xs: 'none', lg: 'flex' }, flexDirection: { xs: 'row', lg: 'column' }, gap: 1, overflowX: { xs: 'auto', lg: 'visible' }, pb: { xs: 0.5, lg: 0 } }}>
                         {(definition.sections || []).map((sec) => {
                             const isActive = activeSection === sec.key;
 
@@ -400,6 +405,8 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
                                     onClick={() => handleScrollTo(sec.key)}
                                     elevation={isActive ? 3 : 0}
                                     sx={{
+                                        flex: { xs: '0 0 auto', lg: 'initial' },
+                                        minWidth: { xs: 160, lg: 'auto' },
                                         p: 1.2,
                                         borderRadius: 2.5,
                                         cursor: "pointer",
@@ -411,6 +418,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "space-between",
+                                        gap: 1,
 
                                         // ✨ Hover
                                         "&:hover": {

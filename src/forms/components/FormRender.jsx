@@ -752,6 +752,11 @@ export default function FormRender({
                     onChange={(e) => { onChange(field.name, e.target.value); setInvalidFields((p) => ({ ...(p || {}), [field.name]: false })); }}
                     disabled={!editing || field.readOnly}
                     error={!!invalidFields[field.name]}
+                    sx={{
+                        '& .MuiOutlinedInput-inputMultiline': {
+                            padding: '14px',
+                        },
+                    }}
                     InputProps={{ endAdornment: invalidFields[field.name] ? <InputAdornment position="end"><Tooltip title="Required"><InfoOutlinedIcon color="error" fontSize="small" /></Tooltip></InputAdornment> : null }}
                 />
             );
@@ -827,6 +832,18 @@ export default function FormRender({
                     editing={editing}
                     onChange={onChange}
                     saveKey={saveKey}
+                />
+            );
+        case "datetime":
+            return (
+                <CustomDateTimePicker
+                    label={`${field.label}${field.required ? ' *' : ''}`}
+                    value={value || ""}
+                    onChange={(val) => { onChange(field.name, val); setInvalidFields((p) => ({ ...(p || {}), [field.name]: false })); }}
+                    size="small"
+                    fullWidth
+                    disabled={!editing || !!field.readOnly}
+                    error={!!invalidFields[field.name]}
                 />
             );
         case "record-picker":

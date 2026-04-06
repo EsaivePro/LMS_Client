@@ -1,0 +1,331 @@
+{
+    "title": "Module Category Details",
+    "fetchConfig": {
+        "endpoint": "/form-service/get",
+        "table": "module_category",
+        "joins": [
+            "module_category_assign"
+        ],
+        "subJoins": {}
+    },
+    "sections": [
+        {
+            "key": "basic",
+            "title": "Basic Details",
+            "fields": [
+                {
+                    "name": "id",
+                    "label": "ID",
+                    "type": "number",
+                    "readOnly": true
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "description",
+                    "label": "Description",
+                    "type": "textarea",
+                    "fullWidth": true
+                },
+                {
+                    "name": "imageurl",
+                    "label": "Image URL",
+                    "type": "text"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration",
+                    "type": "number",
+                    "default": 0
+                }
+            ]
+        },
+        {
+            "key": "enrollment-process",
+            "title": "Enrollment Process",
+            "fields": [
+                {
+                    "name": "enrollment_type",
+                    "label": "Enrollment Type",
+                    "type": "select",
+                    "required": true,
+                    "options": [
+                        {
+                            "label": "Assigned",
+                            "value": "assigned"
+                        },
+                        {
+                            "label": "Manual",
+                            "value": "manual"
+                        },
+                        {
+                            "label": "Paid",
+                            "value": "paid"
+                        },
+                        {
+                            "label": "Scheduled",
+                            "value": "scheduled"
+                        }
+                    ],
+                    "default": "assigned",
+                    "conditionalFields": {
+                        "scheduled": [
+                            "scheduled_start_at",
+                            "scheduled_end_at"
+                        ],
+                        "assigned": [
+                            "numberofdays"
+                        ]
+                    }
+                },
+                {
+                    "name": "enroll_mode",
+                    "label": "Enroll Mode",
+                    "type": "select",
+                    "required": true,
+                    "options": [
+                        {
+                            "label": "Free",
+                            "value": "free"
+                        },
+                        {
+                            "label": "Day Wise",
+                            "value": "daywise"
+                        },
+                        {
+                            "label": "Completion Wise",
+                            "value": "completionwise"
+                        },
+                        {
+                            "label": "All",
+                            "value": "all"
+                        }
+                    ],
+                    "default": "free"
+                },
+                {
+                    "name": "numberofdays",
+                    "label": "Number of Days",
+                    "type": "number",
+                    "default": 0
+                },
+                {
+                    "name": "enroll_status",
+                    "label": "Enroll Status",
+                    "type": "text"
+                },
+                {
+                    "name": "scheduled_start_at",
+                    "label": "Scheduled Start",
+                    "type": "datetime"
+                },
+                {
+                    "name": "scheduled_end_at",
+                    "label": "Scheduled End",
+                    "type": "datetime"
+                }
+            ]
+        },
+        {
+            "key": "module_type",
+            "title": "Module Type",
+            "fields": [
+                {
+                    "name": "module_type",
+                    "label": "Module Type",
+                    "type": "select",
+                    "required": true,
+                    "options": [
+                        {
+                            "label": "Course",
+                            "value": "course"
+                        },
+                        {
+                            "label": "Exam",
+                            "value": "exam"
+                        }
+                    ],
+                    "default": "course"
+                }
+            ]
+        },
+        {
+            "key": "course_assignments",
+            "title": "Course Assignments",
+            "fields": [
+                {
+                    "name": "course_assignments",
+                    "label": "Assigned Courses",
+                    "type": "record-picker",
+                    "pickerConfig": {
+                        "title": "Browse Courses",
+                        "buttonLabel": "Browse & Add Courses",
+                        "endpoint": "/common-service/search",
+                        "tableName": "courses",
+                        "displayColumns": [
+                            {
+                                "name": "id",
+                                "label": "ID",
+                                "minWidth": 70
+                            },
+                            {
+                                "name": "title",
+                                "label": "Course Title",
+                                "minWidth": 360,
+                                "filterable": true
+                            },
+                            {
+                                "name": "description",
+                                "label": "Description",
+                                "minWidth": 260
+                            }
+                        ],
+                        "mapRow": {
+                            "course_id": "id",
+                            "course_title": "title",
+                            "module_type": null,
+                            "day": null,
+                            "sortorder": null
+                        }
+                    },
+                    "table": {
+                        "columns": [
+                            {
+                                "name": "course_id",
+                                "label": "Course ID",
+                                "type": "number",
+                                "minWidth": 90
+                            },
+                            {
+                                "name": "course_title",
+                                "label": "Course Title",
+                                "type": "text",
+                                "minWidth": 320
+                            },
+                            {
+                                "name": "day",
+                                "label": "Day",
+                                "type": "number",
+                                "minWidth": 80
+                            },
+                            {
+                                "name": "sortorder",
+                                "label": "Sort Order",
+                                "type": "number",
+                                "minWidth": 100
+                            },
+                            {
+                                "name": "actions",
+                                "label": "",
+                                "type": "actions",
+                                "minWidth": 50
+                            }
+                        ],
+                        "allowDelete": true,
+                        "draggable": true,
+                        "useMaster": true,
+                        "minRows": 0
+                    }
+                }
+            ]
+        },
+        {
+            "key": "exam_assignments",
+            "title": "Exam Assignments",
+            "fields": [
+                {
+                    "name": "exam_assignments",
+                    "label": "Assigned Exams",
+                    "type": "record-picker",
+                    "pickerConfig": {
+                        "title": "Browse Exams",
+                        "buttonLabel": "Browse & Add Exams",
+                        "endpoint": "/common-service/search",
+                        "tableName": "exams",
+                        "displayColumns": [
+                            {
+                                "name": "id",
+                                "label": "ID",
+                                "minWidth": 70
+                            },
+                            {
+                                "name": "title",
+                                "label": "Exam Title",
+                                "minWidth": 360,
+                                "filterable": true
+                            },
+                            {
+                                "name": "duration_minutes",
+                                "label": "Duration (mins)",
+                                "minWidth": 140
+                            }
+                        ],
+                        "mapRow": {
+                            "exam_id": "id",
+                            "exam_title": "title",
+                            "module_type": null,
+                            "day": null,
+                            "sortorder": null,
+                            "attempt_limit": null,
+                            "time_limit_minutes": null
+                        }
+                    },
+                    "table": {
+                        "columns": [
+                            {
+                                "name": "exam_id",
+                                "label": "Exam ID",
+                                "type": "number",
+                                "minWidth": 90
+                            },
+                            {
+                                "name": "exam_title",
+                                "label": "Exam Title",
+                                "type": "text",
+                                "minWidth": 280
+                            },
+                            {
+                                "name": "day",
+                                "label": "Day",
+                                "type": "number",
+                                "minWidth": 80
+                            },
+                            {
+                                "name": "sortorder",
+                                "label": "Sort Order",
+                                "type": "number",
+                                "minWidth": 100
+                            },
+                            {
+                                "name": "attempt_limit",
+                                "label": "Attempt Limit",
+                                "type": "number",
+                                "minWidth": 120
+                            },
+                            {
+                                "name": "time_limit_minutes",
+                                "label": "Time Limit (mins)",
+                                "type": "number",
+                                "minWidth": 140
+                            },
+                            {
+                                "name": "actions",
+                                "label": "",
+                                "type": "actions",
+                                "minWidth": 50
+                            }
+                        ],
+                        "allowDelete": true,
+                        "draggable": true,
+                        "useMaster": true,
+                        "minRows": 0
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -55,7 +55,7 @@ export const API_ENDPOINTS = {
     CREATE_CATEGORY: "/category-service/create-category",
     UPDATE_CATEGORY: "/category-service",
     DELETE_CATEGORY: "/category-service",
-    ASSIGN_COURSE: "/category-service/assign-course",
+    ASSIGN_COURSE: "/category-service/assign-item",
     UNASSIGN_COURSE: "/category-service",
     GET_ASSIGNED_COURSES: "/category-service",
 

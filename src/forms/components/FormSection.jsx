@@ -26,7 +26,7 @@ const FormSection = React.forwardRef(function FormSection(props, ref) {
     const fields = section.fields || [];
     for (const f of fields) {
         const isFull = f.fullWidth || f.type === 'textarea' || f.type === 'table' || f.type === 'record-picker' || f.type === 'record-assigned';
-        const mdUnits = isFull ? 12 : (f.col || 4);
+        const mdUnits = isFull ? 12 : (f.col || 6);
         if (isFull) {
             if (current.length) {
                 rows.push(current);
@@ -47,21 +47,23 @@ const FormSection = React.forwardRef(function FormSection(props, ref) {
     if (current.length) rows.push(current);
 
     return (
-        <Paper sx={{ p: 3, mb: 2 }} ref={ref}>
+        <Paper sx={{ p: { xs: 1.5, sm: 2, md: 3 }, mb: 2, width: '100%', overflow: 'hidden' }} ref={ref}>
             <Typography variant="h6" sx={{ mb: 2 }}>{section.title}</Typography>
             {rows.map((row, rIdx) => (
-                <Box key={rIdx} sx={{ display: 'flex', flexWrap: 'wrap', mb: 2 }}>
+                <Box key={rIdx} sx={{ display: 'flex', flexWrap: 'wrap', mb: { xs: 1, sm: 1.5 }, mx: { xs: 0, sm: -0.75 } }}>
                     {row.map((cell) => (
                         <Box
                             key={cell.field.name}
                             sx={(theme) => ({
                                 boxSizing: 'border-box',
-                                p: 0,
-                                pr: 1,
+                                minWidth: 0,
+                                width: '100%',
+                                px: { xs: 0.5, sm: 0.75 },
+                                pb: { xs: 1.25, sm: 1.5 },
                                 flex: '0 0 100%',
                                 [theme.breakpoints.up('sm')]: { flex: `0 0 ${cell.isFull ? '100%' : '50%'}` },
-                                [theme.breakpoints.up('md')]: { flex: `0 0 ${cell.isFull ? '100%' : '33.3333%'}` },
-                                [theme.breakpoints.up('lg')]: { flex: `0 0 ${cell.isFull ? '100%' : '25%'}` },
+                                [theme.breakpoints.up('md')]: { flex: `0 0 ${cell.isFull ? '100%' : '50%'}` },
+                                [theme.breakpoints.up('lg')]: { flex: `0 0 ${cell.isFull ? '100%' : '50%'}` },
                             })}
                         >
                             <FormRender

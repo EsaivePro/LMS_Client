@@ -14,18 +14,21 @@ export default function FormHeader({ definition = {}, submitLabel = "Save", edit
         <Paper
             elevation={0}
             sx={{
-                mb: 2,
-                px: 0.5,
-                py: 1.25,
+                mb: 1,
+                px: { xs: 1, sm: 1.5 },
+                py: { xs: 0.9, sm: 1.1 },
                 display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
                 justifyContent: 'space-between',
-                alignItems: 'center',
+                alignItems: { xs: 'stretch', sm: 'center' },
+                gap: { xs: 0.75, sm: 1 },
                 background: "linear-gradient(135deg, #f8f9fb 0%, #fdfdff 50%, #ffffff 100%)",
-                borderRadius: 1.5
+                borderRadius: 1.5,
+                width: '100%',
             }}
         >
             {/* ── Left: Title + editing badge ── */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0, width: { xs: '100%', sm: 'auto' } }}>
 
                 {/* Back Button */}
                 <DriveFileMoveRtlIcon sx={{
@@ -40,10 +43,14 @@ export default function FormHeader({ definition = {}, submitLabel = "Save", edit
                 <Typography
                     variant="h6"
                     sx={{
+                        flex: 1,
+                        minWidth: 0,
                         color: 'var(--dark)',
                         fontWeight: 700,
                         display: 'flex',
-                        alignItems: 'center'
+                        alignItems: 'center',
+                        fontSize: { xs: '1.1rem', sm: '1.25rem' },
+                        wordBreak: 'break-word',
                     }}
                 >
                     {definition.title || 'Details'}
@@ -72,7 +79,18 @@ export default function FormHeader({ definition = {}, submitLabel = "Save", edit
             </Box>
 
             {/* ── Right: Action buttons ── */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'nowrap',
+                    justifyContent: { xs: 'space-between', sm: 'flex-end' },
+                    gap: { xs: 0.5, sm: 1 },
+                    width: { xs: '100%', sm: 'auto' },
+                    overflow: 'hidden',
+                    pb: 0.1,
+                }}
+            >
 
                 {/* Back */}
                 <Button
@@ -80,9 +98,17 @@ export default function FormHeader({ definition = {}, submitLabel = "Save", edit
                     onClick={onCancel}
                     startIcon={<ArrowBackIcon />}
                     sx={{
+                        flex: '0 1 auto',
                         color: 'text.secondary',
                         fontWeight: 500,
-                        fontSize: 14,
+                        fontSize: { xs: 11, sm: 14 },
+                        minWidth: 0,
+                        px: { xs: 0.6, sm: 1.5 },
+                        whiteSpace: 'nowrap',
+                        '& .MuiButton-startIcon': {
+                            display: 'inline-flex',
+                            mr: { xs: 0.4, sm: 1 },
+                        },
                         transition: 'all 0.2s',
                         '&:hover': {
                             color: 'var(--primary)',
@@ -96,7 +122,7 @@ export default function FormHeader({ definition = {}, submitLabel = "Save", edit
 
                 {submitLabel !== "Create" && (
                     <>
-                        <Divider orientation="vertical" flexItem sx={{ mx: 0.25 }} />
+                        <Divider orientation="vertical" flexItem sx={{ mx: 0.25, display: { xs: 'none', sm: 'block' } }} />
 
                         {/* Copy */}
                         <Button
@@ -104,8 +130,16 @@ export default function FormHeader({ definition = {}, submitLabel = "Save", edit
                             onClick={onCopy}
                             startIcon={<ContentCopyIcon fontSize="small" />}
                             sx={{
-                                fontSize: 13,
+                                flex: '0 1 auto',
+                                fontSize: { xs: 11, sm: 13 },
                                 fontWeight: 500,
+                                minWidth: 0,
+                                px: { xs: 0.75, sm: 1.5 },
+                                whiteSpace: 'nowrap',
+                                '& .MuiButton-startIcon': {
+                                    display: 'inline-flex',
+                                    mr: { xs: 0.4, sm: 1 },
+                                },
                                 borderColor: 'var(--primary)',
                                 color: 'var(--primary)',
                                 transition: 'all 0.22s',
@@ -128,8 +162,16 @@ export default function FormHeader({ definition = {}, submitLabel = "Save", edit
                             startIcon={editing ? <CancelIcon fontSize="small" /> : <EditIcon fontSize="small" />}
                             color={editing ? "error" : "primary"}
                             sx={{
-                                fontSize: 13,
+                                flex: '0 1 auto',
+                                fontSize: { xs: 11, sm: 13 },
                                 fontWeight: 500,
+                                minWidth: 0,
+                                px: { xs: 0.75, sm: 1.5 },
+                                whiteSpace: 'nowrap',
+                                '& .MuiButton-startIcon': {
+                                    display: 'inline-flex',
+                                    mr: { xs: 0.4, sm: 1 },
+                                },
                                 transition: 'all 0.22s',
                                 '&:hover': {
                                     transform: 'translateY(-1px)',
@@ -149,8 +191,16 @@ export default function FormHeader({ definition = {}, submitLabel = "Save", edit
                         onClick={onSubmit}
                         startIcon={<SaveIcon fontSize="small" />}
                         sx={{
-                            fontSize: 13,
+                            flex: '0 1 auto',
+                            fontSize: { xs: 11, sm: 13 },
                             fontWeight: 600,
+                            minWidth: 0,
+                            px: { xs: 0.85, sm: 1.75 },
+                            whiteSpace: 'nowrap',
+                            '& .MuiButton-startIcon': {
+                                display: 'inline-flex',
+                                mr: { xs: 0.4, sm: 1 },
+                            },
                             background: 'linear-gradient(135deg, var(--primary) 0%, var(--darkMedium) 100%)',
                             boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                             transition: 'all 0.22s',

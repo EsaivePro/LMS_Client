@@ -16,39 +16,39 @@
                     "label": "ID",
                     "type": "number",
                     "readOnly": true,
-                    "minWidth": 120
+                    "col": 6
                 },
                 {
                     "name": "username",
                     "label": "Username",
                     "type": "text",
                     "required": true,
-                    "minWidth": 320
+                    "col": 6
                 },
                 {
                     "name": "email",
                     "label": "Email",
                     "type": "text",
                     "required": true,
-                    "minWidth": 320
+                    "col": 6
                 },
                 {
                     "name": "phonenumber",
                     "label": "Phone Number",
                     "type": "text",
-                    "minWidth": 200
+                    "col": 6
                 },
                 {
                     "name": "first_name",
                     "label": "First Name",
                     "type": "text",
-                    "minWidth": 240
+                    "col": 6
                 },
                 {
                     "name": "last_name",
                     "label": "Last Name",
                     "type": "text",
-                    "minWidth": 240
+                    "col": 6
                 },
                 {
                     "name": "status",
@@ -59,25 +59,25 @@
                         { "label": "Inactive", "value": "inactive" },
                         { "label": "Suspended", "value": "suspended" }
                     ],
-                    "minWidth": 200
+                    "col": 6
                 },
                 {
                     "name": "location",
                     "label": "Location",
                     "type": "text",
-                    "minWidth": 320
+                    "col": 6
                 },
                 {
                     "name": "timezone",
                     "label": "Timezone",
                     "type": "text",
-                    "minWidth": 200
+                    "col": 6
                 },
                 {
                     "name": "language",
                     "label": "Language",
                     "type": "text",
-                    "minWidth": 140
+                    "col": 6
                 }
             ]
         },
@@ -90,21 +90,21 @@
                     "label": "Email Verified",
                     "type": "boolean",
                     "readOnly": true,
-                    "minWidth": 160
+                    "col": 6
                 },
                 {
                     "name": "last_login_at",
                     "label": "Last Login",
                     "type": "datetime",
                     "readOnly": true,
-                    "minWidth": 200
+                    "col": 6
                 },
                 {
                     "name": "login_attempts",
                     "label": "Login Attempts",
                     "type": "number",
                     "readOnly": true,
-                    "minWidth": 160
+                    "col": 6
                 }
             ]
         }

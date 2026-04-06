@@ -34,7 +34,7 @@ export default function CourseAssignDrawer({ open, onClose, category, courses = 
         }
         showLoader();
         try {
-            await onAssign({ course_id: Number(data.course_id), course_category_id: category.id, day: Number(data.day) || 0, sortorder: Number(data.sortorder) || 0 });
+            await onAssign({ course_id: Number(data.course_id), module_category_id: category.id, day: Number(data.day) || 0, sortorder: Number(data.sortorder) || 0 });
             hideLoader();
             showSuccess("Course assigned successfully");
             // onClose();

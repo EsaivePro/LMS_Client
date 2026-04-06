@@ -7,7 +7,6 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -73,17 +72,17 @@ function Header({ toggleSidebar, profile, logout }) {
 
     return (
         <AppBar position="fixed" color="default" elevation={1}>
-            <Container maxWidth="xl" sx={{ px: { xs: 0.5, sm: 1, md: 2 } }}>
-                <Toolbar
-                    disableGutters
-                    sx={{
-                        justifyContent: "space-between",
-                        px: { xs: 0.5, sm: 1, md: 0 },
-                        minHeight: { xs: 64, sm: 64 },
-                    }}
-                >
+            <Toolbar
+                disableGutters
+                sx={{
+                    justifyContent: "space-between",
+                    px: { xs: 1, sm: 2 },
+                    minHeight: { xs: 64, sm: 64 },
+                    width: "100%",
+                }}
+            >
                     {/* ── LEFT: hamburger + logo ── */}
-                    <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, md: 1 } }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, md: 1 }, flexShrink: 0 }}>
                         {isAuthenticated && (
                             <IconButton size="medium" onClick={toggleSidebar}>
                                 <MenuIcon />
@@ -96,7 +95,13 @@ function Header({ toggleSidebar, profile, logout }) {
                                     : "/logo/EsaiLogo.png"
                             }
                             alt={THEME?.manifest?.name || "LMS"}
-                            width="150"
+                            style={{
+                                width: "auto",
+                                maxWidth: THEME?.manifest?.width || 150,
+                                maxHeight: 40,
+                                objectFit: "contain",
+                                display: "block",
+                            }}
                         />
                     </Box>
 
@@ -289,7 +294,6 @@ function Header({ toggleSidebar, profile, logout }) {
                         </Box>
                     )}
                 </Toolbar>
-            </Container>
         </AppBar>
     );
 }

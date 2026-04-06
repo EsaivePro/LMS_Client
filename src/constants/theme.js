@@ -55,6 +55,7 @@ export const THEME = {
             { src: "logo/Esai-new-logo.png", sizes: "192x192", type: "image/png" },
             { src: "logo/Esai-new-logo.png", sizes: "512x512", type: "image/png" }
         ],
+        width: "100",
         contact: {
             email: "support@esailms.com",
             phone: "+91 7530078007",

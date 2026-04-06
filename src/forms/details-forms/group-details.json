@@ -4,8 +4,7 @@
         "endpoint": "/form-service/get",
         "table": "groups",
         "joins": [
-            "groups_category",
-            "user_groups_assign"
+            "groups_category"
         ],
         "subJoins": {
             "groups_category": {
@@ -25,8 +24,7 @@
                     "name": "id",
                     "label": "ID",
                     "type": "number",
-                    "readOnly": true,
-                    "minWidth": 120
+                    "readOnly": true
                 },
                 {
                     "name": "name",
@@ -88,7 +86,7 @@
                                 "field": "title",
                                 "headerName": "Category Title",
                                 "type": "text",
-                                "minWidth": 800
+                                "minWidth": 380
                             }
                         ]
                     }
@@ -143,7 +141,7 @@
                                 "field": "email",
                                 "headerName": "Email",
                                 "type": "text",
-                                "minWidth": 200
+                                "minWidth": 380
                             },
                             {
                                 "field": "first_name",

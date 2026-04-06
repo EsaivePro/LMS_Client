@@ -31,21 +31,21 @@
                     "label": "ID",
                     "type": "number",
                     "readOnly": true,
-                    "minWidth": 120
+                    "col": 6
                 },
                 {
                     "name": "name",
                     "label": "Group Name",
                     "type": "text",
                     "readOnly": true,
-                    "minWidth": 320
+                    "col": 6
                 },
                 {
                     "name": "description",
                     "label": "Description",
                     "type": "textarea",
                     "readOnly": true,
-                    "minWidth": 640
+                    "fullWidth": true
                 }
             ]
         },
@@ -57,6 +57,7 @@
                     "name": "user_groups_assign",
                     "label": "Assigned Users",
                     "type": "record-picker",
+                    "fullWidth": true,
                     "pickerConfig": {
                         "title": "Browse Users",
                         "buttonLabel": "Browse & Add Users",
@@ -74,33 +75,33 @@
                             {
                                 "name": "id",
                                 "label": "ID",
-                                "minWidth": 70
+                                "col": 6
                             },
                             {
                                 "name": "username",
                                 "label": "Username",
-                                "minWidth": 180,
+                                "col": 6,
                                 "filterable": true
                             },
                             {
                                 "name": "first_name",
                                 "label": "First Name",
-                                "minWidth": 160
+                                "col": 6
                             },
                             {
                                 "name": "last_name",
                                 "label": "Last Name",
-                                "minWidth": 160
+                                "col": 6
                             },
                             {
                                 "name": "email",
                                 "label": "Email",
-                                "minWidth": 240
+                                "col": 6
                             },
                             {
                                 "name": "phonenumber",
                                 "label": "Phone",
-                                "minWidth": 140
+                                "col": 6
                             }
                         ]
                     },
@@ -110,31 +111,31 @@
                                 "name": "user_id",
                                 "label": "ID",
                                 "type": "number",
-                                "minWidth": 70
+                                "col": 6
                             },
                             {
                                 "name": "users_username",
                                 "label": "Username",
                                 "type": "text",
-                                "minWidth": 180
+                                "col": 6
                             },
                             {
                                 "name": "users_first_name",
                                 "label": "First Name",
                                 "type": "text",
-                                "minWidth": 160
+                                "col": 6
                             },
                             {
                                 "name": "users_last_name",
                                 "label": "Last Name",
                                 "type": "text",
-                                "minWidth": 160
+                                "col": 6
                             },
                             {
                                 "name": "users_email",
                                 "label": "Email",
                                 "type": "text",
-                                "minWidth": 240
+                                "col": 6
                             },
                             {
                                 "name": "users_status",
@@ -155,13 +156,13 @@
                                         "label": "Suspended"
                                     }
                                 ],
-                                "minWidth": 140
+                                "col": 6
                             },
                             {
                                 "name": "actions",
                                 "label": "",
                                 "type": "actions",
-                                "minWidth": 50
+                                "col": 6
                             }
                         ],
                         "allowDelete": true,

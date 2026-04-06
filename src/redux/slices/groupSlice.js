@@ -92,7 +92,7 @@ const slice = createSlice({
             .addCase(assignUser.fulfilled, (state, action) => {
                 const data = action?.payload?.data?.response ?? action?.payload?.data ?? action?.payload;
                 if (data) {
-                    const gid = data.course_category_id || data.group_id || action?.meta?.arg?.course_category_id;
+                    const gid = data.module_category_id || data.group_id || action?.meta?.arg?.module_category_id;
                     state.assignments[gid] = state.assignments[gid] || [];
                     state.assignments[gid].unshift(data);
                 }

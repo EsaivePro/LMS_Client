@@ -18,20 +18,20 @@
                     "label": "ID",
                     "type": "number",
                     "readOnly": true,
-                    "minWidth": 120
+                    "col": 6
                 },
                 {
                     "name": "name",
                     "label": "Role Name",
                     "type": "text",
                     "required": true,
-                    "minWidth": 320
+                    "col": 6
                 },
                 {
                     "name": "description",
                     "label": "Description",
                     "type": "textarea",
-                    "minWidth": 640
+                    "fullWidth": true
                 }
             ]
         },
@@ -43,6 +43,7 @@
                     "name": "role_permissions",
                     "label": "Permissions",
                     "type": "record-assigned",
+                    "fullWidth": true,
                     "assignedConfig": {
                         "endpoint": "/form-service/advanced-search",
                         "table": "permissions",

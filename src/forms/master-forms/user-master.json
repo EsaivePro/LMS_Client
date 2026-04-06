@@ -33,7 +33,7 @@
             "key": "username",
             "label": "Username",
             "type": "string",
-            "minWidth": 160,
+            "col": 6,
             "filterable": true,
             "linkTemplate": "{id}"
         },
@@ -41,32 +41,32 @@
             "key": "email",
             "label": "Email",
             "type": "string",
-            "minWidth": 220,
+            "col": 6,
             "filterable": true
         },
         {
             "key": "first_name",
             "label": "First Name",
             "type": "string",
-            "minWidth": 140
+            "col": 6
         },
         {
             "key": "last_name",
             "label": "Last Name",
             "type": "string",
-            "minWidth": 140
+            "col": 6
         },
         {
             "key": "status",
             "label": "Status",
             "type": "string",
-            "minWidth": 110
+            "col": 6
         },
         {
             "key": "created_at",
             "label": "Created At",
             "type": "datetime",
-            "minWidth": 180
+            "col": 6
         }
     ]
 }

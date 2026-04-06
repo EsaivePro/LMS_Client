@@ -163,7 +163,7 @@ export default function CourseCategory() {
 
     const handleAssign = async () => {
         if (!currentCat || !selectedCourseId) return;
-        await assign({ course_id: Number(selectedCourseId), course_category_id: currentCat.id, day: 0, sortorder: 0 }).catch(() => { });
+        await assign({ course_id: Number(selectedCourseId), module_category_id: currentCat.id, day: 0, sortorder: 0 }).catch(() => { });
         await loadAssigned(currentCat.id).catch(() => { });
         setSelectedCourseId("");
     };

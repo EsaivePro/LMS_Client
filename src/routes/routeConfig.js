@@ -23,6 +23,7 @@ import TopicManage from "../modules/forms/pages/TopicManage";
 import UserGroupAssignManage from "../modules/forms/pages/UserGroupAssignManage";
 import RoleManage from "../modules/forms/pages/RoleManage";
 import UserManage from "../modules/forms/pages/UserManage";
+import ModuleCategoryManage from "../modules/forms/pages/ModuleCategoryManage";
 
 // Icons for sidebar menu
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -39,6 +40,7 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import PeopleIcon from "@mui/icons-material/People";
+import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import UserList from "../modules/user/pages/UsersList";
 
 export const protectedRoutes = [
@@ -165,6 +167,21 @@ export const protectedRoutes = [
         icon: <CategoryIcon />,
         type: "item",
     },
+    {
+        path: "/module-category/manage/:id",
+        title: "Manage Module Category",
+        description: "Create module categories and assign courses or exams with scheduling.",
+        permission: "user.management",
+        element: <ModuleCategoryManage />,
+        sideMenu: true,
+        sidePath: "/module-category/manage/list",
+        section: "Manage Configurations",
+        label: "Module Category",
+        icon: <ViewModuleIcon />,
+        type: "item",
+        matchPath: "/module-category/manage",
+    },
+
     // ─────────────────────────────────────────────
     // Manage Configurations Section
     // ─────────────────────────────────────────────

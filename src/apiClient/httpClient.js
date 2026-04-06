@@ -77,8 +77,8 @@ export const httpClient = {
     updateCategory: async (id, data) => axiosInstance.put(`${API_ENDPOINTS.UPDATE_CATEGORY}/${id}/updateCategory`, data),
     deleteCategory: async (id) => axiosInstance.delete(`${API_ENDPOINTS.DELETE_CATEGORY}/${id}/deleteCategory`),
     assignCourseToCategory: async (data) => axiosInstance.post(API_ENDPOINTS.ASSIGN_COURSE, data),
-    unassignCourseById: async (id) => axiosInstance.delete(`${API_ENDPOINTS.UNASSIGN_COURSE}/${id}/assign-course`),
-    getAssignedCourses: async (categoryId) => axiosInstance.get(`${API_ENDPOINTS.GET_ASSIGNED_COURSES}/${categoryId}/assigned-courses`),
+    unassignCourseById: async (id) => axiosInstance.delete(`${API_ENDPOINTS.UNASSIGN_COURSE}/${id}/assign-item`),
+    getAssignedCourses: async (categoryId) => axiosInstance.get(`${API_ENDPOINTS.GET_ASSIGNED_COURSES}/${categoryId}/assigned-items`),
 
     // Group APIs
     getAllGroups: async () => axiosInstance.get(API_ENDPOINTS.GET_ALL_GROUPS),

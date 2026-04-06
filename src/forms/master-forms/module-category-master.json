@@ -1,23 +1,23 @@
 {
-    "baseRoute": "/roles/manage",
-    "tableName": "roles",
+    "baseRoute": "/module-category/manage",
+    "tableName": "module_category",
     "endpoint": "/common-service/search",
     "readFrom": "response.data",
     "serverSide": true,
-    "rowDoubleClick": "/roles/manage/{id}",
+    "rowDoubleClick": "/module-category/manage/{id}",
     "manageRoute": false,
     "moreColumn": [
         "Edit",
         "Delete"
     ],
-    "tableKey": "roles-table",
+    "tableKey": "module-category-table",
     "header": {
-        "title": "Roles",
+        "title": "Module Categories",
         "showCount": true,
         "buttons": [
             {
                 "key": "create",
-                "label": "New Role",
+                "label": "New Module Category",
                 "variant": "contained"
             }
         ]
@@ -30,17 +30,35 @@
             "maxWidth": 80
         },
         {
-            "key": "name",
-            "label": "Name",
+            "key": "title",
+            "label": "Title",
             "type": "string",
             "col": 6,
             "filterable": true,
             "linkTemplate": "{id}"
         },
         {
-            "key": "description",
-            "label": "Description",
+            "key": "module_type",
+            "label": "Module Type",
             "type": "string",
+            "col": 6
+        },
+        {
+            "key": "enrollment_type",
+            "label": "Enrollment Type",
+            "type": "string",
+            "col": 6
+        },
+        {
+            "key": "enroll_mode",
+            "label": "Enroll Mode",
+            "type": "string",
+            "col": 6
+        },
+        {
+            "key": "numberofdays",
+            "label": "Days",
+            "type": "number",
             "col": 6
         },
         {
