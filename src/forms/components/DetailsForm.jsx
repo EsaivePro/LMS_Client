@@ -348,8 +348,8 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
     });
 
     return (
-        <Box sx={{ mt: 0 }}>
-            <Box sx={{ position: "sticky", top: 110, zIndex: 100, boxShadow: '0 2px 0px rgba(0,0,0,0.15)' }}>
+        <Box sx={{ mt: { xs: 0, lg: 0 } }}>
+            <Box sx={{ position: "sticky", top: { xs: 111, lg: 110 }, zIndex: 100, boxShadow: '0 2px 0px rgba(0,0,0,0.15)' }}>
                 <FormHeader
                     definition={definition}
                     submitLabel={currentSubmitLabel}

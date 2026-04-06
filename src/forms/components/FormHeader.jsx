@@ -14,9 +14,10 @@ export default function FormHeader({ definition = {}, submitLabel = "Save", edit
         <Paper
             elevation={0}
             sx={{
+                mt: { xs: 1, lg: 0 },
                 mb: 1,
                 px: { xs: 1, sm: 1.5 },
-                py: { xs: 0.9, sm: 1.1 },
+                py: { xs: 1.5, sm: 1.1 },
                 display: 'flex',
                 flexDirection: { xs: 'column', sm: 'row' },
                 justifyContent: 'space-between',
