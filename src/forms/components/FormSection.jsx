@@ -25,7 +25,7 @@ const FormSection = React.forwardRef(function FormSection(props, ref) {
     let currentSum = 0;
     const fields = section.fields || [];
     for (const f of fields) {
-        const isFull = f.fullWidth || f.type === 'textarea' || f.type === 'table' || f.type === 'record-picker' || f.type === 'record-assigned';
+        const isFull = f.fullWidth || f.type === 'textarea' || f.type === 'table' || f.type === 'record-picker' || f.type === 'record-assigned' || f.type === 'record-dailog';
         const mdUnits = isFull ? 12 : (f.col || 6);
         if (isFull) {
             if (current.length) {

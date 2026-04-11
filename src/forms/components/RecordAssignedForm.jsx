@@ -4,7 +4,6 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import DataTableV2 from "../../components/common/table/DataTableV2";
 import axiosInstance from "../../apiClient/axiosInstance";
 import { formatDateTimeWithSeconds } from "../../utils/resolver.utils";
-import useCommon from "../../hooks/useCommon";
 
 /**
  * Resolves a mapData template object into a concrete delta row.
@@ -45,9 +44,7 @@ export default function RecordAssignedForm({
     recordId,
     editing = false,
     onChange,
-    saveKey = 0,
 }) {
-    const { showLoader, hideLoader } = useCommon();
     const assignedConfig = field.assignedConfig || {};
     const identityKey = assignedConfig.identityKey || "id";
 
@@ -57,8 +54,6 @@ export default function RecordAssignedForm({
     const [loading, setLoading] = useState(false);
     const [preselectedIds, setPreselectedIds] = useState([]);
 
-    // True only on the first fetch after mount — used to show global loader for post-save refreshes
-    const isFirstFetchRef = useRef(true);
     // Track which IDs have already been pre-selected to avoid overriding user deselections on refetch
     const preselectedAppliedRef = useRef(new Set());
     // Map of IDs that were already assigned in server data when the form loaded
@@ -149,10 +144,7 @@ export default function RecordAssignedForm({
                 offset,
             };
 
-            const useGlobalLoader = saveKey > 0 && isFirstFetchRef.current;
-            isFirstFetchRef.current = false;
             setLoading(true);
-            if (useGlobalLoader) showLoader();
             try {
                 const res = await axiosInstance.post(assignedConfig.endpoint, body);
                 const raw = res?.data || {};
@@ -203,7 +195,6 @@ export default function RecordAssignedForm({
                 setTotal(0);
             } finally {
                 setLoading(false);
-                if (useGlobalLoader) hideLoader();
             }
         },
         // eslint-disable-next-line
@@ -256,82 +247,56 @@ export default function RecordAssignedForm({
     );
 
     return (
-        <Box
-            sx={{
-                flex: 1,
-                width: "100%",
-                minHeight: "100%",
-                minWidth: 0,
-                display: "flex",
-                flexDirection: "column",
-                overflow: "hidden",
-                // borderRadius: 1,
-                // boxShadow: 1,
-                // p: 1
-            }}
-        >
+        <Box sx={{ width: "100%" }}>
             {/* Header row */}
             <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <Typography variant="subtitle1" fontWeight={500}>
                     {field.label}
                 </Typography>
-                <Box
-                    sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 0.75,
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: 1,
-                        border: "1px solid",
-                        borderColor: "var(--primary)",
-                        backgroundColor: "var(--primaryLight)",
-                        transition: "background-color 0.2s ease",
-                        "&:hover": {
-                            backgroundColor: "color-mix(in srgb, var(--primary) 15%, transparent)",
-                        },
-                    }}
-                >
-                    <GroupsIcon sx={{ fontSize: 20, color: "var(--primary)" }} />
-                    <Typography
-                        variant="body2"
-                        sx={{ fontSize: "1rem", fontWeight: 500, color: "var(--primary)", lineHeight: 1 }}
+                {assignedCount > 0 && (
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.75,
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: 1,
+                            border: "1px solid",
+                            borderColor: "var(--primary)",
+                            backgroundColor: "var(--primaryLight)",
+                            transition: "background-color 0.2s ease"
+                        }}
                     >
-                        {assignedCount} assigned
-                    </Typography>
-                </Box>
+                        <GroupsIcon sx={{ fontSize: 20, color: "var(--primary)" }} />
+                        <Typography
+                            variant="body2"
+                            sx={{ fontSize: "1rem", fontWeight: 500, color: "var(--primary)", lineHeight: 1 }}
+                        >
+                            {assignedCount} assigned
+                        </Typography>
+                    </Box>
+                )}
             </Box>
 
-            <Box
-                sx={{
-                    flex: 1,
-                    bgcolor: "background.paper",
-                    // borderRadius: 2,
-                    overflow: "hidden",
-                    display: "flex",
-                    flexDirection: "column",
-                }}
-            >
-                <Box sx={{ flex: 1, overflow: "auto" }}>
-                    <DataTableV2
-                        serverSide
-                        rows={rows}
-                        totalCount={total}
-                        loading={loading}
-                        columns={columns}
-                        tableKey={`record-assigned-${field.name}-${editing ? "edit" : "view"}`}
-                        tableName={assignedConfig.table}
-                        onFetchData={handleFetch}
-                        checkboxSelection
-                        onSelectionChange={handleSelectionChange}
-                        checkboxDisabled={!editing}
-                        hideColumnSettings
-                        preselectedIds={preselectedIds}
-                        minHeight={320}
-                        emptySubtitle="No records found."
-                    />
-                </Box>
-            </Box>
+            {/* Checkbox-enabled data table */}
+            <DataTableV2
+                serverSide
+                rows={rows}
+                totalCount={total}
+                loading={loading}
+                columns={columns}
+                tableKey={`record-assigned-${field.name}-${editing ? "edit" : "view"}`}
+                tableName={assignedConfig.table}
+                onFetchData={handleFetch}
+                checkboxSelection
+                onSelectionChange={handleSelectionChange}
+                checkboxDisabled={!editing}
+                hideColumnSettings
+                preselectedIds={preselectedIds}
+                minHeight={320}
+                emptySubtitle="No records found."
+            />
         </Box>
     );
 }

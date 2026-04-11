@@ -131,198 +131,108 @@
             ]
         },
         {
-            "key": "module_type",
-            "title": "Module Type",
+            "key": "module-assignment",
+            "title": "Module Assignment",
             "fields": [
                 {
-                    "name": "module_type",
-                    "label": "Module Type",
-                    "type": "select",
-                    "required": true,
-                    "options": [
-                        {
-                            "label": "Course",
-                            "value": "course"
-                        },
-                        {
-                            "label": "Exam",
-                            "value": "exam"
-                        }
-                    ],
-                    "default": "course"
-                }
-            ]
-        },
-        {
-            "key": "course_assignments",
-            "title": "Course Assignments",
-            "fields": [
-                {
-                    "name": "course_assignments",
-                    "label": "Assigned Courses",
-                    "type": "record-picker",
-                    "pickerConfig": {
-                        "title": "Browse Courses",
-                        "buttonLabel": "Browse & Add Courses",
-                        "endpoint": "/common-service/search",
-                        "tableName": "courses",
-                        "displayColumns": [
+                    "name": "module_category_assign",
+                    "label": "Module Assignments",
+                    "type": "record-dailog",
+                    "fullWidth": true,
+                    "dialogConfig": {
+                        "addButtonLabel": "Assign",
+                        "createButtonLabel": "Add Record",
+                        "updateButtonLabel": "Update Record",
+                        "tableColumns": [
                             {
-                                "name": "id",
-                                "label": "ID",
-                                "minWidth": 70
+                                "field": "module_item_id",
+                                "label": "Module ID",
+                                "minWidth": 120
                             },
                             {
-                                "name": "title",
-                                "label": "Course Title",
-                                "minWidth": 360,
-                                "filterable": true
-                            },
-                            {
-                                "name": "description",
-                                "label": "Description",
-                                "minWidth": 260
-                            }
-                        ],
-                        "mapRow": {
-                            "course_id": "id",
-                            "course_title": "title",
-                            "module_type": null,
-                            "day": null,
-                            "sortorder": null
-                        }
-                    },
-                    "table": {
-                        "columns": [
-                            {
-                                "name": "course_id",
-                                "label": "Course ID",
-                                "type": "number",
-                                "minWidth": 90
-                            },
-                            {
-                                "name": "course_title",
-                                "label": "Course Title",
-                                "type": "text",
-                                "minWidth": 320
-                            },
-                            {
-                                "name": "day",
-                                "label": "Day",
-                                "type": "number",
-                                "minWidth": 80
-                            },
-                            {
-                                "name": "sortorder",
-                                "label": "Sort Order",
-                                "type": "number",
-                                "minWidth": 100
-                            },
-                            {
-                                "name": "actions",
-                                "label": "",
-                                "type": "actions",
-                                "minWidth": 50
-                            }
-                        ],
-                        "allowDelete": true,
-                        "draggable": true,
-                        "useMaster": true,
-                        "minRows": 0
-                    }
-                }
-            ]
-        },
-        {
-            "key": "exam_assignments",
-            "title": "Exam Assignments",
-            "fields": [
-                {
-                    "name": "exam_assignments",
-                    "label": "Assigned Exams",
-                    "type": "record-picker",
-                    "pickerConfig": {
-                        "title": "Browse Exams",
-                        "buttonLabel": "Browse & Add Exams",
-                        "endpoint": "/common-service/search",
-                        "tableName": "exams",
-                        "displayColumns": [
-                            {
-                                "name": "id",
-                                "label": "ID",
-                                "minWidth": 70
-                            },
-                            {
-                                "name": "title",
-                                "label": "Exam Title",
-                                "minWidth": 360,
-                                "filterable": true
-                            },
-                            {
-                                "name": "duration_minutes",
-                                "label": "Duration (mins)",
+                                "field": "module_type",
+                                "label": "Module Type",
                                 "minWidth": 140
-                            }
-                        ],
-                        "mapRow": {
-                            "exam_id": "id",
-                            "exam_title": "title",
-                            "module_type": null,
-                            "day": null,
-                            "sortorder": null,
-                            "attempt_limit": null,
-                            "time_limit_minutes": null
-                        }
-                    },
-                    "table": {
-                        "columns": [
-                            {
-                                "name": "exam_id",
-                                "label": "Exam ID",
-                                "type": "number",
-                                "minWidth": 90
                             },
                             {
-                                "name": "exam_title",
-                                "label": "Exam Title",
-                                "type": "text",
-                                "minWidth": 280
+                                "field": "module_item_label",
+                                "label": "Module Title",
+                                "minWidth": 260
+                            },
+                            {
+                                "field": "sortorder",
+                                "label": "Sort Order",
+                                "minWidth": 120
+                            }
+                        ],
+                        "fields": [
+                            {
+                                "name": "module_type",
+                                "label": "Module Type",
+                                "type": "select",
+                                "default": "course",
+                                "conditionalFields": {
+                                    "course": [
+                                        "module_item_id"
+                                    ],
+                                    "exam": [
+                                        "module_item_id",
+                                        "attempt_limit",
+                                        "time_limit_minutes"
+                                    ]
+                                },
+                                "options": [
+                                    {
+                                        "label": "Course",
+                                        "value": "course"
+                                    },
+                                    {
+                                        "label": "Exam",
+                                        "value": "exam"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "module_item_id",
+                                "label": "Module Item",
+                                "type": "autocomplete",
+                                "required": true,
+                                "sourceColumns": [
+                                    "id",
+                                    "title"
+                                ],
+                                "sourceBy": "module_type",
+                                "sourceMap": {
+                                    "course": "courses",
+                                    "exam": "exams"
+                                },
+                                "storeLabelAs": "module_item_label"
                             },
                             {
                                 "name": "day",
                                 "label": "Day",
                                 "type": "number",
-                                "minWidth": 80
+                                "default": 0
                             },
                             {
                                 "name": "sortorder",
                                 "label": "Sort Order",
                                 "type": "number",
-                                "minWidth": 100
+                                "default": 0
                             },
                             {
                                 "name": "attempt_limit",
                                 "label": "Attempt Limit",
                                 "type": "number",
-                                "minWidth": 120
+                                "default": null
                             },
                             {
                                 "name": "time_limit_minutes",
-                                "label": "Time Limit (mins)",
+                                "label": "Time Limit Minutes",
                                 "type": "number",
-                                "minWidth": 140
-                            },
-                            {
-                                "name": "actions",
-                                "label": "",
-                                "type": "actions",
-                                "minWidth": 50
+                                "default": null
                             }
-                        ],
-                        "allowDelete": true,
-                        "draggable": true,
-                        "useMaster": true,
-                        "minRows": 0
+                        ]
                     }
                 }
             ]

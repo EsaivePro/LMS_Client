@@ -74,8 +74,12 @@
                 {
                     "name": "topic_id",
                     "label": "Topic",
-                    "type": "select",
-                    "optionsSource": "qb_topics"
+                    "type": "autocomplete",
+                    "source": "topics",
+                    "sourceColumns": [
+                        "id",
+                        "title"
+                    ]
                 }
             ]
         },

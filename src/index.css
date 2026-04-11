@@ -73,9 +73,9 @@ body {
     body .MuiAutocomplete-popper>*,
     body .MuiMenu-root .MuiPaper-root,
     body .MuiTooltip-popper>* {
-        transform-origin: top left !important;
-        -webkit-transform: scale(var(--app-scale-inv)) !important;
-        transform: scale(var(--app-scale-inv)) !important;
+        transform-origin: top left;
+        -webkit-transform: scale(var(--app-scale-inv));
+        transform: scale(var(--app-scale-inv));
     }
 }
 
@@ -107,8 +107,8 @@ body .MuiTooltip-popper>* {
     body .MuiAutocomplete-popper>*,
     body .MuiMenu-root .MuiPaper-root,
     body .MuiTooltip-popper>* {
-        transform-origin: top left !important;
-        transform: scale(var(--app-scale-inv)) !important;
+        transform-origin: top left;
+        transform: scale(var(--app-scale-inv));
     }
 }
 
@@ -146,26 +146,26 @@ input[type="submit"],
 /* Material UI button overrides (contained / outlined) */
 .MuiButton-root.MuiButton-contained,
 .MuiButton-contained {
-    background-color: var(--darkMedium) !important;
-    color: var(--onPrimary) !important;
+    background-color: var(--darkMedium);
+    color: var(--onPrimary);
 }
 
 .MuiButton-root.MuiButton-contained:hover,
 .MuiButton-contained:hover {
-    background-color: var(--primary) !important;
+    background-color: var(--primary);
 }
 
 .MuiButton-root.MuiButton-outlined,
 .MuiButton-outlined {
-    color: var(--darkMedium) !important;
-    border-color: var(--darkMedium) !important;
-    background-color: transparent !important;
+    color: var(--darkMedium);
+    border-color: var(--darkMedium);
+    background-color: transparent;
 }
 
 .MuiButton-root.MuiButton-outlined:hover,
 .MuiButton-outlined:hover {
-    border: 1px solid var(--primary) !important;
-    color: var(--primary) !important;
+    border: 1px solid var(--primary);
+    color: var(--primary);
 }
 
 /* Generic outlined helpers (non-MUI) */
@@ -180,8 +180,8 @@ button.outlined,
 
 /* Utility: add `app-button` class to force app colors where inline/tailwind colors exist */
 .app-button {
-    background-color: var(--darkMedium) !important;
-    color: var(--onPrimary) !important;
+    background-color: var(--darkMedium);
+    color: var(--onPrimary);
 }
 
 /* ============================================================
@@ -192,141 +192,141 @@ button.outlined,
 
 /* --- OutlinedInput border (TextField, Select, Autocomplete, DatePicker…) --- */
 .MuiOutlinedInput-notchedOutline {
-    border-color: var(--dark) !important;
+    border-color: var(--dark);
     transition: border-color 0.2s ease;
 }
 
 .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-    border-color: var(--primary) !important;
+    border-color: var(--primary);
 }
 
 .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-    border-color: var(--primary) !important;
+    border-color: var(--primary);
 }
 
 .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(0, 0, 0, 0.388) !important;
+    border-color: rgba(0, 0, 0, 0.388);
 }
 
 /* Disabled input text */
 .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-input,
 .MuiInputBase-root.Mui-disabled .MuiInputBase-input {
-    color: rgba(0, 0, 0, 0.822) !important;
+    color: rgba(0, 0, 0, 0.822);
     font-weight: 500;
-    -webkit-text-fill-color: rgba(0, 0, 0, 0.584) !important;
+    -webkit-text-fill-color: rgba(0, 0, 0, 0.584);
 }
 
 /* --- InputLabel (floating label) --- */
 .MuiInputLabel-root {
-    /* color: var(--dark) !important; */
+    /* color: var(--dark) ; */
 }
 
 .MuiInputLabel-root.Mui-focused {
-    color: var(--primary) !important;
+    color: var(--primary);
 }
 
 .MuiInputLabel-root.Mui-disabled {
-    /* color: rgba(0, 0, 0, 0.388) !important; */
+    /* color: rgba(0, 0, 0, 0.388) ; */
 }
 
 /* --- Select dropdown arrow --- */
 .MuiSelect-icon {
-    color: var(--dark) !important;
+    color: var(--dark);
 }
 
 .MuiOutlinedInput-root.Mui-disabled .MuiSelect-icon {
-    color: rgba(0, 0, 0, 0.388) !important;
+    color: rgba(0, 0, 0, 0.388);
 }
 
 /* --- Checkbox --- */
 .MuiCheckbox-root {
-    color: var(--dark) !important;
+    color: var(--dark);
 }
 
 .MuiCheckbox-root.Mui-checked {
-    color: var(--primary) !important;
+    color: var(--primary);
 }
 
 .MuiCheckbox-root.MuiCheckbox-indeterminate {
-    color: var(--primary) !important;
+    color: var(--primary);
 }
 
 .MuiCheckbox-root.Mui-disabled {
-    color: rgba(0, 0, 0, 0.388) !important;
+    color: rgba(0, 0, 0, 0.388);
 }
 
 /* --- Radio --- */
 .MuiRadio-root {
-    color: var(--dark) !important;
+    color: var(--dark);
 }
 
 .MuiRadio-root.Mui-checked {
-    color: var(--primary) !important;
+    color: var(--primary);
 }
 
 .MuiRadio-root.Mui-disabled {
-    color: rgba(0, 0, 0, 0.388) !important;
+    color: rgba(0, 0, 0, 0.388);
 }
 
 /* --- Switch --- */
 .MuiSwitch-switchBase {
-    color: var(--dark) !important;
+    color: var(--dark);
 }
 
 .MuiSwitch-switchBase+.MuiSwitch-track {
-    background-color: var(--dark) !important;
+    background-color: var(--dark);
 }
 
 .MuiSwitch-switchBase.Mui-checked {
-    color: var(--primary) !important;
+    color: var(--primary);
 }
 
 .MuiSwitch-switchBase.Mui-checked+.MuiSwitch-track {
-    background-color: var(--primary) !important;
-    opacity: 0.5 !important;
+    background-color: var(--primary);
+    opacity: 0.5;
 }
 
 .MuiSwitch-switchBase.Mui-disabled {
-    color: rgba(0, 0, 0, 0.388) !important;
+    color: rgba(0, 0, 0, 0.388);
 }
 
 .MuiSwitch-switchBase.Mui-disabled+.MuiSwitch-track {
-    opacity: 0.15 !important;
+    opacity: 0.15;
 }
 
 /* --- Slider --- */
 .MuiSlider-root {
-    color: var(--dark) !important;
+    color: var(--dark);
 }
 
 .MuiSlider-root:hover {
-    color: var(--primary) !important;
+    color: var(--primary);
 }
 
 .MuiSlider-root.Mui-disabled {
-    color: rgba(0, 0, 0, 0.388) !important;
+    color: rgba(0, 0, 0, 0.388);
 }
 
 /* --- DatePicker / TimePicker adornment icon button (scoped to input) --- */
 .MuiOutlinedInput-root .MuiInputAdornment-root .MuiIconButton-root {
-    color: var(--dark) !important;
+    color: var(--dark);
 }
 
 .MuiOutlinedInput-root:hover .MuiInputAdornment-root .MuiIconButton-root,
 .MuiOutlinedInput-root .MuiInputAdornment-root .MuiIconButton-root:hover {
-    color: var(--primary) !important;
+    color: var(--primary);
 }
 
 .MuiOutlinedInput-root.Mui-disabled .MuiInputAdornment-root .MuiIconButton-root {
-    color: rgba(0, 0, 0, 0.388) !important;
+    color: rgba(0, 0, 0, 0.388);
 }
 
 /* --- FormControlLabel label text (next to Checkbox / Radio / Switch) --- */
 .MuiFormControlLabel-root.Mui-disabled .MuiFormControlLabel-label {
-    color: rgba(0, 0, 0, 0.388) !important;
+    color: rgba(0, 0, 0, 0.388);
 }
 
 /* --- FormHelperText --- */
 .MuiFormHelperText-root.Mui-disabled {
-    color: rgba(0, 0, 0, 0.388) !important;
+    color: rgba(0, 0, 0, 0.388);
 }

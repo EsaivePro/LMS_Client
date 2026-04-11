@@ -47,7 +47,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
                 const name = field.name;
                 if (!name) return;
                 const valueFromData = data[name];
-                if (field.type === "table") {
+                if (field.type === "table" || field.type === "record-dailog") {
                     defaults[name] = Array.isArray(valueFromData) ? valueFromData : [];
                 } else if (field.type === "checkbox") {
                     defaults[name] = (valueFromData !== undefined && valueFromData !== null) ? valueFromData : (field.default !== undefined ? field.default : false);

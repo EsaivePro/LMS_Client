@@ -20,7 +20,7 @@ export function validateFormValues(definition, values) {
 
     (definition.sections || []).forEach((sec) => {
         (sec.fields || []).forEach((f) => {
-            if (f.required && f.type !== "table") {
+            if (f.required && f.type !== "table" && f.type !== "record-dailog") {
                 const val = values[f.name];
                 const empty =
                     val === undefined ||
@@ -33,7 +33,7 @@ export function validateFormValues(definition, values) {
                 }
             }
 
-            if (f.type === "table") {
+            if (f.type === "table" || f.type === "record-dailog") {
                 const cols = f.table?.columns || [];
                 const rows = values[f.name] || [];
                 cols.forEach((col) => {
@@ -63,7 +63,7 @@ export function validateFormValues(definition, values) {
 export function findFirstInvalidSection(definition, values) {
     for (const sec of definition.sections || []) {
         for (const f of sec.fields || []) {
-            if (f.type !== "table") {
+            if (f.type !== "table" && f.type !== "record-dailog") {
                 if (f.required) {
                     const val = values[f.name];
                     const empty =

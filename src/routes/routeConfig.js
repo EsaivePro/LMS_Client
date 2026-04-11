@@ -154,19 +154,6 @@ export const protectedRoutes = [
         icon: <InsightsIcon />,
         type: "item",
     },
-    // Category management
-    {
-        path: "/coursecategory",
-        title: "Course Categories",
-        description: "Manage course categories and assign courses to categories.",
-        permission: "coursecategory.manage",
-        element: <CourseCategory />,
-        sideMenu: true,
-        section: "Category management",
-        label: "Category",
-        icon: <CategoryIcon />,
-        type: "item",
-    },
     {
         path: "/module-category/manage/:id",
         title: "Manage Module Category",
@@ -176,7 +163,7 @@ export const protectedRoutes = [
         sideMenu: true,
         sidePath: "/module-category/manage/list",
         section: "Manage Configurations",
-        label: "Module Category",
+        label: "Category Assign",
         icon: <ViewModuleIcon />,
         type: "item",
         matchPath: "/module-category/manage",

@@ -8,7 +8,7 @@
         ],
         "subJoins": {
             "groups_category": {
-                "key": "course_category_id",
+                "key": "module_category_id",
                 "column": [
                     "title"
                 ]
@@ -51,7 +51,7 @@
                     "type": "record-assigned",
                     "assignedConfig": {
                         "endpoint": "/form-service/advanced-search",
-                        "table": "course_category",
+                        "table": "module_category",
                         "identityKey": "id",
                         "columns": [
                             "id",
@@ -64,14 +64,14 @@
                                 "where": {
                                     "group_id": "{recordId}"
                                 },
-                                "on": "course_category_id"
+                                "on": "module_category_id"
                             }
                         ],
                         "sortby": "created_at",
                         "order": "desc",
                         "mapData": {
                             "id": "{groups_category_id}",
-                            "course_category_id": "{id}",
+                            "module_category_id": "{id}",
                             "is_deleted": "{is_deleted}",
                             "assigned": true
                         },

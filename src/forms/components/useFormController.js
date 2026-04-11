@@ -1,4 +1,9 @@
 import { useCallback, useMemo, useState } from "react";
+import {
+    buildConditionalFieldRules,
+    buildConditionalWatchedDefaults,
+    filterFieldsByConditionalRules,
+} from "./conditionalFields";
 
 /**
  * useFormController
@@ -27,32 +32,18 @@ export function useFormController(formDef) {
 
     // ── Derive rules by scanning all sections/fields once ────────────
     const rulesMeta = useMemo(() => {
-        const rules = [];
-        (formDef.sections || []).forEach((section) => {
-            (section.fields || []).forEach((field) => {
-                if (!field.conditionalFields) return;
-                rules.push({
-                    watchField: field.name,
-                    sectionKey: section.key,
-                    defaultValue: field.default ?? null,
-                    conditionalFields: field.conditionalFields,
-                    allConditional: new Set(
-                        Object.values(field.conditionalFields).flat()
-                    ),
-                });
-            });
+        return (formDef.sections || []).flatMap((section) => {
+            return buildConditionalFieldRules(section.fields || []).map((rule) => ({
+                ...rule,
+                sectionKey: section.key,
+            }));
         });
-        return rules;
-    }, []);
+    }, [formDef]);
 
     // ── Initial watched values from each rule's defaultValue ─────────
     const initialWatched = useMemo(() => {
-        const init = {};
-        rulesMeta.forEach((rule) => {
-            init[rule.watchField] = rule.defaultValue;
-        });
-        return init;
-    }, []);
+        return buildConditionalWatchedDefaults(rulesMeta);
+    }, [rulesMeta]);
 
     const [watchedValues, setWatchedValues] = useState(initialWatched);
 
@@ -62,7 +53,7 @@ export function useFormController(formDef) {
         if (isWatched) {
             setWatchedValues((prev) => ({ ...prev, [name]: value }));
         }
-    }, []);
+    }, [rulesMeta]);
 
     // ── onLoad: called after DetailsForm fetches a record ────────────
     const onLoad = useCallback((values) => {
@@ -75,28 +66,21 @@ export function useFormController(formDef) {
         if (Object.keys(updates).length) {
             setWatchedValues((prev) => ({ ...prev, ...updates }));
         }
-    }, []);
+    }, [rulesMeta]);
 
     // ── Filtered definition recomputed on watchedValues change ───────
     const definition = useMemo(() => {
         if (!rulesMeta.length) return formDef;
 
-        const ruleBySection = new Map(rulesMeta.map((r) => [r.sectionKey, r]));
-
         return {
             ...formDef,
             sections: (formDef.sections || []).map((section) => {
-                const rule = ruleBySection.get(section.key);
-                if (!rule) return section;
-
-                const currentValue = watchedValues[rule.watchField];
-                const visibleFields = new Set(rule.conditionalFields[currentValue] ?? []);
+                const sectionRules = rulesMeta.filter((rule) => rule.sectionKey === section.key);
+                if (!sectionRules.length) return section;
 
                 return {
                     ...section,
-                    fields: section.fields.filter(
-                        (f) => !rule.allConditional.has(f.name) || visibleFields.has(f.name)
-                    ),
+                    fields: filterFieldsByConditionalRules(section.fields || [], sectionRules, watchedValues),
                 };
             }),
         };

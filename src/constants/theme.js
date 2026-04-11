@@ -2,7 +2,7 @@ export const THEME = {
     colors: {
         primary: "#8F00FF", //"#aa2c44", // #ff9800 
         primaryMedium: "#9000ff49",
-        primaryLight: "rgba(162, 122, 255, 0.09)", // rgba(255, 152, 0, 0.04)
+        primaryLight: "#fbf5ff", //"rgba(162, 122, 255, 0.09)", // rgba(255, 152, 0, 0.04)
 
         dark: "#212121",
         darkMedium: "#434242ff", //"#c33f57ff",

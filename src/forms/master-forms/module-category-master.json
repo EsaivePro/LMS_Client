@@ -38,12 +38,6 @@
             "linkTemplate": "{id}"
         },
         {
-            "key": "module_type",
-            "label": "Module Type",
-            "type": "string",
-            "col": 6
-        },
-        {
             "key": "enrollment_type",
             "label": "Enrollment Type",
             "type": "string",
