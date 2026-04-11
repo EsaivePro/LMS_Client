@@ -2,6 +2,7 @@ export { default as ArrayFormField } from "./ArrayFormField";
 export { default as CheckboxFormField } from "./CheckboxFormField";
 export { default as DateTimeFormField } from "./DateTimeFormField";
 export { default as DefaultFormField } from "./DefaultFormField";
+export { default as FileUploadFormField } from "./FileUploadFormField";
 export { default as NumberFormField } from "./NumberFormField";
 export { default as RecordDailogField } from "./RecordDailogField";
 export { default as SelectFormField } from "./SelectFormField";

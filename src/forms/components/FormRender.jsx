@@ -5,6 +5,7 @@ import {
     CheckboxFormField,
     DateTimeFormField,
     DefaultFormField,
+    FileUploadFormField,
     NumberFormField,
     RecordDailogField,
     RecordPickerField,
@@ -75,6 +76,18 @@ export default function FormRender({
             return <RecordDailogField field={field} value={value || []} onChange={onChange} editing={editing} showError={showError} />;
         case "datetime":
             return <DateTimeFormField field={field} value={value} onChange={onChange} editing={editing} invalidFields={invalidFields} setInvalidFields={setInvalidFields} />;
+        case "fileupload":
+            return (
+                <FileUploadFormField
+                    field={field}
+                    value={value}
+                    onChange={onChange}
+                    editing={editing}
+                    invalidFields={invalidFields}
+                    setInvalidFields={setInvalidFields}
+                    showError={showError}
+                />
+            );
         case "record-picker":
             return <RecordPickerField field={field} value={value || []} formValues={formValues} recordId={recordId} onChange={onChange} editing={editing} />;
         case "table":

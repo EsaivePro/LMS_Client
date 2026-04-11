@@ -164,8 +164,8 @@ input[type="submit"],
 
 .MuiButton-root.MuiButton-outlined:hover,
 .MuiButton-outlined:hover {
-    border: 1px solid var(--primary);
-    color: var(--primary);
+    border: 1px solid var(--primary) !important;
+    color: var(--primary) !important;
 }
 
 /* Generic outlined helpers (non-MUI) */
@@ -197,11 +197,11 @@ button.outlined,
 }
 
 .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-    border-color: var(--primary);
+    border-color: var(--primary) !important;
 }
 
 .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-    border-color: var(--primary);
+    border-color: var(--primary) !important;
 }
 
 .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline {
@@ -222,7 +222,7 @@ button.outlined,
 }
 
 .MuiInputLabel-root.Mui-focused {
-    color: var(--primary);
+    color: var(--primary) !important;
 }
 
 .MuiInputLabel-root.Mui-disabled {
@@ -244,11 +244,11 @@ button.outlined,
 }
 
 .MuiCheckbox-root.Mui-checked {
-    color: var(--primary);
+    color: var(--primary) !important;
 }
 
 .MuiCheckbox-root.MuiCheckbox-indeterminate {
-    color: var(--primary);
+    color: var(--primary) !important;
 }
 
 .MuiCheckbox-root.Mui-disabled {
@@ -261,7 +261,7 @@ button.outlined,
 }
 
 .MuiRadio-root.Mui-checked {
-    color: var(--primary);
+    color: var(--primary) !important;
 }
 
 .MuiRadio-root.Mui-disabled {
@@ -278,11 +278,11 @@ button.outlined,
 }
 
 .MuiSwitch-switchBase.Mui-checked {
-    color: var(--primary);
+    color: var(--primary) !important;
 }
 
 .MuiSwitch-switchBase.Mui-checked+.MuiSwitch-track {
-    background-color: var(--primary);
+    background-color: var(--primary) !important;
     opacity: 0.5;
 }
 
@@ -300,7 +300,7 @@ button.outlined,
 }
 
 .MuiSlider-root:hover {
-    color: var(--primary);
+    color: var(--primary) !important;
 }
 
 .MuiSlider-root.Mui-disabled {
@@ -314,7 +314,7 @@ button.outlined,
 
 .MuiOutlinedInput-root:hover .MuiInputAdornment-root .MuiIconButton-root,
 .MuiOutlinedInput-root .MuiInputAdornment-root .MuiIconButton-root:hover {
-    color: var(--primary);
+    color: var(--primary) !important;
 }
 
 .MuiOutlinedInput-root.Mui-disabled .MuiInputAdornment-root .MuiIconButton-root {

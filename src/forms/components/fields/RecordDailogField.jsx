@@ -25,6 +25,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import CheckboxFormField from "./CheckboxFormField";
 import DateTimeFormField from "./DateTimeFormField";
 import DefaultFormField from "./DefaultFormField";
+import FileUploadFormField from "./FileUploadFormField";
 import NumberFormField from "./NumberFormField";
 import SelectFormField from "./SelectFormField";
 import TextareaFormField from "./TextareaFormField";
@@ -642,6 +643,10 @@ export default function RecordDailogField({ field, value = [], onChange, editing
             return <DateTimeFormField key={componentKey} {...commonProps} />;
         }
 
+        if (dialogField.type === "fileupload") {
+            return <FileUploadFormField key={componentKey} {...commonProps} showError={showError} />;
+        }
+
         if (dialogField.type === "checkbox") {
             return <CheckboxFormField key={componentKey} {...commonProps} />;
         }
@@ -694,6 +699,7 @@ export default function RecordDailogField({ field, value = [], onChange, editing
                 checkboxSelection={false}
                 defaultPageSize={5}
                 pageSizeOptions={[5, 10, 20]}
+                onRowDoubleClick={editing ? (row) => openEditDialog(row.__idx) : undefined}
             />
 
             <Dialog

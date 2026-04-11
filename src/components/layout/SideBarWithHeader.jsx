@@ -26,6 +26,7 @@ import { Link, useLocation } from "react-router-dom";
 import Header from "./Header";
 import ContentContainer from "./ContentContainer";
 import CourseContainer from "./CourseContainer";
+import SlideDialog from "../common/dialog/SlideDialog";
 
 // Icons
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -64,9 +65,10 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
     const [expandedGroup, setExpandedGroup] = React.useState(null);
     const [search, setSearch] = React.useState("");
     const [collapsedSections, setCollapsedSections] = React.useState(new Set());
+    const [logoutConfirmOpen, setLogoutConfirmOpen] = React.useState(false);
 
     const sidebarRef = React.useRef(null);
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, logout } = useAuth();
     const { viewContainerCard, viewCourseCard, viewHeader } = useCommon();
     const { permissions } = useAdmin();
     const navigate = useNavigate();
@@ -75,15 +77,22 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
     const MENU = React.useMemo(() => getMenuFromRoutes(), []);
 
     // ── Logout ─────────────────────────────────────────────────
-    const handleLogout = async (e) => {
-        if (e?.preventDefault) e.preventDefault();
+    const handleLogout = async () => {
+        setLogoutConfirmOpen(false);
         try {
             await httpClient.logoutUser();
-            tokenStorage.clearAll();
-            navigate("/login");
         } catch (err) {
             console.error("Server logout failed:", err);
+        } finally {
+            await logout();
+            tokenStorage.clearAll();
+            navigate("/login", { replace: true });
         }
+    };
+
+    const requestLogout = (e) => {
+        if (e?.preventDefault) e.preventDefault();
+        setLogoutConfirmOpen(true);
     };
 
     // ── Auto-expand group for active child ──────────────────────
@@ -181,7 +190,7 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                         <Header
                             toggleSidebar={toggleSidebar}
                             profile={() => navigate("/user/profile/" + user?.id)}
-                            logout={handleLogout}
+                            logout={requestLogout}
                             open={open}
                         />
                     </AppBar>
@@ -198,7 +207,7 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                             width: "100%",
                             height: "calc(100vh - 64px)",
                             backgroundColor: "rgba(0,0,0,0.3)",
-                            zIndex: 1500,
+                            zIndex: (theme) => theme.zIndex.drawer - 1,
                         }}
                     />
                 )}
@@ -214,7 +223,7 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                         height: "calc(100vh - 64px)",
                         background: "#1a1d23",
                         transition: "left 0.3s ease",
-                        zIndex: 2000,
+                        zIndex: (theme) => theme.zIndex.drawer,
                         display: "flex",
                         flexDirection: "column",
                         boxShadow: "4px 0 20px rgba(0,0,0,0.4)",
@@ -562,7 +571,7 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                             </Link>
 
                             <ListItemButton
-                                onClick={handleLogout}
+                                onClick={requestLogout}
                                 sx={{
                                     borderRadius: 1.5,
                                     py: 0.7,
@@ -590,6 +599,19 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                         </Box>
                     </Box>
                 </Box>
+
+                <SlideDialog
+                    open={logoutConfirmOpen}
+                    onClose={() => setLogoutConfirmOpen(false)}
+                    title="Confirm Logout"
+                    onSubmit={handleLogout}
+                    submitLabel="Logout"
+                    cancelLabel="Cancel"
+                >
+                    <Typography sx={{ pt: 1 }}>
+                        You are about to sign out of your current session. Do you want to continue?
+                    </Typography>
+                </SlideDialog>
 
                 {/* ── MAIN CONTENT ── */}
                 {viewHeader ? (

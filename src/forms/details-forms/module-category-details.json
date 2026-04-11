@@ -33,8 +33,11 @@
                 },
                 {
                     "name": "imageurl",
-                    "label": "Image URL",
-                    "type": "text"
+                    "label": "Card Image",
+                    "type": "fileupload",
+                    "accept": "image/*",
+                    "uploadPath": "images/module-category",
+                    "buttonLabel": "Upload Image"
                 },
                 {
                     "name": "duration",

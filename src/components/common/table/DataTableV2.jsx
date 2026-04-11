@@ -72,6 +72,7 @@ export default function DataTable({
     endOfResultsMessage = "No more data",
     checkboxDisabled = false,
     hideColumnSettings = false,
+    hideSearch = false,
     preselectedIds = [],
     tableName,
     tableKey = "default",
@@ -588,44 +589,46 @@ export default function DataTable({
                 </Tooltip>}
 
                 {/* Global search */}
-                <TextField
-                    size="small"
-                    placeholder={searchPlaceholder}
-                    value={localExternalSearch}
-                    onChange={(e) => {
-                        const v = e.target.value;
-                        setLocalExternalSearch(v);
-                        if (typeof onExternalSearchChange === "function") {
-                            onExternalSearchChange(v);
-                        } else {
-                            if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
-                            searchDebounceRef.current = setTimeout(() => {
-                                setPage(0);
-                                setSearchCounter((c) => c + 1);
-                            }, 500);
-                        }
-                    }}
-                    InputProps={{
-                        startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: "text.disabled" }} />,
-                        endAdornment: (
-                            <Tooltip title={searchActive ? "Search active" : `Search activates when ${searchMinLength}+ characters are entered`}>
-                                <IconButton size="small" sx={{ p: 0.5 }} disableRipple>
-                                    <InfoOutlinedIcon
-                                        sx={{ color: searchActive ? "var(--primary)" : "text.disabled" }}
-                                        fontSize="small"
-                                    />
-                                </IconButton>
-                            </Tooltip>
-                        ),
-                    }}
-                    sx={{
-                        width: pickerSelected ? 220 : 240,
-                        "& .MuiOutlinedInput-root": {
-                            borderRadius: 1,
-                            fontSize: 16,
-                        },
-                    }}
-                />
+                {!hideSearch && (
+                    <TextField
+                        size="small"
+                        placeholder={searchPlaceholder}
+                        value={localExternalSearch}
+                        onChange={(e) => {
+                            const v = e.target.value;
+                            setLocalExternalSearch(v);
+                            if (typeof onExternalSearchChange === "function") {
+                                onExternalSearchChange(v);
+                            } else {
+                                if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+                                searchDebounceRef.current = setTimeout(() => {
+                                    setPage(0);
+                                    setSearchCounter((c) => c + 1);
+                                }, 500);
+                            }
+                        }}
+                        InputProps={{
+                            startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: "text.disabled" }} />,
+                            endAdornment: (
+                                <Tooltip title={searchActive ? "Search active" : `Search activates when ${searchMinLength}+ characters are entered`}>
+                                    <IconButton size="small" sx={{ p: 0.5 }} disableRipple>
+                                        <InfoOutlinedIcon
+                                            sx={{ color: searchActive ? "var(--primary)" : "text.disabled" }}
+                                            fontSize="small"
+                                        />
+                                    </IconButton>
+                                </Tooltip>
+                            ),
+                        }}
+                        sx={{
+                            width: pickerSelected ? 220 : 240,
+                            "& .MuiOutlinedInput-root": {
+                                borderRadius: 1,
+                                fontSize: 16,
+                            },
+                        }}
+                    />
+                )}
             </Box>
 
             {/* ================= COLLAPSIBLE FILTER PANEL ================= */}

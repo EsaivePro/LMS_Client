@@ -24,6 +24,7 @@ import UserGroupAssignManage from "../modules/forms/pages/UserGroupAssignManage"
 import RoleManage from "../modules/forms/pages/RoleManage";
 import UserManage from "../modules/forms/pages/UserManage";
 import ModuleCategoryManage from "../modules/forms/pages/ModuleCategoryManage";
+import AuditLogPage from "../modules/audit/pages/AuditLogPage";
 
 // Icons for sidebar menu
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -42,6 +43,7 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import PeopleIcon from "@mui/icons-material/People";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import UserList from "../modules/user/pages/UsersList";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 
 export const protectedRoutes = [
     // ─────────────────────────────────────────────
@@ -152,6 +154,18 @@ export const protectedRoutes = [
         section: "Reports/Analytics",
         label: "Learning Insights",
         icon: <InsightsIcon />,
+        type: "item",
+    },
+    {
+        path: "/audit/logs",
+        title: "Audit Logs",
+        description: "Review actions, status, and entity-level changes across the platform.",
+        permission: "user.management",
+        element: <AuditLogPage />,
+        sideMenu: true,
+        section: "Reports/Analytics",
+        label: "Audit logs",
+        icon: <ReceiptLongIcon />,
         type: "item",
     },
     {
