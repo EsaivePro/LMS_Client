@@ -23,11 +23,11 @@ export default function SlideDialog({
     cancelLabel = "Cancel",
 }) {
     const theme = useTheme();
-    const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+    // const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
     return (
         <Dialog
-            fullScreen={fullScreen}
+            // fullScreen={fullScreen}
             open={open}
             slots={{
                 transition: Transition,
@@ -40,8 +40,8 @@ export default function SlideDialog({
             sx={{
                 "& .MuiDialog-paper": {
                     width: "680px",
-                    maxWidth: "95%",
-                    borderRadius: fullScreen ? 0 : 2,
+                    // maxWidth: "95%",
+                    borderRadius: 2,
                     overflow: "hidden",
                     border: "1px solid rgba(148, 163, 184, 0.18)",
                     background: "linear-gradient(180deg, #ffffff 0%, var(--primaryLight) 100%)",
@@ -70,8 +70,10 @@ export default function SlideDialog({
                     py: 3,
                     backgroundColor: "rgba(248, 250, 252, 0.52)",
                     minHeight: "100px",
-                    display: "flex",
-                    alignItems: "center",
+                    width: "100%",
+                    "& > *": {
+                        width: "100%",
+                    },
                 }}
             >
                 {children}

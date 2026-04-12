@@ -26,7 +26,7 @@ import { Link, useLocation } from "react-router-dom";
 import Header from "./Header";
 import ContentContainer from "./ContentContainer";
 import CourseContainer from "./CourseContainer";
-import SlideDialog from "../common/dialog/SlideDialog";
+import ConfirmationPopup from "../common/dialog/ConfirmationPopup";
 
 // Icons
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -61,7 +61,7 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const location = useLocation();
 
-    const [open, setOpen] = React.useState(fixed ? true : false);
+    const [open, setOpen] = React.useState(fixed && !isMobile);
     const [expandedGroup, setExpandedGroup] = React.useState(null);
     const [search, setSearch] = React.useState("");
     const [collapsedSections, setCollapsedSections] = React.useState(new Set());
@@ -69,7 +69,7 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
 
     const sidebarRef = React.useRef(null);
     const { user, isAuthenticated, logout } = useAuth();
-    const { viewContainerCard, viewCourseCard, viewHeader } = useCommon();
+    const { viewContainerCard, viewCourseCard, viewHeader, showLoader, hideLoader } = useCommon();
     const { permissions } = useAdmin();
     const navigate = useNavigate();
 
@@ -79,14 +79,19 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
     // ── Logout ─────────────────────────────────────────────────
     const handleLogout = async () => {
         setLogoutConfirmOpen(false);
+        showLoader("Signing out...");
         try {
             await httpClient.logoutUser();
         } catch (err) {
             console.error("Server logout failed:", err);
         } finally {
-            await logout();
-            tokenStorage.clearAll();
-            navigate("/login", { replace: true });
+            try {
+                await logout();
+                tokenStorage.clearAll();
+                navigate("/login", { replace: true });
+            } finally {
+                hideLoader();
+            }
         }
     };
 
@@ -600,18 +605,16 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                     </Box>
                 </Box>
 
-                <SlideDialog
+                <ConfirmationPopup
                     open={logoutConfirmOpen}
                     onClose={() => setLogoutConfirmOpen(false)}
                     title="Confirm Logout"
-                    onSubmit={handleLogout}
-                    submitLabel="Logout"
+                    onConfirm={handleLogout}
+                    confirmLabel="Logout"
                     cancelLabel="Cancel"
-                >
-                    <Typography sx={{ pt: 1 }}>
-                        You are about to sign out of your current session. Do you want to continue?
-                    </Typography>
-                </SlideDialog>
+                    confirmColor="error"
+                    message="You are about to sign out of your current session. Do you want to continue?"
+                />
 
                 {/* ── MAIN CONTENT ── */}
                 {viewHeader ? (
