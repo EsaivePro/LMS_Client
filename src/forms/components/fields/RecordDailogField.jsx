@@ -375,7 +375,7 @@ export default function RecordDailogField({ field, value = [], onChange, editing
                 const responses = await Promise.all(
                     nextRequestPlan.map(async (group) => ({
                         group,
-                        response: await httpClient.formAutocomplete({
+                        response: await httpClient.formSearch({
                             table: group.sourceRef,
                             columns: group.sourceColumns,
                             where: { [group.valueKey]: group.whereValue },
@@ -728,7 +728,7 @@ export default function RecordDailogField({ field, value = [], onChange, editing
                         background: "linear-gradient(135deg, rgba(15,23,42,0.04) 0%, rgba(59,130,246,0.10) 100%)",
                     }}
                 >
-                    <Typography variant="overline" sx={{ display: "block", fontSize:"14px", color: "text.secondary", letterSpacing: 1.2 }}>
+                    <Typography variant="overline" sx={{ display: "block", fontSize: "14px", color: "text.secondary", letterSpacing: 1.2 }}>
                         {isPreviewMode ? "Preview Record" : editIndex !== null ? "Update Record" : "Create Record"}
                     </Typography>
                     {/* <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2 }}>

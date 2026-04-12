@@ -60,18 +60,6 @@
                         {
                             "label": "Assigned",
                             "value": "assigned"
-                        },
-                        {
-                            "label": "Manual",
-                            "value": "manual"
-                        },
-                        {
-                            "label": "Paid",
-                            "value": "paid"
-                        },
-                        {
-                            "label": "Scheduled",
-                            "value": "scheduled"
                         }
                     ],
                     "default": "assigned",
@@ -92,34 +80,21 @@
                     "required": true,
                     "options": [
                         {
-                            "label": "Free",
-                            "value": "free"
-                        },
-                        {
                             "label": "Day Wise",
                             "value": "daywise"
                         },
                         {
                             "label": "Completion Wise",
                             "value": "completionwise"
-                        },
-                        {
-                            "label": "All",
-                            "value": "all"
                         }
                     ],
-                    "default": "free"
+                    "default": "daywise"
                 },
                 {
                     "name": "numberofdays",
                     "label": "Number of Days",
                     "type": "number",
                     "default": 0
-                },
-                {
-                    "name": "enroll_status",
-                    "label": "Enroll Status",
-                    "type": "text"
                 },
                 {
                     "name": "scheduled_start_at",

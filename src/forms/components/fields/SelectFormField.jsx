@@ -152,7 +152,7 @@ export default function SelectFormField({
                     });
                 }
             } else {
-                const response = await httpClient.formAutocomplete({
+                const response = await httpClient.formSearch({
                     table: sourceRef,
                     columns: sourceColumns,
                     where: requestWhere,

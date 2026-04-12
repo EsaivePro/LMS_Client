@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Box,
   Button,
-  TextField,
   Typography,
-  InputAdornment
+  Tooltip,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  IconButton,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { fetchCourses } from "../../../redux/slices/coursesSlice";
 import DataTableV1 from "../../../components/common/table/DataTableV1";
 import CourseCreate from "../../../components/course/CourseCreate";
@@ -14,13 +17,48 @@ import CourseUpdate from "../../../components/course/CourseUpdate";
 import CourseDelete from "../../../components/course/CourseDelete";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
-import SearchIcon from "@mui/icons-material/Search";
 import GlobalAlert from "../../../components/common/alert/GlobalAlert";
 import { useNavigate } from "react-router-dom";
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import useCourseCategory from "../../../hooks/useCourseCategory";
+
+function ActionsCell({ onEdit, onDelete }) {
+  const [anchor, setAnchor] = useState(null);
+  const open = Boolean(anchor);
+
+  return (
+    <>
+      <Tooltip title="More" placement="top" disableInteractive>
+        <IconButton size="small" onClick={(event) => setAnchor(event.currentTarget)} sx={{ color: "var(--dark)" }}>
+          <MoreVertIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+      <Menu
+        anchorEl={anchor}
+        open={open}
+        onClose={() => setAnchor(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+        slotProps={{ paper: { elevation: 2, sx: { minWidth: 120, borderRadius: 1.5 } } }}
+      >
+        <MenuItem onClick={() => { setAnchor(null); onEdit(); }} sx={{ gap: 0 }}>
+          <ListItemIcon sx={{ minWidth: 0 }}>
+            <EditIcon fontSize="small" />
+          </ListItemIcon>
+          Edit
+        </MenuItem>
+        <MenuItem onClick={() => { setAnchor(null); onDelete(); }} sx={{ gap: 0, color: "error.main" }}>
+          <ListItemIcon sx={{ minWidth: 0, color: "error.main" }}>
+            <DeleteIcon fontSize="small" />
+          </ListItemIcon>
+          Delete
+        </MenuItem>
+      </Menu>
+    </>
+  );
+}
 
 export default function CoursesList() {
   const dispatch = useDispatch();
@@ -46,16 +84,9 @@ export default function CoursesList() {
   const [selectedCourse, setSelectedCourse] = React.useState(null);
   const [openDelete, setOpenDelete] = React.useState(false);
   const [deleteCourse, setDeleteCourse] = React.useState(0);
-
-  // NEW: Search State
-  const [search, setSearch] = useState("");
-
-  // Filter logic (client-side)
-  const filteredCourses = allCourses?.filter(
-    (c) =>
-      c?.title?.toLowerCase().includes(search.toLowerCase()) ||
-      c?.description?.toLowerCase().includes(search.toLowerCase())
-  );
+  const [rows, setRows] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const defaultNoRows = {
     title: "No Course Found",
@@ -72,7 +103,51 @@ export default function CoursesList() {
     setOpenDelete(true);
   };
 
-  const columns = [
+  const handleFetchData = useCallback(async (queryString) => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams(queryString);
+      const page = parseInt(params.get("page") || "1", 10);
+      const limit = parseInt(params.get("limit") || "10", 10);
+      const q = (params.get("q") || "").trim().toLowerCase();
+      const sortBy = params.get("sort_by") || "";
+      const sortOrder = params.get("sort_order") || "asc";
+
+      let working = Array.isArray(allCourses) ? [...allCourses] : [];
+
+      if (q) {
+        working = working.filter((course) => {
+          const title = String(course?.title || "").toLowerCase();
+          const description = String(course?.description || "").toLowerCase();
+          return title.includes(q) || description.includes(q);
+        });
+      }
+
+      if (sortBy) {
+        const direction = sortOrder === "desc" ? -1 : 1;
+        working.sort((left, right) => {
+          const leftValue = left?.[sortBy];
+          const rightValue = right?.[sortBy];
+          if (leftValue == null && rightValue == null) return 0;
+          if (leftValue == null) return -1 * direction;
+          if (rightValue == null) return 1 * direction;
+          if (typeof leftValue === "number" && typeof rightValue === "number") {
+            return (leftValue - rightValue) * direction;
+          }
+          return String(leftValue).localeCompare(String(rightValue), undefined, { numeric: true, sensitivity: "base" }) * direction;
+        });
+      }
+
+      const start = (page - 1) * limit;
+      const end = start + limit;
+      setTotal(working.length);
+      setRows(working.slice(start, end));
+    } finally {
+      setLoading(false);
+    }
+  }, [allCourses]);
+
+  const columns = useMemo(() => [
     {
       field: "id",
       headerName: "ID",
@@ -144,37 +219,16 @@ export default function CoursesList() {
     {
       field: "actions",
       headerName: "ACTIONS",
-      flex: 1,
-      maxWidth: 120,
+      pinned: "right",
+      minWidth: 60,
+      maxWidth: 60,
       sortable: false,
       align: "center",
       renderCell: (params) => (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "start",
-            alignItems: "center",
-            gap: 1,
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          <IconButton
-            color="primary"
-            size="small"
-            onClick={() => openUpdateCourse(params.row)}
-          >
-            <EditIcon fontSize="small" />
-          </IconButton>
-
-          <IconButton
-            color="error"
-            size="small"
-            onClick={() => openDeleteCourse(params.row.id)}
-          >
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-        </Box>
+        <ActionsCell
+          onEdit={() => openUpdateCourse(params.row)}
+          onDelete={() => openDeleteCourse(params.row.id)}
+        />
       ),
     },
     {
@@ -206,7 +260,7 @@ export default function CoursesList() {
         </Box>
       ),
     },
-  ];
+  ], [navigate]);
 
   return (
     <Box p={2}>
@@ -233,7 +287,7 @@ export default function CoursesList() {
               sx={{ color: "var(--textPrimary)", mb: 0.3, p: .7 }}
             >
               <Button disabled>
-                Total Courses: {filteredCourses?.length ?? 0}
+                Total Courses: {total}
               </Button>
             </Typography>
           </Box>
@@ -246,29 +300,6 @@ export default function CoursesList() {
             Add Course
           </Button>
         </Box>
-        {/* 
-        <TextField
-          size="medium"
-          fullWidth
-          placeholder="Search courses..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          sx={{
-            mt: 1,
-            backgroundColor: "white",
-            borderRadius: 2,
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 2,
-            },
-          }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon sx={{ color: "var(--textSecondary)" }} />
-              </InputAdornment>
-            ),
-          }}
-        /> */}
       </Box>
 
       {/* Dialogs */}
@@ -294,10 +325,15 @@ export default function CoursesList() {
 
       {/* DATATABLE */}
       <DataTableV1
-        rows={filteredCourses}
+        rows={rows}
+        totalCount={total}
+        loading={loading}
         columns={columns}
         noRowsContent={defaultNoRows}
-        serverSide={false}
+        serverSide
+        tableKey="courses-table"
+        tableName="courses"
+        onFetchData={handleFetchData}
       />
     </Box>
   );

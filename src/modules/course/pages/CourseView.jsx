@@ -63,6 +63,7 @@ const CourseView = () => {
     const lastAnalyticsRef = useRef(0);
     const userIdRef = useRef(null);
     const courseIdRef = useRef(null);
+    const topicIdRef = useRef(0);
     const curriculumLenRef = useRef(0);
     const totalRef = useRef(0);
     const completedRef = useRef(0);
@@ -313,6 +314,18 @@ const CourseView = () => {
         return curriculum[topicIndex]?.lessons?.[lessonIndex] || null;
     };
 
+    // Keep frequently-used IDs/counts in refs so video callbacks always use fresh values.
+    useEffect(() => {
+        userIdRef.current = user?.id || null;
+        courseIdRef.current = courseDetail?.id || null;
+        curriculumLenRef.current = curriculum.length || 0;
+        totalRef.current = total || 0;
+        completedRef.current = completed || 0;
+
+        const pos = selectedLesson ? locateLesson(selectedLesson.id) : null;
+        topicIdRef.current = pos ? (curriculum[pos.topicIndex]?.id || 0) : 0;
+    }, [user?.id, courseDetail?.id, curriculum, total, completed, selectedLesson?.id, locateLesson]);
+
     // ================================================
     // OPEN LESSON
     // ================================================
@@ -485,26 +498,18 @@ const CourseView = () => {
         lastSaveRef.current = 0;
         lastAnalyticsRef.current = Math.floor(video.currentTime || 0);
 
-        // keep stable refs updated for the effect to avoid re-subscribing
-        userIdRef.current = user?.id || null;
-        courseIdRef.current = courseDetail?.id || null;
-        curriculumLenRef.current = curriculum.length || 0;
-        totalRef.current = total || 0;
-        completedRef.current = completed || 0;
-
-        const pos = selectedLesson ? locateLesson(selectedLesson.id) : null;
-        const topicId = pos ? (curriculum[pos.topicIndex]?.id || 0) : 0;
-
         const safeUpdateProgress = async (watched_seconds, total_seconds) => {
             try {
                 const uid = userIdRef.current;
                 const cid = courseIdRef.current;
-                if (!uid || !cid) return;
+                const tid = topicIdRef.current;
+                const lid = selectedLesson?.id;
+                if (!uid || !cid || !tid || !lid) return;
                 await updateLessonProgress({
                     user_id: uid,
                     course_id: cid,
-                    topic_id: topicId,
-                    lesson_id: selectedLesson.id,
+                    topic_id: tid,
+                    lesson_id: lid,
                     watched_seconds,
                     total_seconds,
                     total_topics: curriculumLenRef.current,

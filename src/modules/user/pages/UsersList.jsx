@@ -7,10 +7,18 @@ import {
     Drawer,
     IconButton,
 } from "@mui/material";
+import {
+    Tooltip,
+    Menu,
+    MenuItem,
+    ListItemIcon,
+} from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 import { useNavigate } from "react-router-dom";
 
@@ -24,6 +32,42 @@ import useRole from "../../../hooks/useRole";
 import axiosInstance from "../../../apiClient/axiosInstance";
 
 /* ========================================================= */
+
+function ActionsCell({ onEdit, onDelete }) {
+    const [anchor, setAnchor] = useState(null);
+    const open = Boolean(anchor);
+
+    return (
+        <>
+            <Tooltip title="More" placement="top" disableInteractive>
+                <IconButton size="small" onClick={(event) => setAnchor(event.currentTarget)} sx={{ color: "var(--dark)" }}>
+                    <MoreVertIcon fontSize="small" />
+                </IconButton>
+            </Tooltip>
+            <Menu
+                anchorEl={anchor}
+                open={open}
+                onClose={() => setAnchor(null)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+                slotProps={{ paper: { elevation: 2, sx: { minWidth: 120, borderRadius: 1.5 } } }}
+            >
+                <MenuItem onClick={() => { setAnchor(null); onEdit(); }} sx={{ gap: 0 }}>
+                    <ListItemIcon sx={{ minWidth: 0 }}>
+                        <EditIcon fontSize="small" />
+                    </ListItemIcon>
+                    Edit
+                </MenuItem>
+                <MenuItem onClick={() => { setAnchor(null); onDelete(); }} sx={{ gap: 0, color: "error.main" }}>
+                    <ListItemIcon sx={{ minWidth: 0, color: "error.main" }}>
+                        <DeleteOutlineIcon fontSize="small" />
+                    </ListItemIcon>
+                    Delete
+                </MenuItem>
+            </Menu>
+        </>
+    );
+}
 
 export default function UserList() {
     const navigate = useNavigate();
@@ -191,27 +235,16 @@ export default function UserList() {
             {
                 field: "actions",
                 headerName: "ACTIONS",
-                maxWidth: 120,
+                pinned: "right",
+                minWidth: 60,
+                maxWidth: 60,
                 sortable: false,
                 align: "center",
                 renderCell: (params) => (
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                        <IconButton
-                            size="small"
-                            color="primary"
-                            onClick={() => openEdit(params.row)}
-                        >
-                            <EditIcon fontSize="small" />
-                        </IconButton>
-
-                        {/* <IconButton
-                            size="small"
-                            color="error"
-                            onClick={() => handleDelete(params.row.id)}
-                        >
-                            <DeleteIcon fontSize="small" />
-                        </IconButton> */}
-                    </Box>
+                    <ActionsCell
+                        onEdit={() => openEdit(params.row)}
+                        onDelete={() => handleDelete(params.row.id)}
+                    />
                 ),
             },
             {

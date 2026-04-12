@@ -88,6 +88,21 @@ const buildActionChipSx = (action) => {
     return { color: "info.main", backgroundColor: "rgba(59,130,246,0.12)" };
 };
 
+const getDefaultDateRange = () => {
+    const now = new Date();
+
+    const from = new Date(now);
+    from.setHours(0, 0, 0, 0);
+
+    const to = new Date(now);
+    to.setHours(23, 59, 59, 999);
+
+    return {
+        from: from.toISOString(),
+        to: to.toISOString(),
+    };
+};
+
 export default function AuditLogPage() {
     const { setTitleContainer, setContainerDescription, showError, showLoader, hideLoader } = useCommon();
     const showErrorRef = useRef(showError);
@@ -98,14 +113,17 @@ export default function AuditLogPage() {
     const [rows, setRows] = useState([]);
     const [loading, setLoading] = useState(false);
     const [userOptions, setUserOptions] = useState([]);
-    const [filters, setFilters] = useState({
-        user: null,
-        action: "",
-        status: "",
-        entity: "",
-        search: "",
-        from: "",
-        to: "",
+    const [filters, setFilters] = useState(() => {
+        const defaultRange = getDefaultDateRange();
+        return {
+            user: null,
+            action: "",
+            status: "",
+            entity: "",
+            search: "",
+            from: defaultRange.from,
+            to: defaultRange.to,
+        };
     });
 
     useEffect(() => {
@@ -123,12 +141,12 @@ export default function AuditLogPage() {
 
     const loadUsers = useCallback(async (searchText = "") => {
         try {
-            const response = await httpClient.formAutocomplete({
+            const response = await httpClient.formSearch({
                 table: "users",
                 columns: ["id", "username", "email"],
                 where: {},
                 globalSearch: searchText,
-                limit: 20,
+                limit: 10,
             });
 
             const list = response?.data?.response?.data || response?.data?.response || response?.data || [];
@@ -155,12 +173,12 @@ export default function AuditLogPage() {
                 ...(filters.entity ? { entity: filters.entity } : {}),
             };
 
-            const response = await httpClient.formAutocomplete({
+            const response = await httpClient.formSearch({
                 table: "audit_logs",
                 columns: AUDIT_COLUMNS,
                 where,
                 globalSearch: filters.search,
-                limit: 250,
+                limit: 50,
             });
 
             const list = response?.data?.response?.data || response?.data?.response || response?.data || [];
@@ -168,7 +186,7 @@ export default function AuditLogPage() {
 
             let userMap = new Map();
             if (userIds.length) {
-                const usersResponse = await httpClient.formAutocomplete({
+                const usersResponse = await httpClient.formSearch({
                     table: "users",
                     columns: ["id", "username", "email"],
                     where: { id: userIds },

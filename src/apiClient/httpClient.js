@@ -134,7 +134,8 @@ export const httpClient = {
     insertForm: async (data) => axiosInstance.post(API_ENDPOINTS.INSERT_FORM, data),
     updateForm: async (data) => axiosInstance.put(API_ENDPOINTS.UPDATE_FORM, data),
     deleteForm: async (data) => axiosInstance.delete(API_ENDPOINTS.DELETE_FORM, data),
-    formAutocomplete: async (data) => axiosInstance.post("/form-service/autocomplete", data),
-
+    formSearch: async (data) => axiosInstance.post("/form-service/autocomplete", data),
+    formSearch: async (data) => axiosInstance.post("/form-service/search", data),
+    commonSearch: async (data) => axiosInstance.post("/common-service/search", data),
     execute: async (name, data) => axiosInstance.post(API_ENDPOINTS.EXECUTE + name, data),
 };
