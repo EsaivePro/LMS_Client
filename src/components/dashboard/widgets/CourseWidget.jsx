@@ -106,6 +106,17 @@ function CourseCard({ course, index, width = 300 }) {
                 willChange: "transform, opacity",
                 "&:hover": { transform: "scale(1.02)", boxShadow: 2 },
                 "&:hover .course-image": { transform: "scale(1.04)" },
+                background:
+                    "linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%)",
+                // boxShadow: '0 4px 24px 0 rgba(31, 38, 135, 0.10)',
+                transition: "box-shadow 0.35s cubic-bezier(.4,2,.6,1), transform 0.35s cubic-bezier(.4,2,.6,1)",
+                position: 'relative',
+                overflow: 'hidden',
+                '&:hover': {
+                    transform: "translateY(-8px) scale(1.03)",
+                    // boxShadow: '0 12px 32px 0 rgba(31,38,135,0.18)',
+                    borderColor: 'var(--primaryMedium, #4f8cff)',
+                },
             }}
         >
             {/* ================= IMAGE HEADER ================= */}

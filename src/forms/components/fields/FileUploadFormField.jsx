@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from "react";
 import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
 import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import { presignAndUploadFile } from "../../../services/awscloud/S3Services";
+import { uploadFile } from "../../../services/StorageProvider";
 import { buildErrorAdornment, buildLabel, clearInvalid, commonProps } from "./fieldHelpers";
 
 const getDisplayName = (value) => {
@@ -40,12 +40,22 @@ export default function FileUploadFormField({ field, value, onChange, editing, i
         try {
             const uploadPath = field.uploadPath || "uploads/forms";
             const safeFileName = `${Date.now()}-${file.name}`;
-            const { cdnUrl } = await presignAndUploadFile({
+            const response = await uploadFile({
                 file,
                 key: `${uploadPath}/${safeFileName}`,
+                bucket: field.bucket || 'lms-files',
             });
-
-            onChange(field.name, cdnUrl);
+            // Handle new response structure (flat or nested)
+            let url = null;
+            if (response && response.signedUrl) {
+                url = response.signedUrl;
+            } else if (response && response.data && response.data.signedUrl) {
+                url = response.data.signedUrl;
+            } else if (response && (response.publicUrl || response.cdnUrl)) {
+                url = response.publicUrl || response.cdnUrl;
+            }
+            if (!url) throw new Error("No file URL returned from upload");
+            onChange(field.name, url);
             clearInvalid(field.name, setInvalidFields);
         } catch (error) {
             showError?.(field.uploadErrorMessage || "File upload failed");
