@@ -132,8 +132,21 @@ const CurriculumView = ({
                             {topic.lessons.map((lesson, i) => {
                                 const isSelected = selectedLesson?.id === lesson.id;
                                 const duration = secondsToTime(lesson.duration || 0);
-                                const percent = lesson.progress_percent ?? lesson.progressPercent ?? 0;
-                                const isCompleted = lesson.is_completed ?? lesson.isCompleted ?? false;
+                                const lessonProgress = localProgress?.[lesson.id] || {};
+                                const watchedSeconds = lessonProgress.lastPosition ?? lessonProgress.watchedSeconds ?? lesson.watched_seconds ?? 0;
+
+                                const apiPercent = lesson.progress_percent ?? lesson.progressPercent ?? 0;
+                                const isCompleted = lessonProgress.completed ?? lesson.is_completed ?? lesson.isCompleted ?? false;
+                                let livePercent = 0;
+                                if (lesson.duration > 0) {
+                                    livePercent = Math.min(100, Math.round((watchedSeconds / lesson.duration) * 100));
+                                }
+                                let percent = apiPercent;
+                                if (isCompleted) {
+                                    percent = 100;
+                                } else if (livePercent > apiPercent) {
+                                    percent = livePercent;
+                                }
 
                                 return (
                                     <React.Fragment key={lesson.id}>

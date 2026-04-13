@@ -19,6 +19,7 @@ const drawerWidth = 360;
 export default function CourseLayoutDrawer({
     selectedLesson,
     courseProgress,
+    liveCoursePercent,
     selectedLessonProgress,
     urlLessonNotFound,
     signedUrl,
@@ -73,6 +74,7 @@ export default function CourseLayoutDrawer({
                 onMenuClick={handleDrawerToggle}
                 drawerWidth={drawerWidth}
                 courseProgress={courseProgress}
+                liveCoursePercent={liveCoursePercent}
             />
 
             <Box sx={{ display: "flex", width: "100%" }}>

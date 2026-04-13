@@ -73,6 +73,7 @@ const CourseView = () => {
     const [courseProgress, setCourseProgress] = useState([]);
     const [completed, setCompleted] = useState(0);
     const [total, setTotal] = useState(0);
+    const [liveCoursePercent, setLiveCoursePercent] = useState(0);
     const [selectedLesson, setSelectedLesson] = useState(null);
     const [selectedLessonProgress, setSelectedLessonProgress] = useState({ progress_percent: 0, is_completed: false });
     const [signedUrl, setSignedUrl] = useState(null);
@@ -206,14 +207,6 @@ const CourseView = () => {
                 setCourseProgress(found.courseProgress || {});
                 setIsFav(found.courseProgress?.is_favorite || false);
                 setCurriculum(topics);
-                setCompleted((topics || []).reduce((acc, topic) => {
-                    const lessons = topic?.lessons || [];
-                    return acc + lessons.filter((l) => l.is_completed).length;
-                }, 0));
-                setTotal((topics || []).reduce((acc, topic) => {
-                    const lessons = topic?.lessons || [];
-                    return acc + lessons.length;
-                }, 0));
             } else if (!hasFetched.current) {
                 hasFetched.current = true;
                 (async () => {
@@ -228,6 +221,44 @@ const CourseView = () => {
             }
         }
     }, [id, courseDetails, dispatch, getCourseById, enrollmentCoursesByUser]);
+
+    // Recalculate completed/total and live course percent when curriculum or localProgress changes
+    React.useEffect(() => {
+        if (!curriculum || curriculum.length === 0) {
+            setCompleted(0);
+            setTotal(0);
+            setLiveCoursePercent(0);
+            return;
+        }
+        let completedCount = 0;
+        let totalCount = 0;
+        let percentSum = 0;
+        for (const topic of curriculum) {
+            const lessons = topic?.lessons || [];
+            totalCount += lessons.length;
+            for (const lesson of lessons) {
+                // Use localProgress for completion if available, else fallback
+                const lp = localProgress?.[lesson.id];
+                const apiPercent = lesson.progress_percent ?? lesson.progressPercent ?? 0;
+                let livePercent = 0;
+                if (lesson.duration > 0) {
+                    const watchedSeconds = lp?.lastPosition ?? lp?.watchedSeconds ?? lesson.watched_seconds ?? 0;
+                    livePercent = Math.min(100, Math.round((watchedSeconds / lesson.duration) * 100));
+                }
+                let percent = apiPercent;
+                if ((lp?.completed ?? lesson.is_completed ?? lesson.isCompleted)) {
+                    percent = 100;
+                    completedCount++;
+                } else if (livePercent > apiPercent) {
+                    percent = livePercent;
+                }
+                percentSum += percent;
+            }
+        }
+        setCompleted(completedCount);
+        setTotal(totalCount);
+        setLiveCoursePercent(totalCount > 0 ? Math.round(percentSum / totalCount) : 0);
+    }, [curriculum, localProgress]);
 
     // Sync `lid` query param -> selected lesson after curriculum is loaded
     useEffect(() => {
@@ -547,8 +578,8 @@ const CourseView = () => {
                 lastAnalyticsRef.current = current;
             }
 
-            // Update local progress and mark completion when >=90%
-            if (duration > 0 && current / duration >= 0.9) {
+            // Update local progress and mark completion when >=98%
+            if (duration > 0 && current / duration >= 0.98) {
                 persistProgress((prev) => {
                     const updated = { ...prev };
                     const p = updated[selectedLesson.id] || { watchedSeconds: 0, completed: false, lastPosition: 0 };
@@ -663,6 +694,7 @@ const CourseView = () => {
                     <CourseLayoutDrawer
                         selectedLesson={selectedLesson}
                         courseProgress={courseProgress}
+                        liveCoursePercent={liveCoursePercent}
                         signedUrl={signedUrl}
                         // loadingSignedUrl={loadingSignedUrl}
                         user={user}

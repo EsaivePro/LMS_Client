@@ -23,6 +23,8 @@ const CourseHeader = ({
     onMenuClick = () => { },
     drawerWidth,
     courseProgress,
+    completed = 0,
+    total = 0,
 }) => {
     const isMobile = useMediaQuery("(max-width:900px)");
 
@@ -146,8 +148,7 @@ const CourseHeader = ({
                                     color: "var(--textSecondary)",
                                 }}
                             >
-                                {courseProgress?.completed_lessons || 0} of{" "}
-                                {courseDetail?.total_lessons || 0} complete
+                                {completed} of {total} complete
                             </Typography>
                         </Box>
                     </Stack>}
@@ -155,7 +156,7 @@ const CourseHeader = ({
                         <Box sx={{ position: "relative", marginTop: "1px" }}>
                             <CircularProgress
                                 variant="determinate"
-                                value={courseProgress?.progress_percent || 0}
+                                value={liveCoursePercent || 0}
                                 size={isMobile ? 30 : 42}
                                 thickness={3}
                                 sx={{ color: "var(--primary)" }}
@@ -186,8 +187,7 @@ const CourseHeader = ({
                                     color: "var(--onPrimary)",
                                 }}
                             >
-                                {courseProgress?.completed_lessons || 0} of{" "}
-                                {courseDetail?.total_lessons || 0}
+                                {completed} of {total}
                             </Typography>
                         </Box>
                     </Stack>}
