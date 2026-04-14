@@ -42,17 +42,12 @@ export default function FileUploadFormField({ field, value, onChange, editing, i
             const safeFileName = `${Date.now()}-${file.name}`;
             const response = await uploadFile({
                 file,
-                key: `${uploadPath}/${safeFileName}`,
-                bucket: field.bucket || 'lms-files',
+                key: `${uploadPath}/${safeFileName}`
             });
             // Handle new response structure (flat or nested)
             let url = null;
-            if (response && response.signedUrl) {
-                url = response.signedUrl;
-            } else if (response && response.data && response.data.signedUrl) {
-                url = response.data.signedUrl;
-            } else if (response && (response.publicUrl || response.cdnUrl)) {
-                url = response.publicUrl || response.cdnUrl;
+            if (response && response.path) {
+                url = response.path;
             }
             if (!url) throw new Error("No file URL returned from upload");
             onChange(field.name, url);

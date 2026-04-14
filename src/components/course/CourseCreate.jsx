@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { addCourse } from "../../redux/slices/coursesSlice";
 import useCommon from "../../hooks/useCommon";
 import { errorValidation } from "../../utils/resolver.utils";
-import { presignAndUploadFile } from "../../services/awscloud/S3Services";
+import { uploadFile } from "../../services/StorageProvider";
 import { Button } from "@mui/material";
 
 export default function CourseCreate({ openDialog, setOpenDialog }) {
@@ -47,8 +47,8 @@ export default function CourseCreate({ openDialog, setOpenDialog }) {
         // if image selected, upload first and attach URL
         if (selectedImageFile) {
           try {
-            const { cdnUrl } = await presignAndUploadFile({ file: selectedImageFile, key: `images/courses/${Date.now()}-${selectedImageFile.name}` });
-            payload.imageurl = cdnUrl;
+            const { path } = await uploadFile({ file: selectedImageFile, key: `images/courses/${Date.now()}-${selectedImageFile.name}` });
+            payload.imageurl = path;
           } catch (e) {
             hideLoader();
             showError("Image upload failed");

@@ -18,7 +18,8 @@ import {
     Backdrop, Stack
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
-import { presignAndUploadFile, deleteFromS3 } from "../../../services/awscloud/S3Services";
+import { deleteFile } from "../../../services/StorageProvider";
+import { uploadFile } from "../../../services/StorageProvider";
 import { errorValidation, secondsToTime } from "../../../utils/resolver.utils";
 import useCommon from "../../../hooks/useCommon";
 import { CONSTANTS } from "../../../constants";
@@ -170,7 +171,7 @@ export default function LessonHandler({
             // reset progress and upload with progress callback
             setUploadProgress(0);
             hideLoader();
-            const result = await presignAndUploadFile({
+            const result = await uploadFile({
                 file,
                 key,
                 onProgress: (pct) => {
@@ -185,7 +186,7 @@ export default function LessonHandler({
             // showLoader();
             setUploadProgress(100);
             // small delay to let UI show 100% progress, then reset in caller
-            return result.cdnUrl;
+            return result?.path;
         } catch (e) {
             console.error("Upload error:", e);
             showError(CONSTANTS?.SOMETING_WENT_WORNG_IN_SERVER);
@@ -204,7 +205,7 @@ export default function LessonHandler({
             if (oldLesson?.video_url) {
                 s3Delete = false;
                 showLoader();
-                s3Delete = !errorValidation(await deleteFromS3(oldLesson.video_url));
+                s3Delete = !errorValidation(await deleteFile(oldLesson?.video_url));
                 hideLoader();
             }
 
@@ -231,7 +232,7 @@ export default function LessonHandler({
         // Replace old file → delete existing from S3
         if (selectedFile && lessonForm.video_url) {
             showLoader();
-            const s3DeleteResponse = await deleteFromS3(lessonForm.video_url);
+            const s3DeleteResponse = await deleteFile(lessonForm?.video_url);
             hideLoader();
             if (errorValidation(s3DeleteResponse)) {
                 showError(CONSTANTS?.SOMETING_WENT_WORNG_IN_SERVER);

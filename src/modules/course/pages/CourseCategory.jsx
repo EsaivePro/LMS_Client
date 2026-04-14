@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import useCommon from "../../../hooks/useCommon";
-import { presignAndUploadFile } from "../../../services/awscloud/S3Services";
+import { uploadFile } from "../../../services/StorageProvider";
 import DataTableV1 from "../../../components/common/table/DataTableV1";
 import ShowPopup from "../../../components/common/dialog/ShowPopup";
 import SlideDialog from "../../../components/common/dialog/SlideDialog";
@@ -60,9 +60,9 @@ export default function CourseCategory() {
         try {
             if (selectedImageFile) {
                 showLoader();
-                const { cdnUrl } = await presignAndUploadFile({ file: selectedImageFile, key: `images/course-categories/${Date.now()}-${selectedImageFile.name}` });
+                const { path } = await uploadFile({ file: selectedImageFile, key: `images/course-categories/${Date.now()}-${selectedImageFile.name}` });
                 hideLoader();
-                form.imageurl = cdnUrl;
+                form.imageurl = path;
             }
         } catch (e) {
             hideLoader();
@@ -98,9 +98,9 @@ export default function CourseCategory() {
         try {
             if (selectedImageFile) {
                 showLoader();
-                const { cdnUrl } = await presignAndUploadFile({ file: selectedImageFile, key: `images/course-categories/${editing.id || Date.now()}-${selectedImageFile.name}` });
+                const { path } = await uploadFile({ file: selectedImageFile, key: `images/course-categories/${editing.id || Date.now()}-${selectedImageFile.name}` });
                 hideLoader();
-                form.imageurl = cdnUrl;
+                form.imageurl = path;
             }
         } catch (e) {
             hideLoader();

@@ -1,6 +1,6 @@
 // src/services/awscloud/StorageProvider.js
 import { presignAndUploadFile, deleteFromS3 } from "./awscloud/S3Services";
-import { supabasePresignAndUploadFile, deleteFromSupabase } from "../services/supabasecloud/SupabaseStorageService";
+import { supabasePresignAndUploadFile, getSupabaseSignedUrl, deleteFromSupabase } from "../services/supabasecloud/SupabaseStorageService";
 
 // Configuration: 's3' or 'supabase'
 const STORAGE_BACKEND = 'supabase'; // or 's3'
@@ -9,19 +9,26 @@ export function getStorageBackend() {
     return STORAGE_BACKEND;
 }
 
-export async function uploadFile({ file, key, onProgress, bucket }) {
+export async function uploadFile({ file, key, onProgress }) {
     if (STORAGE_BACKEND === 'supabase') {
-        return await supabasePresignAndUploadFile({ file, key, bucket, onProgress });
+        return await supabasePresignAndUploadFile({ file, key, onProgress });
     } else {
         return await presignAndUploadFile({ file, key, onProgress });
     }
 }
 
-export async function deleteFile({ url, bucket, key }) {
+export async function getSignedUrl({ key }) {
     if (STORAGE_BACKEND === 'supabase') {
-        // url or key must be provided
-        return await deleteFromSupabase({ bucket, key: key || url });
+        return await getSupabaseSignedUrl({ key });
     } else {
-        return await deleteFromS3(url);
+        // TODO: Implement getSignedUrl for S3 if needed, or return the public URL if files are public
+    }
+}
+
+export async function deleteFile({ key }) {
+    if (STORAGE_BACKEND === 'supabase') {
+        return await deleteFromSupabase({ key });
+    } else {
+        return await deleteFromS3({ key });
     }
 }

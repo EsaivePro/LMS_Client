@@ -39,6 +39,7 @@ import { useNavigate } from "react-router-dom";
 import { secondsToTime, formatDateTimeWithSeconds } from "../../../utils/resolver.utils";
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 import CloseIcon from '@mui/icons-material/Close';
+import { getSignedUrl } from "../../../services/StorageProvider";
 // import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 // import MenuBookIcon from "@mui/icons-material/MenuBook";
 // import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
@@ -554,13 +555,13 @@ export default function CourseCategoryWidget({ title }) {
 
                 const resp = await httpClient.getUserEnrolledCourseCategory(user.id);
                 const arr = normalizeArray(resp?.data ?? resp ?? {});
-                const mapped = arr.map((it) => ({
+                const mapped = await Promise.all(arr.map(async (it) => ({
                     id: it.id,
                     title: it.title || it.name || it.categoryName || `Category ${it.id}`,
                     description: it.description || it.summary || "",
-                    image: it.imageurl || "/course/default-course-card.png",
+                    image: await getSignedUrl({ key: it?.imageurl }) || "/course/default-course-card.png",
                     raw: it,
-                }));
+                })));
 
                 if (mounted) setCategories(mapped);
             } catch (err) {

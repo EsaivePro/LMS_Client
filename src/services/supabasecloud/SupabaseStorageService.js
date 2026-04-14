@@ -4,12 +4,11 @@ import axiosInstance from "../../apiClient/axiosInstance";
  * Upload file to Supabase Storage (multipart/form-data)
  * Returns: { publicUrl, key, ... }
  */
-export async function supabasePresignAndUploadFile({ file, bucket = "default", key, onProgress } = {}) {
+export async function supabasePresignAndUploadFile({ file, key, onProgress } = {}) {
     // The backend expects the file as multipart/form-data field 'file', not in req.body
     try {
         const formData = new FormData();
         formData.append("file", file); // This will be available as req.file on backend
-        formData.append("bucket", bucket);
         if (key) formData.append("key", key);
 
         // DO NOT send as JSON! Must be multipart/form-data
@@ -46,11 +45,11 @@ export async function supabasePresignAndUploadFile({ file, bucket = "default", k
  * Get signed URL for secure/private file access
  * Returns: signedUrl (string)
  */
-export async function getSupabaseSignedUrl({ bucket, key, expiresIn = 60 } = {}) {
+export async function getSupabaseSignedUrl({ key, expiresIn = 60 } = {}) {
     try {
         const res = await axiosInstance.post(
             "/upload-service/supabase/presign",
-            { bucket, key, expiresIn }
+            { key, expiresIn }
         );
         if (res.data?.error) {
             throw new Error(res.data.message || "Supabase presign failed");
@@ -65,14 +64,14 @@ export async function getSupabaseSignedUrl({ bucket, key, expiresIn = 60 } = {})
 
 /**
  * Delete file from Supabase Storage
- * Accepts: { bucket, key }
+ * Accepts: { key }
  * Returns: true on success
  */
-export async function deleteFromSupabase({ bucket, key } = {}) {
+export async function deleteFromSupabase({ key } = {}) {
     try {
         const res = await axiosInstance.post(
             "/upload-service/supabase/delete",
-            { bucket, key }
+            { key }
         );
         if (res.data?.error) {
             throw new Error(res.data.message || "Supabase delete failed");
