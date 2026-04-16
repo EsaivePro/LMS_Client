@@ -98,12 +98,33 @@ export default function createHeaderHandlers({
                 (k) => currentValues[k]?.__pendingFile
             );
             if (pendingFileKeys.length > 0) {
+                const totalPendingFiles = pendingFileKeys.length;
+                const updateUploadProgress = (fileIndex, filePercent = 0) => {
+                    const safePercent = Number.isFinite(Number(filePercent))
+                        ? Math.max(0, Math.min(100, Math.round(Number(filePercent))))
+                        : 0;
+                    const overallProgress = Math.round(
+                        ((fileIndex * 100) + safePercent) / totalPendingFiles
+                    );
+
+                    showLoader({
+                        message: `Uploading file ${fileIndex + 1} of ${totalPendingFiles}`,
+                        progress: overallProgress,
+                        showProgress: true,
+                    });
+                };
+
                 let resolvedValues = { ...currentValues };
-                for (const fieldName of pendingFileKeys) {
+                for (const [fileIndex, fieldName] of pendingFileKeys.entries()) {
                     const { __pendingFile: file, existingId, fieldConfig } = currentValues[fieldName];
                     const uploadPath = fieldConfig?.uploadPath || "uploads/forms";
                     const safeFileName = `${Date.now()}-${file.name}`;
-                    const storageResponse = await uploadFile({ file, key: `${uploadPath}/${safeFileName}` });
+                    updateUploadProgress(fileIndex, 0);
+                    const storageResponse = await uploadFile({
+                        file,
+                        key: `${uploadPath}/${safeFileName}`,
+                        onProgress: (filePercent) => updateUploadProgress(fileIndex, filePercent),
+                    });
                     if (!storageResponse?.path) throw new Error("No file path returned from upload");
 
                     const extension = file.name.includes(".") ? file.name.split(".").pop() : null;
@@ -138,6 +159,8 @@ export default function createHeaderHandlers({
 
                     resolvedValues[fieldName] = fileId;
                 }
+
+                showLoader("Saving form...");
                 setValues(resolvedValues);
                 currentValues = resolvedValues;
             }

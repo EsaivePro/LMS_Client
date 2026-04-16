@@ -3,6 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   loadingOverlay: false,
   loadingMessage: "Please wait",
+  loadingProgress: null,
+  loadingShowProgress: false,
   alert: { open: false, message: "", type: "" },
   sidebarOpen: false,
   modal: { open: false },
@@ -21,12 +23,30 @@ const commonSlice = createSlice({
   initialState,
   reducers: {
     showLoading: (state, action) => {
+      const payload = action?.payload;
+
       state.loadingOverlay = true;
-      state.loadingMessage = action?.payload;
+      if (payload && typeof payload === "object" && !Array.isArray(payload)) {
+        const progress = Number(payload.progress);
+        state.loadingMessage = payload.message || "Please wait";
+        state.loadingProgress = Number.isFinite(progress)
+          ? Math.max(0, Math.min(100, Math.round(progress)))
+          : null;
+        state.loadingShowProgress = Boolean(
+          payload.showProgress ?? Number.isFinite(progress)
+        );
+        return;
+      }
+
+      state.loadingMessage = payload || "Please wait";
+      state.loadingProgress = null;
+      state.loadingShowProgress = false;
     },
     hideLoading: (state) => {
       state.loadingOverlay = false;
       state.loadingMessage = "";
+      state.loadingProgress = null;
+      state.loadingShowProgress = false;
     },
     successAlert: (state, action) => {
       state.alert = { open: true, type: "success", message: action.payload };
@@ -76,12 +96,16 @@ const commonSlice = createSlice({
       (action) => action.type.endsWith('/fulfilled'),
       (state) => {
         state.loadingOverlay = false;
+        state.loadingProgress = null;
+        state.loadingShowProgress = false;
       }
     );
     builder.addMatcher(
       (action) => action.type.endsWith('/rejected'),
       (state) => {
         state.loadingOverlay = false;
+        state.loadingProgress = null;
+        state.loadingShowProgress = false;
       }
     );
   }

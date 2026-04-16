@@ -22,6 +22,8 @@ const useCommon = () => {
     // Selectors
     const loadingOverlay = useSelector((state) => state.common.loadingOverlay);
     const loadingMessage = useSelector((state) => state.common.loadingMessage)
+    const loadingProgress = useSelector((state) => state.common.loadingProgress);
+    const loadingShowProgress = useSelector((state) => state.common.loadingShowProgress);
     const alert = useSelector((state) => state.common.alert);
     const sidebarOpen = useSelector((state) => state.common.sidebarOpen);
     const modal = useSelector((state) => state.common.modal);
@@ -56,6 +58,8 @@ const useCommon = () => {
         // state
         loadingOverlay,
         loadingMessage,
+        loadingProgress,
+        loadingShowProgress,
         alert,
         sidebarOpen,
         modal,
