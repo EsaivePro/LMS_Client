@@ -1,4 +1,5 @@
 import React from "react";
+import { VimeoPlayer } from "../../components/common/video";
 import {
   Box,
   Paper,
@@ -69,6 +70,14 @@ export default function Dashboard() {
   }, [dispatch]);
   return (
     <Box sx={{ p: { xs: 2, sm: 3 }, mt: 4, backgroundColor: "var(--lightgrey)", minHeight: "100vh" }}>
+
+      {/* ---------- Vimeo Video Player Example ---------- */}
+      <Box sx={{ maxWidth: 800, mx: "auto", mb: 4 }}>
+        <Typography variant="h6" fontWeight={600} gutterBottom>
+          Vimeo Video Player Demo
+        </Typography>
+        <VimeoPlayer videoId="1182860114" title="Sample Vimeo Video" />
+      </Box>
 
       {/* ---------- Summary Cards ---------- */}
       <Box

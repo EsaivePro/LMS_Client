@@ -33,7 +33,7 @@ export async function supabasePresignAndUploadFile({ file, key, onProgress } = {
         }
 
         // Should return { signedUrl, path, fileName, ... }
-        return response.data.data;
+        return response.data?.response?.data;
     } catch (err) {
         console.error("Supabase upload failed:", err);
         throw err;

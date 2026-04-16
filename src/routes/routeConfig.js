@@ -1,3 +1,4 @@
+import FileUploadPage from "../pages/FileUploadPage";
 import AdminDashboard from "../modules/dashboard/pages/AdminDashBoard";
 import CoursesList from "../modules/course/pages/CoursesList";
 import CourseView from "../modules/course/pages/CourseView";
@@ -25,6 +26,8 @@ import RoleManage from "../modules/forms/pages/RoleManage";
 import UserManage from "../modules/forms/pages/UserManage";
 import ModuleCategoryManage from "../modules/forms/pages/ModuleCategoryManage";
 import AuditLogPage from "../modules/audit/pages/AuditLogPage";
+import UploadFilesPage from "../modules/upload/pages/UploadFilesPage";
+import VimeoDemoPage from "../pages/video/VimeoDemoPage";
 
 // Icons for sidebar menu
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -44,6 +47,8 @@ import PeopleIcon from "@mui/icons-material/People";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import UserList from "../modules/user/pages/UsersList";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import LiveTvIcon from "@mui/icons-material/LiveTv";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 export const protectedRoutes = [
     // ─────────────────────────────────────────────
@@ -166,6 +171,18 @@ export const protectedRoutes = [
         section: "Reports/Analytics",
         label: "Audit logs",
         icon: <ReceiptLongIcon />,
+        type: "item",
+    },
+    {
+        path: "/upload/files",
+        title: "File Upload Manager",
+        description: "Browse, add, edit, and remove tracked file records.",
+        permission: "user.management",
+        element: <UploadFilesPage />,
+        sideMenu: true,
+        section: "Reports/Analytics",
+        label: "File Uploads",
+        icon: <CloudUploadIcon />,
         type: "item",
     },
     {
@@ -310,6 +327,28 @@ export const protectedRoutes = [
         element: <ExamSummaryPage />,
         sideMenu: false,
     },
+
+    {
+        path: "/demo",
+        title: "Demo",
+        description: "Demo video for the platform.",
+        permission: "exam.management",
+        element: <VimeoDemoPage />,
+        sideMenu: false,
+    },
+
+    {
+        path: "/video/vimeo-demo",
+        title: "Vimeo Video Demo",
+        description: "Standalone Vimeo video player demo page.",
+        permission: "dashboard.view", // Or adjust as needed
+        element: <VimeoDemoPage />,
+        sideMenu: true,
+        section: "Demo",
+        label: "Vimeo Video Demo",
+        icon: <LiveTvIcon />,
+        type: "item",
+    }
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════

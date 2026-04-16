@@ -81,6 +81,7 @@ export default function FormRender({
                 <FileUploadFormField
                     field={field}
                     value={value}
+                    formValues={formValues}
                     onChange={onChange}
                     editing={editing}
                     invalidFields={invalidFields}

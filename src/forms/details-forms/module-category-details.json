@@ -1,5 +1,6 @@
 {
     "title": "Module Category Details",
+    "module": "module_category",
     "fetchConfig": {
         "endpoint": "/form-service/get",
         "table": "module_category",
@@ -32,7 +33,7 @@
                     "fullWidth": true
                 },
                 {
-                    "name": "imageurl",
+                    "name": "file_id",
                     "label": "Card Image",
                     "type": "fileupload",
                     "accept": "image/*",

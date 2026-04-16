@@ -1,35 +1,22 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
 import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { uploadFile } from "../../../services/StorageProvider";
+import { httpClient } from "../../../apiClient/httpClient";
 import { buildErrorAdornment, buildLabel, clearInvalid, commonProps } from "./fieldHelpers";
 
-const getDisplayName = (value) => {
-    if (!value) return "";
-
-    try {
-        const url = new URL(value);
-        const pathname = url.pathname || "";
-        return decodeURIComponent(pathname.split("/").pop() || value);
-    } catch {
-        return String(value).split("/").pop() || String(value);
-    }
-};
-
-const isImageFile = (value, accept) => {
-    if (!value) return false;
-    if (typeof accept === "string" && accept.includes("image/")) return true;
-    return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(value);
-};
-
-export default function FileUploadFormField({ field, value, onChange, editing, invalidFields, setInvalidFields, showError }) {
+export default function FileUploadFormField({ field, value, formValues, onChange, editing, invalidFields, setInvalidFields, showError }) {
     const inputRef = useRef(null);
     const [uploading, setUploading] = useState(false);
     const [previewOpen, setPreviewOpen] = useState(false);
+    // Tracks display info for the most recently uploaded file in this session
+    const [uploadedFile, setUploadedFile] = useState(null); // { name, path }
 
-    const displayName = useMemo(() => getDisplayName(value), [value]);
-    const showImagePreview = useMemo(() => isImageFile(value, field.accept), [value, field.accept]);
+    const existingImageName = formValues?.["imageurl"];
+    const displayName = uploadedFile?.name ?? (existingImageName ? existingImageName : value ? `File #${value}` : "");
+    const previewUrl = uploadedFile?.path ?? null;
+    const showImagePreview = typeof field.accept === "string" && field.accept.includes("image/");
 
     const handleFileChange = async (event) => {
         const file = event.target.files?.[0];
@@ -40,17 +27,57 @@ export default function FileUploadFormField({ field, value, onChange, editing, i
         try {
             const uploadPath = field.uploadPath || "uploads/forms";
             const safeFileName = `${Date.now()}-${file.name}`;
-            const response = await uploadFile({
+            const storageResponse = await uploadFile({
                 file,
                 key: `${uploadPath}/${safeFileName}`
             });
-            // Handle new response structure (flat or nested)
-            let url = null;
-            if (response && response.path) {
-                url = response.path;
+
+            if (!storageResponse?.path) throw new Error("No file path returned from upload");
+
+            const extension = file.name.includes(".") ? file.name.split(".").pop() : null;
+            const fileType = file.type ? file.type.split("/")[0] : null;
+
+            const fileRecord = {
+                file_name: safeFileName,
+                location: storageResponse.path,
+                mime_type: file.type || null,
+                file_type: fileType,
+                extension: extension,
+                file_size: file.size || null,
+                file_path: storageResponse.path,
+                file_module: uploadPath,
+                is_public: true,
+                status: "active",
+            };
+
+            let fileId = null;
+
+            if (value) {
+                // Update existing upload_files record
+                await httpClient.updateForm({
+                    table: "upload_files",
+                    id: value,
+                    data: fileRecord,
+                });
+                fileId = value;
+            } else {
+                // Insert new upload_files record
+                const res = await httpClient.insertForm({
+                    table: "upload_files",
+                    data: fileRecord,
+                });
+                fileId =
+                    res.data?.data?.id ??
+                    res.data?.response?.id ??
+                    res.data?.data?.insertId ??
+                    res.data?.insertId ??
+                    null;
+                if (!fileId) throw new Error("No file ID returned after insert");
             }
-            if (!url) throw new Error("No file URL returned from upload");
-            onChange(field.name, url);
+
+            setUploadedFile({ name: file.name, path: storageResponse.path });
+            onChange(field.name, fileId);
+            onChange("imageurl", file.name);
             clearInvalid(field.name, setInvalidFields);
         } catch (error) {
             showError?.(field.uploadErrorMessage || "File upload failed");
@@ -96,7 +123,7 @@ export default function FileUploadFormField({ field, value, onChange, editing, i
                     {uploading ? "Uploading..." : (field.buttonLabel || "Upload File")}
                 </Button>
 
-                {value ? (
+                {previewUrl ? (
                     <Button
                         variant="text"
                         color="inherit"
@@ -133,7 +160,7 @@ export default function FileUploadFormField({ field, value, onChange, editing, i
                     {showImagePreview ? (
                         <Box
                             component="img"
-                            src={value}
+                            src={previewUrl}
                             alt={displayName || field.label || "Preview"}
                             sx={{
                                 width: "100%",
@@ -146,7 +173,7 @@ export default function FileUploadFormField({ field, value, onChange, editing, i
                     ) : (
                         <Box
                             component="iframe"
-                            src={value}
+                            src={previewUrl}
                             title={displayName || field.label || "File Preview"}
                             sx={{
                                 width: "100%",

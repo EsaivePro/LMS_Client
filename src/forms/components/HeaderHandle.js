@@ -10,6 +10,7 @@ export default function createHeaderHandlers({
     navigate,
     location,
     values,
+    valuesRef,
     setValues,
     setEditing,
     setTitleContainer,
@@ -75,11 +76,14 @@ export default function createHeaderHandlers({
     const handleSubmit = async (e) => {
         e?.preventDefault?.();
 
+        // Always read the latest values via ref to avoid stale closure issues
+        const currentValues = valuesRef?.current ?? values;
+
         // Validate first — before showLoader so React batching doesn't collapse loader
-        const { valid, invalidFields } = validateFormValues(definition, values);
+        const { valid, invalidFields } = validateFormValues(definition, currentValues);
         if (!valid) {
             setInvalidFields(invalidFields);
-            const section = findFirstInvalidSection(definition, values);
+            const section = findFirstInvalidSection(definition, currentValues);
             if (section) handleScrollTo(section);
             showError("Please fill required fields");
             return;
@@ -89,11 +93,11 @@ export default function createHeaderHandlers({
         showLoader();
         try {
             if (onSubmit) {
-                await onSubmit(values);
+                await onSubmit(currentValues);
                 return;
             }
 
-            const payload = buildFormPayload(definition, values);
+            const payload = buildFormPayload(definition, currentValues);
             if (!payload.table) throw new Error("No table resolved from definition");
 
             if (payload.mode === "insert") {

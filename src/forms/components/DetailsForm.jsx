@@ -26,6 +26,8 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
     const [optionsCache, setOptionsCache] = useState({});
     const [optionsLoading, setOptionsLoading] = useState({});
     const searchTimers = useRef({});
+    const valuesRef = useRef(values);
+    valuesRef.current = values; // Always reflect the latest values for handleSubmit
     const [currentSubmitLabel, setSubmitLabel] = useState(submitLabel);
     const [editing, setEditing] = useState(submitLabel === "Create" || !!initialEditing);
     const [saveKey, setSaveKey] = useState(0);
@@ -56,6 +58,9 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
                     else if (field.default !== undefined) defaults[name] = field.default;
                     else if (overrideNumberDefaults[name] !== undefined) defaults[name] = overrideNumberDefaults[name];
                     else defaults[name] = 0;
+                } else if (field.type === "fileupload") {
+                    defaults[name] = (valueFromData !== undefined && valueFromData !== null) ? valueFromData : (field.default !== undefined ? field.default : "");
+                    defaults["imageurl"] = data["imageurl"] || ""; // Support legacy image_url field for backward compatibility
                 } else {
                     defaults[name] = (valueFromData !== undefined && valueFromData !== null) ? valueFromData : (field.default !== undefined ? field.default : "");
                 }
@@ -140,6 +145,8 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
 
     const handleChange = (name, value) => {
         setValues((v) => ({ ...v, [name]: value }));
+        console.log("Field changed", name, value);
+        console.log("Current form values", { ...valuesRef.current, [name]: value });
         onFieldChange?.(name, value);
     };
 
@@ -331,6 +338,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
         navigate,
         location,
         values,
+        valuesRef,
         setValues,
         setEditing,
         setTitleContainer,
