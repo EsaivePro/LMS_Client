@@ -1,14 +1,11 @@
 import React, { useRef, useState } from "react";
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
 import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import { uploadFile } from "../../../services/StorageProvider";
-import { httpClient } from "../../../apiClient/httpClient";
 import { buildErrorAdornment, buildLabel, clearInvalid, commonProps } from "./fieldHelpers";
 
-export default function FileUploadFormField({ field, value, formValues, onChange, editing, invalidFields, setInvalidFields, showError }) {
+export default function FileUploadFormField({ field, value, formValues, onChange, editing, invalidFields, setInvalidFields }) {
     const inputRef = useRef(null);
-    const [uploading, setUploading] = useState(false);
     const [previewOpen, setPreviewOpen] = useState(false);
     // Tracks display info for the most recently uploaded file in this session
     const [uploadedFile, setUploadedFile] = useState(null); // { name, path }
@@ -18,73 +15,21 @@ export default function FileUploadFormField({ field, value, formValues, onChange
     const previewUrl = uploadedFile?.path ?? null;
     const showImagePreview = typeof field.accept === "string" && field.accept.includes("image/");
 
-    const handleFileChange = async (event) => {
+    const handleFileChange = (event) => {
         const file = event.target.files?.[0];
         event.target.value = "";
         if (!file) return;
 
-        setUploading(true);
-        try {
-            const uploadPath = field.uploadPath || "uploads/forms";
-            const safeFileName = `${Date.now()}-${file.name}`;
-            const storageResponse = await uploadFile({
-                file,
-                key: `${uploadPath}/${safeFileName}`
-            });
+        // Capture the current saved id (null for new records) before overwriting
+        const existingId = value && typeof value !== "object" ? value : null;
 
-            if (!storageResponse?.path) throw new Error("No file path returned from upload");
+        // Store file locally for display — actual upload happens on submit
+        setUploadedFile({ name: file.name, path: null });
 
-            const extension = file.name.includes(".") ? file.name.split(".").pop() : null;
-            const fileType = file.type ? file.type.split("/")[0] : null;
-
-            const fileRecord = {
-                file_name: safeFileName,
-                location: storageResponse.path,
-                mime_type: file.type || null,
-                file_type: fileType,
-                extension: extension,
-                file_size: file.size || null,
-                file_path: storageResponse.path,
-                file_module: uploadPath,
-                is_public: true,
-                status: "active",
-            };
-
-            let fileId = null;
-
-            if (value) {
-                // Update existing upload_files record
-                await httpClient.updateForm({
-                    table: "upload_files",
-                    id: value,
-                    data: fileRecord,
-                });
-                fileId = value;
-            } else {
-                // Insert new upload_files record
-                const res = await httpClient.insertForm({
-                    table: "upload_files",
-                    data: fileRecord,
-                });
-                fileId =
-                    res.data?.data?.id ??
-                    res.data?.response?.id ??
-                    res.data?.data?.insertId ??
-                    res.data?.insertId ??
-                    null;
-                if (!fileId) throw new Error("No file ID returned after insert");
-            }
-
-            setUploadedFile({ name: file.name, path: storageResponse.path });
-            onChange(field.name, fileId);
-            onChange("imageurl", file.name);
-            clearInvalid(field.name, setInvalidFields);
-        } catch (error) {
-            showError?.(field.uploadErrorMessage || "File upload failed");
-            console.error("File upload failed", error);
-        } finally {
-            setUploading(false);
-        }
+        // Signal a pending upload to the form; handleSubmit will process it
+        onChange(field.name, { __pendingFile: file, existingId, fieldConfig: field });
+        onChange("imageurl", file.name);
+        clearInvalid(field.name, setInvalidFields);
     };
 
     return (
@@ -97,10 +42,7 @@ export default function FileUploadFormField({ field, value, formValues, onChange
                 disabled
                 error={!!invalidFields[field.name]}
                 InputProps={{
-                    endAdornment: buildErrorAdornment(
-                        !!invalidFields[field.name],
-                        uploading ? <CircularProgress size={16} sx={{ color: "var(--primary)" }} /> : null
-                    ),
+                    endAdornment: buildErrorAdornment(!!invalidFields[field.name]),
                 }}
             />
 
@@ -111,16 +53,16 @@ export default function FileUploadFormField({ field, value, formValues, onChange
                     type="file"
                     accept={field.accept || "*"}
                     onChange={handleFileChange}
-                    disabled={!editing || !!field.readOnly || uploading}
+                    disabled={!editing || !!field.readOnly}
                 />
 
                 <Button
                     variant="outlined"
-                    startIcon={uploading ? <CircularProgress size={16} sx={{ color: "var(--primary)" }} /> : <UploadFileOutlinedIcon />}
+                    startIcon={<UploadFileOutlinedIcon />}
                     onClick={() => inputRef.current?.click()}
-                    disabled={!editing || !!field.readOnly || uploading}
+                    disabled={!editing || !!field.readOnly}
                 >
-                    {uploading ? "Uploading..." : (field.buttonLabel || "Upload File")}
+                    {field.buttonLabel || "Upload File"}
                 </Button>
 
                 {previewUrl ? (

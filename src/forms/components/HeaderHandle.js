@@ -1,4 +1,5 @@
 import { httpClient } from "../../apiClient/httpClient";
+import { uploadFile } from "../../services/StorageProvider";
 import {
     validateFormValues,
     findFirstInvalidSection,
@@ -77,7 +78,7 @@ export default function createHeaderHandlers({
         e?.preventDefault?.();
 
         // Always read the latest values via ref to avoid stale closure issues
-        const currentValues = valuesRef?.current ?? values;
+        let currentValues = valuesRef?.current ?? values;
 
         // Validate first — before showLoader so React batching doesn't collapse loader
         const { valid, invalidFields } = validateFormValues(definition, currentValues);
@@ -92,6 +93,55 @@ export default function createHeaderHandlers({
 
         showLoader();
         try {
+            // Process any pending file uploads before building the payload
+            const pendingFileKeys = Object.keys(currentValues).filter(
+                (k) => currentValues[k]?.__pendingFile
+            );
+            if (pendingFileKeys.length > 0) {
+                let resolvedValues = { ...currentValues };
+                for (const fieldName of pendingFileKeys) {
+                    const { __pendingFile: file, existingId, fieldConfig } = currentValues[fieldName];
+                    const uploadPath = fieldConfig?.uploadPath || "uploads/forms";
+                    const safeFileName = `${Date.now()}-${file.name}`;
+                    const storageResponse = await uploadFile({ file, key: `${uploadPath}/${safeFileName}` });
+                    if (!storageResponse?.path) throw new Error("No file path returned from upload");
+
+                    const extension = file.name.includes(".") ? file.name.split(".").pop() : null;
+                    const fileType = file.type ? file.type.split("/")[0] : null;
+                    const fileRecord = {
+                        file_name: safeFileName,
+                        location: storageResponse.path,
+                        mime_type: file.type || null,
+                        file_type: fileType,
+                        extension: extension,
+                        file_size: file.size || null,
+                        file_path: storageResponse.path,
+                        file_module: uploadPath,
+                        is_public: true,
+                        status: "active",
+                    };
+
+                    let fileId = null;
+                    if (existingId) {
+                        await httpClient.updateForm({ table: "upload_files", id: existingId, data: fileRecord });
+                        fileId = existingId;
+                    } else {
+                        const res = await httpClient.insertForm({ table: "upload_files", data: fileRecord });
+                        fileId =
+                            res.data?.data?.id ??
+                            res.data?.response?.id ??
+                            res.data?.data?.insertId ??
+                            res.data?.insertId ??
+                            null;
+                        if (!fileId) throw new Error("No file ID returned after insert");
+                    }
+
+                    resolvedValues[fieldName] = fileId;
+                }
+                setValues(resolvedValues);
+                currentValues = resolvedValues;
+            }
+
             if (onSubmit) {
                 await onSubmit(currentValues);
                 return;
