@@ -2,7 +2,25 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import GroupsIcon from "@mui/icons-material/Groups";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import PeopleIcon from "@mui/icons-material/People";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+
+const LABEL_ICON_MAP = {
+    content: LibraryBooksIcon,
+    contents: LibraryBooksIcon,
+    user: PeopleIcon,
+    users: PeopleIcon,
+    member: PeopleIcon,
+    members: PeopleIcon,
+};
+
+function resolveAssignedIcon(singularLabel) {
+    if (!singularLabel) return GroupsIcon;
+    const key = singularLabel.trim().toLowerCase();
+    return LABEL_ICON_MAP[key] || AssignmentIcon;
+}
 import DataTableV2 from "../../components/common/table/DataTableV2";
 import axiosInstance from "../../apiClient/axiosInstance";
 import { formatDateTimeWithSeconds } from "../../utils/resolver.utils";
@@ -49,11 +67,12 @@ export default function RecordAssignedForm({
     onChange,
 }) {
     const navigate = useNavigate();
-    const { showLoader, hideLoader } = useCommon();
+    const { showLoader, hideLoader, showWarning } = useCommon();
     const assignedConfig = field.assignedConfig || {};
     const identityKey = assignedConfig.identityKey || "id";
     const dragDrop = assignedConfig.dragDrop === true;
     const dragOrderBy = assignedConfig.dragOrderBy || null;
+    const maxRecords = assignedConfig.maxRecords || null;
 
     const [rows, setRows] = useState([]);
     const [isDragOrdered, setIsDragOrdered] = useState(false);
@@ -372,6 +391,10 @@ export default function RecordAssignedForm({
 
     const handleSelectionChange = useCallback(
         (ids) => {
+            if (maxRecords !== null && ids.length > maxRecords) {
+                showWarning(`You can only assign up to ${maxRecords} ${assignedConfig.singularLabel || "records"}.`);
+                return;
+            }
             currentSelectedIdsRef.current = ids;
             const idSet = new Set(ids);
 
@@ -395,7 +418,7 @@ export default function RecordAssignedForm({
 
             onChange?.(field.name, buildDelta(ids, false));
         },
-        [field.name, identityKey, dragDrop, buildDelta, onChange]
+        [field.name, identityKey, dragDrop, buildDelta, onChange, maxRecords, showWarning, assignedConfig.singularLabel]
     );
 
     /**
@@ -468,7 +491,7 @@ export default function RecordAssignedForm({
                             transition: "background-color 0.2s ease"
                         }}
                     >
-                        <GroupsIcon sx={{ fontSize: 20, color: "var(--primary)" }} />
+                        {(() => { const Icon = resolveAssignedIcon(assignedConfig.singularLabel); return <Icon sx={{ fontSize: 20, color: "var(--primary)" }} />; })()}
                         <Typography
                             variant="body2"
                             sx={{ fontSize: "1rem", fontWeight: 500, color: "var(--primary)", lineHeight: 1 }}
@@ -492,6 +515,7 @@ export default function RecordAssignedForm({
                 checkboxSelection
                 onSelectionChange={handleSelectionChange}
                 checkboxDisabled={!editing}
+                maxSelectableRows={maxRecords}
                 hideColumnSettings
                 preselectedIds={preselectedIds}
                 minHeight={320}

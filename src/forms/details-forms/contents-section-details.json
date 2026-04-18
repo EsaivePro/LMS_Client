@@ -79,6 +79,7 @@
                     "fullWidth": true,
                     "assignedConfig": {
                         "singularLabel": "contents",
+                        "maxRecords": 10,
                         "endpoint": "/form-service/advanced-search",
                         "table": "content_library",
                         "identityKey": "id",

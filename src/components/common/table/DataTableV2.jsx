@@ -72,6 +72,7 @@ export default function DataTable({
     infiniteScrollHasMore,
     endOfResultsMessage = "No more data",
     checkboxDisabled = false,
+    maxSelectableRows = null,
     hideColumnSettings = false,
     hideSearch = false,
     preselectedIds = [],
@@ -1021,7 +1022,14 @@ export default function DataTable({
                                                 <Checkbox
                                                     checked={selectedIds.includes(row.id)}
                                                     onChange={() => !checkboxDisabled && toggleRow(row.id)}
-                                                    disabled={checkboxDisabled}
+                                                    disabled={
+                                                        checkboxDisabled ||
+                                                        (
+                                                            maxSelectableRows !== null &&
+                                                            !selectedIds.includes(row.id) &&
+                                                            selectedIds.length >= maxSelectableRows
+                                                        )
+                                                    }
                                                 />
                                             </TableCell>
                                         )}
