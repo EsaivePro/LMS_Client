@@ -35,6 +35,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import FilterListIcon from "@mui/icons-material/FilterList";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import NoRowsOverlay from "./NoRowsOverlay";
 
 const STORAGE_KEY = "datatable_filters_v9";
@@ -76,6 +77,8 @@ export default function DataTable({
     preselectedIds = [],
     tableName,
     tableKey = "default",
+    rowDraggable = false,
+    onRowReorder,
 }) {
     const storageKey = `${STORAGE_KEY}_${tableKey}`;
 
@@ -96,6 +99,8 @@ export default function DataTable({
     const [filters, setFilters] = React.useState({});
     const [operators, setOperators] = React.useState({});
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [dragSrcIdx, setDragSrcIdx] = React.useState(null);
+    const [dragOverIdx, setDragOverIdx] = React.useState(null);
     const [filterPanelOpen, setFilterPanelOpen] = React.useState(false);
     const [localExternalSearch, setLocalExternalSearch] = React.useState(externalSearchProp);
     const searchDebounceRef = React.useRef(null);
@@ -248,8 +253,8 @@ export default function DataTable({
     // an overflow:auto container resolves to the container's clientWidth, preventing scroll.
     const totalMinWidth = React.useMemo(() => {
         const colsTotal = orderedColumns.reduce((sum, col) => sum + (col.minWidth || 120), 0);
-        return colsTotal + (checkboxSelection ? 48 : 0);
-    }, [orderedColumns, checkboxSelection]);
+        return colsTotal + (checkboxSelection ? 48 : 0) + (rowDraggable ? 40 : 0);
+    }, [orderedColumns, checkboxSelection, rowDraggable]);
 
     /* ================= LOCAL PROCESSING (filters / sort / paginate) ================= */
     const processedRows = React.useMemo(() => {
@@ -884,6 +889,9 @@ export default function DataTable({
                         {/* HEADER */}
                         <TableHead>
                             <TableRow >
+                                {rowDraggable && (
+                                    <TableCell sx={{ width: 40, background: "var(--primaryLight)", p: 0 }} />
+                                )}
                                 {checkboxSelection && (
                                     <TableCell padding="checkbox" sx={{ background: "var(--primaryLight)" }}>
                                         <Checkbox
@@ -969,9 +977,32 @@ export default function DataTable({
                                     <TableRow
                                         key={row.id}
                                         hover
+                                        draggable={rowDraggable}
+                                        onDragStart={rowDraggable ? () => setDragSrcIdx(index) : undefined}
+                                        onDragOver={rowDraggable ? (e) => { e.preventDefault(); setDragOverIdx(index); } : undefined}
+                                        onDragEnd={rowDraggable ? () => { setDragSrcIdx(null); setDragOverIdx(null); } : undefined}
+                                        onDrop={rowDraggable ? (e) => {
+                                            e.preventDefault();
+                                            if (dragSrcIdx === null || dragSrcIdx === index) {
+                                                setDragSrcIdx(null);
+                                                setDragOverIdx(null);
+                                                return;
+                                            }
+                                            const newRows = [...displayRows];
+                                            const [moved] = newRows.splice(dragSrcIdx, 1);
+                                            newRows.splice(index, 0, moved);
+                                            onRowReorder?.(newRows);
+                                            setDragSrcIdx(null);
+                                            setDragOverIdx(null);
+                                        } : undefined}
                                         onDoubleClick={() => onRowDoubleClick?.(row)}
                                         sx={{
                                             transition: "0.2s",
+                                            opacity: dragSrcIdx === index ? 0.4 : 1,
+                                            borderTop: dragOverIdx === index && dragSrcIdx !== index
+                                                ? "2px solid var(--primary)"
+                                                : undefined,
+                                            cursor: rowDraggable ? (dragSrcIdx === index ? "grabbing" : "grab") : "default",
                                             "&:nth-of-type(even)": {
                                                 backgroundColor: "#fafafa",
                                             },
@@ -980,6 +1011,11 @@ export default function DataTable({
                                             },
                                         }}
                                     >
+                                        {rowDraggable && (
+                                            <TableCell sx={{ width: 40, p: 0, pl: 0.5, color: "text.disabled" }}>
+                                                <DragIndicatorIcon fontSize="small" />
+                                            </TableCell>
+                                        )}
                                         {checkboxSelection && (
                                             <TableCell padding="checkbox">
                                                 <Checkbox

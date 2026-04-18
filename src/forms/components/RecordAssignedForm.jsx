@@ -47,8 +47,11 @@ export default function RecordAssignedForm({
 }) {
     const assignedConfig = field.assignedConfig || {};
     const identityKey = assignedConfig.identityKey || "id";
+    const dragDrop = assignedConfig.dragDrop === true;
+    const dragOrderBy = assignedConfig.dragOrderBy || null;
 
     const [rows, setRows] = useState([]);
+    const [isDragOrdered, setIsDragOrdered] = useState(false);
     const [total, setTotal] = useState(0);
     const [assignedCount, setAssignedCount] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -60,6 +63,12 @@ export default function RecordAssignedForm({
     const existingAssignedRowsRef = useRef(new Map());
     // Map of id → row for every row ever fetched — needed to build delta for removed rows
     const allSeenRowsRef = useRef(new Map());
+    // Ordered list of currently-selected IDs (used to compute order_no when dragDrop is true).
+    // The ref is used inside callbacks; the state copy triggers re-renders for the order column.
+    const orderedAssignedIdsRef = useRef([]);
+    const [orderedAssignedIds, setOrderedAssignedIds] = useState([]);
+    // Latest selected IDs — needed so handleRowReorder can rebuild delta without stale closure
+    const currentSelectedIdsRef = useRef([]);
 
     // Resolve {recordId} placeholder in orderby.where values
     const resolvedOrderby = useMemo(() => {
@@ -71,6 +80,7 @@ export default function RecordAssignedForm({
         };
         return (assignedConfig.orderby || []).map((ob) => ({
             table: ob.table,
+            ...(ob.columns ? { columns: ob.columns } : {}),
             where: Object.fromEntries(
                 Object.entries(ob.where || {}).map(([k, v]) => [k, resolveVal(v)])
             ),
@@ -80,7 +90,7 @@ export default function RecordAssignedForm({
 
     // Build DataTableV2 columns from assignedConfig.displayColumns
     const columns = useMemo(() => {
-        return (assignedConfig.displayColumns || []).map((col) => {
+        const dataCols = (assignedConfig.displayColumns || []).map((col) => {
             const base = {
                 field: col.field,
                 headerName: col.headerName,
@@ -102,7 +112,30 @@ export default function RecordAssignedForm({
 
             return base;
         });
-    }, [assignedConfig.displayColumns]); // eslint-disable-line
+
+        if (!dragDrop) return dataCols;
+
+        const orderNoCol = {
+            field: "__order_no",
+            headerName: "Order No",
+            type: "number",
+            minWidth: 100,
+            sortable: false,
+            filterable: false,
+            renderCell: (params) => {
+                const pos = orderedAssignedIds.indexOf(params.row[identityKey]);
+                return pos >= 0 ? (
+                    <Typography variant="body2" fontWeight={600} color="var(--primary)">
+                        {pos + 1}
+                    </Typography>
+                ) : (
+                    <Typography variant="body2" color="text.disabled">—</Typography>
+                );
+            },
+        };
+
+        return [orderNoCol, ...dataCols];
+    }, [assignedConfig.displayColumns, dragDrop, orderedAssignedIds, identityKey]); // eslint-disable-line
 
     // Called by DataTableV2 whenever page/sort/filter changes
     const handleFetch = useCallback(
@@ -142,6 +175,7 @@ export default function RecordAssignedForm({
                 order: sortOrder,
                 limit,
                 offset,
+                ...(dragDrop ? { dragDrop: true } : {}),
             };
 
             setLoading(true);
@@ -158,6 +192,7 @@ export default function RecordAssignedForm({
                 const newAssignedCount = dataNode.assignedCount ?? 0;
 
                 setRows(data);
+                setIsDragOrdered(false);
                 setTotal(newTotal);
                 setAssignedCount(newAssignedCount);
 
@@ -178,6 +213,36 @@ export default function RecordAssignedForm({
                             existingAssignedRowsRef.current.set(rowId, row);
                         }
                     });
+
+                // Populate initial drag-drop order from server-returned assigned rows.
+                // Sort ascending by the join table's order_no field (e.g. "contents_section_order_no")
+                // so the initial display matches the saved order from the DB.
+                if (dragDrop) {
+                    const joinOrderField = (() => {
+                        const ob = (assignedConfig.orderby || [])[0];
+                        if (ob?.table && ob?.columns?.[0]) return `${ob.table}_${ob.columns[0]}`;
+                        return null;
+                    })();
+
+                    const assignedRows = data
+                        .filter((row) => row.is_assigned === true)
+                        .slice()
+                        .sort((a, b) =>
+                            joinOrderField
+                                ? (a[joinOrderField] ?? 0) - (b[joinOrderField] ?? 0)
+                                : 0
+                        );
+
+                    let changed = false;
+                    assignedRows.forEach((row) => {
+                        const rowId = row[identityKey];
+                        if (!orderedAssignedIdsRef.current.includes(rowId)) {
+                            orderedAssignedIdsRef.current.push(rowId);
+                            changed = true;
+                        }
+                    });
+                    if (changed) setOrderedAssignedIds([...orderedAssignedIdsRef.current]);
+                }
 
                 // Pre-select rows where is_assigned === true (once per ID)
                 const newlyAssigned = data
@@ -210,8 +275,68 @@ export default function RecordAssignedForm({
         ]
     );
 
+    /**
+     * Builds the delta array to pass to onChange.
+     * When includeExistingAssigned=true (drag reorder), all currently selected rows
+     * are included so the backend can update their order_no values.
+     * When false (checkbox change), only newly added/removed rows are included.
+     */
+    const buildDelta = useCallback(
+        (ids, includeExistingAssigned = false) => {
+            const idSet = new Set(ids);
+            const mapData = assignedConfig.mapData || null;
+            const existingAssignedRows = existingAssignedRowsRef.current;
+            const delta = [];
+
+            const getOrderNo = (id) => {
+                if (!dragDrop || !mapData || !("order_no" in mapData)) return undefined;
+                const pos = orderedAssignedIdsRef.current.indexOf(id);
+                return pos >= 0 ? pos + 1 : null;
+            };
+
+            const buildItem = (id, row, isDeleted) => {
+                const item = applyMapData(mapData, row, identityKey, isDeleted);
+                if (!isDeleted) {
+                    const orderNo = getOrderNo(id);
+                    if (orderNo != null) item.order_no = orderNo;
+                }
+                return item;
+            };
+
+            if (includeExistingAssigned) {
+                // Full delta: all selected rows (used after drag reorder to update order_no for everyone)
+                for (const id of ids) {
+                    const row =
+                        existingAssignedRows.get(id) ||
+                        allSeenRowsRef.current.get(id) ||
+                        { [identityKey]: id };
+                    delta.push(buildItem(id, row, false));
+                }
+            } else {
+                // Diff delta: only newly checked rows
+                for (const id of ids) {
+                    if (!existingAssignedRows.has(id)) {
+                        const row = allSeenRowsRef.current.get(id) || { [identityKey]: id };
+                        delta.push(buildItem(id, row, false));
+                    }
+                }
+            }
+
+            // Always include deselected rows as is_deleted
+            for (const [id, row] of existingAssignedRows.entries()) {
+                if (!idSet.has(id)) {
+                    delta.push(applyMapData(mapData, row, identityKey, true));
+                }
+            }
+
+            return delta;
+        },
+        [assignedConfig.mapData, dragDrop, identityKey]
+    );
+
     const handleSelectionChange = useCallback(
         (ids) => {
+            currentSelectedIdsRef.current = ids;
             const idSet = new Set(ids);
 
             // Sync is_assigned on local rows to reflect current checkbox state
@@ -222,29 +347,68 @@ export default function RecordAssignedForm({
                 }))
             );
 
-            // Compute delta: only rows that changed relative to the initial server state
-            const mapData = assignedConfig.mapData || null;
-            const existingAssignedRows = existingAssignedRowsRef.current;
-            const delta = [];
-
-            // Newly checked — not assigned on server initially
-            for (const id of ids) {
-                if (!existingAssignedRows.has(id)) {
-                    const row = allSeenRowsRef.current.get(id) || { [identityKey]: id };
-                    delta.push(applyMapData(mapData, row, identityKey, false));
-                }
-            }
-            // Newly unchecked — was assigned on server but now deselected
-            for (const [id, row] of existingAssignedRows.entries()) {
-                if (!idSet.has(id)) {
-                    delta.push(applyMapData(mapData, row, identityKey, true));
-                }
+            // Maintain ordered list: remove deselected, append newly selected
+            if (dragDrop) {
+                const next = orderedAssignedIdsRef.current.filter((id) => idSet.has(id));
+                ids.forEach((id) => {
+                    if (!next.includes(id)) next.push(id);
+                });
+                orderedAssignedIdsRef.current = next;
+                setOrderedAssignedIds(next);
             }
 
-            onChange?.(field.name, delta);
+            onChange?.(field.name, buildDelta(ids, false));
         },
-        [field.name, identityKey, assignedConfig.mapData, onChange]
+        [field.name, identityKey, dragDrop, buildDelta, onChange]
     );
+
+    /**
+     * Called by DataTableV2 when the user drags a row to a new position.
+     * Updates the global order reference and emits a full delta so all
+     * assigned rows get their new order_no values.
+     */
+    const handleRowReorder = useCallback(
+        (newPageRows) => {
+            if (!dragDrop) return;
+
+            const newPageIds = newPageRows.map((r) => r[identityKey]);
+            // Only reorder IDs that are currently tracked (assigned)
+            const newPageAssignedIds = newPageIds.filter((id) =>
+                orderedAssignedIdsRef.current.includes(id)
+            );
+
+            if (newPageAssignedIds.length > 0) {
+                const assignedIdSet = new Set(newPageAssignedIds);
+                const globalOrder = orderedAssignedIdsRef.current;
+
+                // Find where this page's assigned rows sit in the global list
+                const indices = globalOrder
+                    .map((id, i) => (assignedIdSet.has(id) ? i : -1))
+                    .filter((i) => i >= 0);
+
+                const insertAt = Math.min(...indices);
+                const without = globalOrder.filter((id) => !assignedIdSet.has(id));
+                without.splice(insertAt, 0, ...newPageAssignedIds);
+                orderedAssignedIdsRef.current = without;
+                setOrderedAssignedIds([...without]);
+            }
+
+            // Update the displayed rows immediately
+            setRows(newPageRows);
+            setIsDragOrdered(true);
+
+            // Emit full delta so all assigned rows carry their updated order_no
+            onChange?.(field.name, buildDelta(currentSelectedIdsRef.current, true));
+        },
+        [dragDrop, identityKey, field.name, buildDelta, onChange]
+    );
+
+    // When dragDrop is active, always present rows sorted ascending by dragOrderBy
+    // so the table order matches the saved order_no from the DB on every render.
+    const sortedRows = useMemo(() => {
+        if (!dragDrop || !dragOrderBy || isDragOrdered) return rows;
+        return [...rows].sort((a, b) => (a[dragOrderBy] ?? 0) - (b[dragOrderBy] ?? 0));
+    }, [rows, dragDrop, dragOrderBy, isDragOrdered]);
 
     return (
         <Box sx={{ width: "100%" }}>
@@ -282,7 +446,7 @@ export default function RecordAssignedForm({
             {/* Checkbox-enabled data table */}
             <DataTableV2
                 serverSide
-                rows={rows}
+                rows={sortedRows}
                 totalCount={total}
                 loading={loading}
                 columns={columns}
@@ -296,6 +460,8 @@ export default function RecordAssignedForm({
                 preselectedIds={preselectedIds}
                 minHeight={320}
                 emptySubtitle="No records found."
+                rowDraggable={dragDrop && editing}
+                onRowReorder={handleRowReorder}
             />
         </Box>
     );

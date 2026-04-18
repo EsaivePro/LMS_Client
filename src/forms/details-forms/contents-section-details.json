@@ -81,16 +81,12 @@
                         "endpoint": "/form-service/advanced-search",
                         "table": "content_library",
                         "identityKey": "id",
-                        "columns": [
-                            "id",
-                            "title",
-                            "description",
-                            "content_type",
-                            "duration"
-                        ],
                         "orderby": [
                             {
                                 "table": "contents_section",
+                                "columns": [
+                                    "order_no"
+                                ],
                                 "where": {
                                     "section_id": "{recordId}"
                                 },
@@ -104,8 +100,11 @@
                             "id": "{contents_section_id}",
                             "content_id": "{id}",
                             "is_deleted": "{is_deleted}",
+                            "order_no": 1,
                             "assigned": true
                         },
+                        "dragDrop": true,
+                        "dragOrderBy": "contents_section_order_no",
                         "displayColumns": [
                             {
                                 "field": "id",
