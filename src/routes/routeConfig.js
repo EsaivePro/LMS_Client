@@ -19,7 +19,8 @@ import GroupManage from "../modules/forms/pages/GroupManage";
 import ExamPage from "../modules/exam/pages/ExamPage";
 import ExamSummaryPage from "../modules/exam/pages/ExamSummaryPage";
 import QuestionManage from "../modules/forms/pages/QuestionManage";
-import SectionManage from "../modules/forms/pages/SectionManage";
+import QuestionsSectionManage from "../modules/forms/pages/QuestionsSectionManage";
+import ContentsSectionManage from "../modules/forms/pages/ContentsSectionManage";
 import TopicManage from "../modules/forms/pages/TopicManage";
 import CourseManage from "../modules/forms/pages/CourseManage";
 import ContentLibraryManage from "../modules/forms/pages/ContentLibraryManage";
@@ -248,6 +249,20 @@ export const protectedRoutes = [
         matchPath: "/content-library/manage",
     },
     {
+        path: "/content-section/manage/:id",
+        title: "Manage content section",
+        description: "Create content sections, assign questions and schedule them.",
+        permission: "user.management",
+        element: <ContentsSectionManage />,
+        sideMenu: true,
+        sidePath: "/content-section/manage/list",
+        section: "Manage Configurations",
+        label: "Content Sections",
+        icon: <SegmentIcon />,
+        type: "item",
+        matchPath: "/content-section/manage",
+    },
+    {
         path: "/questions/manage/:id",
         title: "Manage question",
         description: "Create questions, assign options and schedule them.",
@@ -267,7 +282,7 @@ export const protectedRoutes = [
         title: "Manage section",
         description: "Create sections, assign questions and schedule them.",
         permission: "exam.management",
-        element: <SectionManage />,
+        element: <QuestionsSectionManage />,
         sideMenu: true,
         sidePath: "/sections/manage/list",
         section: "Manage Configurations",

@@ -1,0 +1,73 @@
+{
+    "baseRoute": "/content-section/manage",
+    "tableName": "sections",
+    "endpoint": "/common-service/search",
+    "readFrom": "response.data",
+    "serverSide": true,
+    "rowDoubleClick": "/content-section/manage/{id}",
+    "manageRoute": false,
+    "moreColumn": [
+        "Edit",
+        "Delete"
+    ],
+    "tableKey": "sections-table",
+    "header": {
+        "title": "Content Sections",
+        "showCount": true,
+        "buttons": [
+            {
+                "key": "create",
+                "label": "New Section",
+                "variant": "contained"
+            }
+        ]
+    },
+    "fields": [
+        {
+            "key": "id",
+            "label": "ID",
+            "type": "number",
+            "maxWidth": 80
+        },
+        {
+            "key": "title",
+            "label": "Title",
+            "type": "string",
+            "minWidth": 240,
+            "filterable": true,
+            "linkTemplate": "{id}"
+        },
+        {
+            "key": "display_name",
+            "label": "Display Name",
+            "type": "string",
+            "minWidth": 200
+        },
+        {
+            "key": "description",
+            "label": "Description",
+            "type": "string",
+            "minWidth": 300
+        },
+        {
+            "key": "is_active",
+            "label": "Status",
+            "type": "boolean",
+            "minWidth": 120,
+            "valueOptions": [
+                true,
+                false
+            ],
+            "renderValues": {
+                "true": "Active",
+                "false": "Inactive"
+            }
+        },
+        {
+            "key": "created_at",
+            "label": "Created At",
+            "type": "datetime",
+            "minWidth": 180
+        }
+    ]
+}

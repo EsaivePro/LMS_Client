@@ -1,10 +1,10 @@
 import { useParams } from "react-router-dom";
-import formDef from "../../../forms/details-forms/section-details.json";
-import masterConfig from "../../../forms/master-forms/section-master.json";
+import formDef from "../../../forms/details-forms/contents-section-details.json";
+import masterConfig from "../../../forms/master-forms/contents-section-master.json";
 import DetailsForm from "../../../forms/components/DetailsForm";
 import MasterForm from "../../../forms/components/MasterForm";
 
-const SectionManage = () => {
+const ContentsSectionManage = () => {
     const { id } = useParams();
 
     const submitLabel = id === "create" ? "Create" : "Update";
@@ -17,4 +17,4 @@ const SectionManage = () => {
     );
 };
 
-export default SectionManage;
+export default ContentsSectionManage;

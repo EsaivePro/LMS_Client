@@ -1,0 +1,146 @@
+{
+    "title": "Section Details",
+    "fetchConfig": {
+        "endpoint": "/form-service/get",
+        "table": "sections",
+        "joins": [
+            "contents_section"
+        ],
+        "subJoins": {
+            "contents_section": {
+                "key": "content_id",
+                "column": [
+                    "title"
+                ]
+            }
+        }
+    },
+    "sections": [
+        {
+            "key": "basic",
+            "title": "General Information",
+            "fields": [
+                {
+                    "name": "id",
+                    "label": "ID",
+                    "type": "number",
+                    "readOnly": true,
+                    "col": 6
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "type": "text",
+                    "required": true,
+                    "col": 6
+                },
+                {
+                    "name": "display_name",
+                    "label": "Display Name",
+                    "type": "text",
+                    "col": 6
+                },
+                {
+                    "name": "description",
+                    "label": "Description",
+                    "type": "textarea",
+                    "fullWidth": true
+                }
+            ]
+        },
+        {
+            "key": "state",
+            "title": "Record State",
+            "fields": [
+                {
+                    "name": "modules",
+                    "label": "Module Type",
+                    "type": "text",
+                    "default": "Content",
+                    "readOnly": true,
+                    "required": true
+                },
+                {
+                    "name": "is_active",
+                    "label": "Active",
+                    "type": "checkbox",
+                    "default": true
+                }
+            ]
+        },
+        {
+            "key": "contents_section",
+            "title": "Content Allocation",
+            "fields": [
+                {
+                    "name": "contents_section",
+                    "label": "Contents",
+                    "type": "record-assigned",
+                    "fullWidth": true,
+                    "assignedConfig": {
+                        "endpoint": "/form-service/advanced-search",
+                        "table": "content_library",
+                        "identityKey": "id",
+                        "columns": [
+                            "id",
+                            "title",
+                            "description",
+                            "content_type",
+                            "duration"
+                        ],
+                        "orderby": [
+                            {
+                                "table": "contents_section",
+                                "where": {
+                                    "section_id": "{recordId}"
+                                },
+                                "on": "content_id"
+                            }
+                        ],
+                        "singularLabel": "contents",
+                        "sortby": "created_at",
+                        "order": "desc",
+                        "mapData": {
+                            "id": "{contents_section_id}",
+                            "content_id": "{id}",
+                            "is_deleted": "{is_deleted}",
+                            "assigned": true
+                        },
+                        "displayColumns": [
+                            {
+                                "field": "id",
+                                "headerName": "ID",
+                                "type": "number",
+                                "minWidth": 80
+                            },
+                            {
+                                "field": "title",
+                                "headerName": "Title",
+                                "type": "text",
+                                "minWidth": 200
+                            },
+                            {
+                                "field": "content_type",
+                                "headerName": "Content Type",
+                                "type": "text",
+                                "minWidth": 140
+                            },
+                            {
+                                "field": "duration",
+                                "headerName": "Duration (seconds)",
+                                "type": "number",
+                                "minWidth": 160
+                            },
+                            {
+                                "field": "description",
+                                "headerName": "Description",
+                                "type": "text",
+                                "minWidth": 200
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

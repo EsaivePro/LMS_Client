@@ -273,7 +273,7 @@ export default function RecordAssignedForm({
                             variant="body2"
                             sx={{ fontSize: "1rem", fontWeight: 500, color: "var(--primary)", lineHeight: 1 }}
                         >
-                            {assignedCount} assigned
+                            {assignedCount} {assignedConfig.singularLabel || "assigned"}
                         </Typography>
                     </Box>
                 )}

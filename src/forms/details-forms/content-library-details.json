@@ -23,7 +23,8 @@
                     "label": "Title",
                     "type": "text",
                     "required": true,
-                    "minWidth": 320
+                    "minWidth": 320,
+                    "createOnly": true
                 },
                 {
                     "name": "description",
@@ -34,8 +35,8 @@
             ]
         },
         {
-            "key": "media",
-            "title": "Media Details",
+            "key": "content",
+            "title": "Content Information",
             "fields": [
                 {
                     "name": "content_type",
