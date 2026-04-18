@@ -119,16 +119,17 @@ export default function createHeaderHandlers({
                     const { __pendingFile: file, existingId, fieldConfig } = currentValues[fieldName];
                     const uploadPath = fieldConfig?.uploadPath || "uploads/forms";
                     const safeFileName = `${Date.now()}-${file.name}`;
+                    const fileType = file.type ? file.type.split("/")[0] : null;
                     updateUploadProgress(fileIndex, 0);
                     const storageResponse = await uploadFile({
                         file,
                         key: `${uploadPath}/${safeFileName}`,
                         onProgress: (filePercent) => updateUploadProgress(fileIndex, filePercent),
+                        fileType,
                     });
                     if (!storageResponse?.path) throw new Error("No file path returned from upload");
 
                     const extension = file.name.includes(".") ? file.name.split(".").pop() : null;
-                    const fileType = file.type ? file.type.split("/")[0] : null;
                     const fileRecord = {
                         file_name: safeFileName,
                         location: storageResponse.path,

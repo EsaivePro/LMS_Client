@@ -9,18 +9,20 @@ export async function uploadToVimeoDirect({ file, onProgress, onSuccess, onError
     try {
         // 1️⃣ Get upload ticket from backend
         const { data } = await axiosInstance.post(
-            "/vimeo/upload-ticket",
+            "/upload-service/vimeo/upload-ticket",
             {
                 size: file.size,
                 name: file.name,
             }
         );
 
-        const { uploadLink, videoId } = data;
+        const { uploadLink, videoId } = data?.response || {};
 
         // 2️⃣ Upload directly to Vimeo using TUS
+        // uploadUrl (not endpoint) because Vimeo already created the upload via the ticket —
+        // tus must PATCH directly rather than POST to create a new one (which causes 405).
         const upload = new tus.Upload(file, {
-            endpoint: uploadLink,
+            uploadUrl: uploadLink,
             retryDelays: [0, 1000, 3000, 5000],
             metadata: {
                 filename: file.name,
@@ -66,7 +68,7 @@ export async function addVideoToVimeoAlbum({ videoId, albumId }) {
         throw new Error("videoId and albumId are required");
     }
     try {
-        const { data } = await axiosInstance.post("/vimeo/add-to-album", {
+        const { data } = await axiosInstance.post("/upload-service/vimeo/add-to-album", {
             videoId,
             albumId,
         });
@@ -86,7 +88,7 @@ export async function addVideoToVimeoAlbum({ videoId, albumId }) {
 export async function deleteVimeoVideo({ videoId }) {
     if (!videoId) throw new Error("videoId is required");
     try {
-        const { data } = await axiosInstance.post("/vimeo/delete", { videoId });
+        const { data } = await axiosInstance.post("/upload-service/vimeo/delete", { videoId });
         return data;
     } catch (err) {
         console.error("Failed to delete Vimeo video (backend):", err);
@@ -105,7 +107,7 @@ export async function deleteVimeoVideo({ videoId }) {
 export async function editVimeoVideo({ videoId, name, description }) {
     if (!videoId) throw new Error("videoId is required");
     try {
-        const { data } = await axiosInstance.post("/vimeo/edit", { videoId, name, description });
+        const { data } = await axiosInstance.post("/upload-service/vimeo/edit", { videoId, name, description });
         return data;
     } catch (err) {
         console.error("Failed to edit Vimeo video (backend):", err);

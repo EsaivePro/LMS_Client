@@ -21,6 +21,8 @@ import ExamSummaryPage from "../modules/exam/pages/ExamSummaryPage";
 import QuestionManage from "../modules/forms/pages/QuestionManage";
 import SectionManage from "../modules/forms/pages/SectionManage";
 import TopicManage from "../modules/forms/pages/TopicManage";
+import CourseManage from "../modules/forms/pages/CourseManage";
+import ContentLibraryManage from "../modules/forms/pages/ContentLibraryManage";
 import UserGroupAssignManage from "../modules/forms/pages/UserGroupAssignManage";
 import RoleManage from "../modules/forms/pages/RoleManage";
 import UserManage from "../modules/forms/pages/UserManage";
@@ -218,16 +220,32 @@ export const protectedRoutes = [
         matchPath: "/topics/manage",
     },
     {
-        path: "/courses",
-        title: "Course Management",
-        description: "View, create, and manage courses and their content.",
+        path: "/courses/manage/:id",
+        title: "Manage course",
+        description: "Create and update courses with image and description details.",
         permission: "course.list",
-        element: <CoursesList />,
+        element: <CourseManage />,
         sideMenu: true,
+        sidePath: "/courses/manage/list",
         section: "Manage Configurations",
         label: "Courses",
         icon: <FeedIcon />,
         type: "item",
+        matchPath: "/courses/manage",
+    },
+    {
+        path: "/content-library/manage/:id",
+        title: "Manage content library",
+        description: "Create and maintain reusable content assets, files, and visibility settings.",
+        permission: "user.management",
+        element: <ContentLibraryManage />,
+        sideMenu: true,
+        sidePath: "/content-library/manage/list",
+        section: "Manage Configurations",
+        label: "Content Library",
+        icon: <CategoryIcon />,
+        type: "item",
+        matchPath: "/content-library/manage",
     },
     {
         path: "/questions/manage/:id",

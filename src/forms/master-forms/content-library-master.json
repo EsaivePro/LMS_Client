@@ -1,0 +1,71 @@
+{
+    "baseRoute": "/content-library/manage",
+    "tableName": "content_library",
+    "endpoint": "/common-service/search",
+    "readFrom": "response.data",
+    "serverSide": true,
+    "rowDoubleClick": "/content-library/manage/{id}",
+    "manageRoute": false,
+    "moreColumn": [
+        "Edit",
+        "Delete"
+    ],
+    "tableKey": "content-library-table",
+    "header": {
+        "title": "Content Library",
+        "showCount": true,
+        "buttons": [
+            {
+                "key": "create",
+                "label": "New Content",
+                "variant": "contained"
+            }
+        ]
+    },
+    "fields": [
+        {
+            "key": "id",
+            "label": "ID",
+            "type": "number",
+            "maxWidth": 80
+        },
+        {
+            "key": "title",
+            "label": "Title",
+            "type": "string",
+            "minWidth": 240,
+            "filterable": true,
+            "linkTemplate": "{id}"
+        },
+        {
+            "key": "content_type",
+            "label": "Content Type",
+            "type": "string",
+            "minWidth": 140
+        },
+        {
+            "key": "visibility",
+            "label": "Visibility",
+            "type": "string",
+            "minWidth": 120
+        },
+        {
+            "key": "duration",
+            "label": "Duration",
+            "type": "number",
+            "minWidth": 120
+        },
+        {
+            "key": "tags",
+            "label": "Tags",
+            "type": "string",
+            "minWidth": 220
+        },
+        {
+            "key": "created_at",
+            "label": "Created At",
+            "type": "datetime",
+            "minWidth": 180
+        }
+    ]
+}

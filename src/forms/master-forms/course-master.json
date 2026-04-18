@@ -1,0 +1,59 @@
+{
+    "baseRoute": "/courses/manage",
+    "tableName": "courses",
+    "endpoint": "/common-service/search",
+    "readFrom": "response.data",
+    "serverSide": true,
+    "rowDoubleClick": "/courses/manage/{id}",
+    "manageRoute": false,
+    "moreColumn": [
+        "Edit",
+        "Delete"
+    ],
+    "tableKey": "courses-table",
+    "header": {
+        "title": "Courses",
+        "showCount": true,
+        "buttons": [
+            {
+                "key": "create",
+                "label": "New Course",
+                "variant": "contained"
+            }
+        ]
+    },
+    "fields": [
+        {
+            "key": "id",
+            "label": "ID",
+            "type": "number",
+            "maxWidth": 80
+        },
+        {
+            "key": "title",
+            "label": "Course Title",
+            "type": "string",
+            "minWidth": 260,
+            "filterable": true,
+            "linkTemplate": "{id}"
+        },
+        {
+            "key": "description",
+            "label": "Description",
+            "type": "string",
+            "minWidth": 340
+        },
+        {
+            "key": "imageurl",
+            "label": "Course Image",
+            "type": "string",
+            "minWidth": 260
+        },
+        {
+            "key": "created_at",
+            "label": "Created At",
+            "type": "datetime",
+            "minWidth": 180
+        }
+    ]
+}

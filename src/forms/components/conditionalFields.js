@@ -1,12 +1,13 @@
 export const buildConditionalFieldRules = (fields = []) => {
     return fields.reduce((rules, field) => {
-        if (!field?.name || !field.conditionalFields) return rules;
+        if (!field?.name || (!field.conditionalFields && !field.conditionalFieldProps)) return rules;
 
         rules.push({
             watchField: field.name,
             defaultValue: field.default ?? null,
-            conditionalFields: field.conditionalFields,
-            allConditional: new Set(Object.values(field.conditionalFields).flat()),
+            conditionalFields: field.conditionalFields || {},
+            conditionalFieldProps: field.conditionalFieldProps || {},
+            allConditional: new Set(Object.values(field.conditionalFields || {}).flat()),
         });
 
         return rules;
@@ -25,18 +26,30 @@ export const filterFieldsByConditionalRules = (fields = [], rules = [], values =
 
     const visibleConditional = new Set();
     const hiddenConditional = new Set();
+    const fieldOverrides = new Map();
 
     rules.forEach((rule) => {
         const currentValue = values?.[rule.watchField] ?? rule.defaultValue;
         const visibleFields = new Set(rule.conditionalFields?.[currentValue] ?? []);
+        const overrides = rule.conditionalFieldProps?.[currentValue] || {};
 
         rule.allConditional.forEach((fieldName) => {
             if (visibleFields.has(fieldName)) visibleConditional.add(fieldName);
             else hiddenConditional.add(fieldName);
         });
+
+        Object.entries(overrides).forEach(([fieldName, overrideConfig]) => {
+            const previous = fieldOverrides.get(fieldName) || {};
+            fieldOverrides.set(fieldName, { ...previous, ...overrideConfig });
+        });
     });
 
-    return fields.filter((field) => !hiddenConditional.has(field.name) || visibleConditional.has(field.name));
+    return fields
+        .filter((field) => !hiddenConditional.has(field.name) || visibleConditional.has(field.name))
+        .map((field) => {
+            const overrideConfig = fieldOverrides.get(field.name);
+            return overrideConfig ? { ...field, ...overrideConfig } : field;
+        });
 };
 
 export const getHiddenConditionalFieldNames = (fields = [], rules = [], values = {}) => {

@@ -1,25 +1,52 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
     Box,
     Paper,
-    List,
-    ListItemButton,
-    ListItemText,
     Typography
 } from "@mui/material";
 import useCommon from "../../hooks/useCommon";
 import { httpClient } from "../../apiClient/httpClient";
 import axiosInstance from "../../apiClient/axiosInstance";
-import FormHeader from "./FormHeader";
 import createHeaderHandlers from "./HeaderHandle";
 import FormSection from "./FormSection";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { buildConditionalFieldRules, filterFieldsByConditionalRules } from "./conditionalFields";
+import { useFormHeader } from "../../contexts/FormHeaderContext";
+
+const buildInitialValues = (definition, data = {}) => {
+    const defaults = {};
+    const overrideNumberDefaults = { duration_minutes: 30 };
+    (definition.sections || []).forEach((section) => {
+        (section.fields || []).forEach((field) => {
+            const name = field.name;
+            if (!name) return;
+            const valueFromData = data[name];
+            if (field.type === "table" || field.type === "record-dailog") {
+                defaults[name] = Array.isArray(valueFromData) ? valueFromData : [];
+            } else if (field.type === "checkbox") {
+                defaults[name] = (valueFromData !== undefined && valueFromData !== null) ? valueFromData : (field.default !== undefined ? field.default : false);
+            } else if (field.type === "number") {
+                if (valueFromData !== undefined && valueFromData !== null) defaults[name] = valueFromData;
+                else if (field.default !== undefined) defaults[name] = field.default;
+                else if (overrideNumberDefaults[name] !== undefined) defaults[name] = overrideNumberDefaults[name];
+                else defaults[name] = 0;
+            } else if (field.type === "fileupload") {
+                defaults[name] = (valueFromData !== undefined && valueFromData !== null) ? valueFromData : (field.default !== undefined ? field.default : "");
+                defaults["imageurl"] = data["imageurl"] || "";
+            } else {
+                defaults[name] = (valueFromData !== undefined && valueFromData !== null) ? valueFromData : (field.default !== undefined ? field.default : "");
+            }
+        });
+    });
+    return defaults;
+};
 
 export default function DetailsForm({ definition = {}, initialValues = {}, id, onSubmit, submitLabel = "Save", initialEditing = false, onFieldChange, onLoad }) {
     const { setTitleContainer, showSuccess, showError, showLoader, hideLoader } = useCommon();
-    const [values, setValues] = useState(initialValues || {});
+    const { registerFormHeader } = useFormHeader();
+    const [values, setValues] = useState(() => buildInitialValues(definition, initialValues || {}));
     const [resolvedInitialValues, setResolvedInitialValues] = useState(initialValues || {});
     const [invalidFields, setInvalidFields] = useState({});
     const [tableState, setTableState] = useState({});
@@ -40,34 +67,6 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
         setTitleContainer(definition.title || "Details");
         if (currentSubmitLabel === "Create") setEditing(true);
     }, [definition.title, setTitleContainer, currentSubmitLabel]);
-
-    const buildInitialValues = (definition, data = {}) => {
-        const defaults = {};
-        const overrideNumberDefaults = { duration_minutes: 30 };
-        (definition.sections || []).forEach((section) => {
-            (section.fields || []).forEach((field) => {
-                const name = field.name;
-                if (!name) return;
-                const valueFromData = data[name];
-                if (field.type === "table" || field.type === "record-dailog") {
-                    defaults[name] = Array.isArray(valueFromData) ? valueFromData : [];
-                } else if (field.type === "checkbox") {
-                    defaults[name] = (valueFromData !== undefined && valueFromData !== null) ? valueFromData : (field.default !== undefined ? field.default : false);
-                } else if (field.type === "number") {
-                    if (valueFromData !== undefined && valueFromData !== null) defaults[name] = valueFromData;
-                    else if (field.default !== undefined) defaults[name] = field.default;
-                    else if (overrideNumberDefaults[name] !== undefined) defaults[name] = overrideNumberDefaults[name];
-                    else defaults[name] = 0;
-                } else if (field.type === "fileupload") {
-                    defaults[name] = (valueFromData !== undefined && valueFromData !== null) ? valueFromData : (field.default !== undefined ? field.default : "");
-                    defaults["imageurl"] = data["imageurl"] || ""; // Support legacy image_url field for backward compatibility
-                } else {
-                    defaults[name] = (valueFromData !== undefined && valueFromData !== null) ? valueFromData : (field.default !== undefined ? field.default : "");
-                }
-            });
-        });
-        return defaults;
-    };
 
     useEffect(() => {
         try {
@@ -272,9 +271,9 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
         const el = refs.current[key];
         if (el) {
             const header = document.querySelector('header, .app-header, .MuiAppBar-root');
-            const headerHeight = 175; //header ? header.getBoundingClientRect().height : 96;
+            const headerHeight = 128; //header ? header.getBoundingClientRect().height : 96;
             const rectTop = el.getBoundingClientRect().top + window.pageYOffset;
-            const target = Math.max(0, rectTop - headerHeight - 8);
+            const target = Math.max(0, rectTop - headerHeight);
             window.scrollTo({ top: target, behavior: 'smooth' });
         }
         setActiveSection(key);
@@ -290,7 +289,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
             const dom = el;
             if (dom) {
                 const header = document.querySelector('header, .app-header, .MuiAppBar-root');
-                const headerHeight = 117;
+                const headerHeight = 130;
                 const rectTop = dom.getBoundingClientRect().top + window.pageYOffset;
                 const target = Math.max(0, rectTop - headerHeight - 8);
                 window.scrollTo({ top: target, behavior: 'smooth' });
@@ -355,23 +354,50 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
         onAfterSave: () => setSaveKey((k) => k + 1),
     });
 
+    // Register form actions into BreadcrumbsNav via context
+    const handlersRef = useRef({});
+    handlersRef.current = { handleToggleEdit, handleCancel, handleCopy, handleSubmit };
+
+    // Derive display title: record's own title/name when editing, "Create New …" when creating
+    const displayTitle = useMemo(() => {
+        if (currentSubmitLabel === "Create") {
+            const baseName = (definition.title || "").replace(/\s*details\s*$/i, "").trim();
+            return `Create New ${baseName}`;
+        }
+        return values.title || values.name || values.label;
+    }, [currentSubmitLabel, values.title, values.name, values.label, definition.title]);
+
+    useEffect(() => {
+        registerFormHeader({
+            displayTitle,
+            submitLabel: currentSubmitLabel,
+            editing,
+            onToggleEdit: () => handlersRef.current.handleToggleEdit(),
+            onCancel: () => handlersRef.current.handleCancel(),
+            onCopy: () => handlersRef.current.handleCopy(),
+            onSubmit: () => handlersRef.current.handleSubmit(),
+        });
+        return () => registerFormHeader(null);
+    }, [editing, currentSubmitLabel, displayTitle]);
+
+    // Resolve conditional field overrides (e.g. file_id accept changes based on content_type)
+    const resolvedSections = useMemo(() => {
+        const allFields = (definition.sections || []).flatMap((sec) => sec.fields || []);
+        const rules = buildConditionalFieldRules(allFields);
+        if (!rules.length) return definition.sections || [];
+        const resolvedFields = filterFieldsByConditionalRules(allFields, rules, values);
+        const resolvedMap = new Map(resolvedFields.map((f) => [f.name, f]));
+        return (definition.sections || []).map((sec) => ({
+            ...sec,
+            fields: (sec.fields || []).map((f) => resolvedMap.get(f.name) || f),
+        }));
+    }, [definition.sections, values]);
+
     return (
         <Box sx={{ mt: { xs: 0, lg: 0 } }}>
-            <Box sx={{ position: "sticky", top: { xs: 111, lg: 110 }, zIndex: 100, boxShadow: '0 2px 0px rgba(0,0,0,0.15)' }}>
-                <FormHeader
-                    definition={definition}
-                    submitLabel={currentSubmitLabel}
-                    editing={editing}
-                    onToggleEdit={handleToggleEdit}
-                    onCancel={handleCancel}
-                    onCopy={handleCopy}
-                    onSubmit={handleSubmit}
-                />
-            </Box>
-
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: { xs: 1, sm: 2 }, mt: { xs: 0.25, sm: 1.25 }, width: '100%', minWidth: 0 }}>
                 <Box sx={{ flex: 1, minWidth: 0, width: '100%' }} component="form" onSubmit={handleSubmit}>
-                    {(definition.sections || []).map((sec) => (
+                    {resolvedSections.map((sec) => (
                         <FormSection
                             key={sec.key}
                             ref={(el) => (refs.current[sec.key] = el)}
@@ -398,13 +424,13 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
                         width: { xs: '100%', lg: 240 },
                         minWidth: 0,
                         position: { xs: 'static', lg: 'sticky' },
-                        top: { lg: 185 },
+                        top: { lg: 130 },
                         alignSelf: "flex-start",
                         order: { xs: -1, lg: 0 },
                     }}
                 >
                     <Box sx={{ display: { xs: 'none', lg: 'flex' }, flexDirection: { xs: 'row', lg: 'column' }, gap: 1, overflowX: { xs: 'auto', lg: 'visible' }, pb: { xs: 0.5, lg: 0 } }}>
-                        {(definition.sections || []).map((sec) => {
+                        {resolvedSections.map((sec) => {
                             const isActive = activeSection === sec.key;
 
                             return (

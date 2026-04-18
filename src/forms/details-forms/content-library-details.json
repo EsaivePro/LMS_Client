@@ -1,0 +1,176 @@
+{
+    "title": "Content Library Details",
+    "module": "content_library",
+    "fetchConfig": {
+        "endpoint": "/form-service/get",
+        "table": "content_library",
+        "joins": [],
+        "subJoins": {}
+    },
+    "sections": [
+        {
+            "key": "basic",
+            "title": "General Information",
+            "fields": [
+                {
+                    "name": "id",
+                    "label": "ID",
+                    "type": "number",
+                    "readOnly": true
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "type": "text",
+                    "required": true,
+                    "minWidth": 320
+                },
+                {
+                    "name": "description",
+                    "label": "Description",
+                    "type": "textarea",
+                    "minWidth": 640
+                }
+            ]
+        },
+        {
+            "key": "media",
+            "title": "Media Details",
+            "fields": [
+                {
+                    "name": "content_type",
+                    "label": "Content Type",
+                    "type": "select",
+                    "required": true,
+                    "default": "video",
+                    "conditionalFieldProps": {
+                        "video": {
+                            "file_id": {
+                                "accept": "video/*"
+                            }
+                        },
+                        "pdf": {
+                            "file_id": {
+                                "accept": "application/pdf"
+                            }
+                        },
+                        "doc": {
+                            "file_id": {
+                                "accept": ".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                            }
+                        },
+                        "ppt": {
+                            "file_id": {
+                                "accept": ".ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                            }
+                        },
+                        "image": {
+                            "file_id": {
+                                "accept": "image/*"
+                            }
+                        },
+                        "audio": {
+                            "file_id": {
+                                "accept": "audio/*"
+                            }
+                        },
+                        "other": {
+                            "file_id": {
+                                "accept": "*"
+                            }
+                        }
+                    },
+                    "options": [
+                        {
+                            "label": "Video",
+                            "value": "video"
+                        },
+                        {
+                            "label": "PDF",
+                            "value": "pdf"
+                        },
+                        {
+                            "label": "Document",
+                            "value": "doc"
+                        },
+                        {
+                            "label": "Presentation",
+                            "value": "ppt"
+                        },
+                        {
+                            "label": "Image",
+                            "value": "image"
+                        },
+                        {
+                            "label": "Audio",
+                            "value": "audio"
+                        },
+                        {
+                            "label": "Other",
+                            "value": "other"
+                        }
+                    ]
+                },
+                {
+                    "name": "imageurl",
+                    "label": "Thumbnail URL",
+                    "type": "text",
+                    "minWidth": 640
+                },
+                {
+                    "name": "file_id",
+                    "label": "Library File",
+                    "type": "fileupload",
+                    "accept": "*/*",
+                    "buttonLabel": "Upload File",
+                    "uploadPath": "content-library/files"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "number",
+                    "default": 0
+                }
+            ]
+        },
+        {
+            "key": "security",
+            "title": "Security & Permissions",
+            "fields": [
+                {
+                    "name": "visibility",
+                    "label": "Visibility",
+                    "type": "select",
+                    "required": true,
+                    "default": "private",
+                    "options": [
+                        {
+                            "label": "Public",
+                            "value": "public"
+                        },
+                        {
+                            "label": "Private",
+                            "value": "private"
+                        },
+                        {
+                            "label": "Unlisted",
+                            "value": "unlisted"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "metadata",
+            "title": "Additional Metadata",
+            "fields": [
+                {
+                    "name": "tags",
+                    "label": "Tags (comma separated)",
+                    "type": "text",
+                    "minWidth": 640
+                }
+            ]
+        }
+    ]
+}

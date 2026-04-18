@@ -1,82 +1,94 @@
-import React from "react";
-import { Box, Paper, Typography, Button, Divider, Chip } from "@mui/material";
+import { Box, Typography, Button, Chip, Divider } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Tooltip, IconButton } from '@mui/material';
-import DriveFileMoveRtlIcon from '@mui/icons-material/DriveFileMoveRtl';
+
 export default function FormHeader({ definition = {}, submitLabel = "Save", editing = false, onToggleEdit, onCancel, onCopy, onSubmit }) {
     return (
-        <Paper
-            elevation={0}
+        <Box
             sx={{
-                mt: { xs: 1, lg: 0 },
-                mb: 1,
-                px: { xs: 1, sm: 1.5 },
-                py: { xs: 1.5, sm: 1.1 },
+                position: 'fixed',
+                top: { xs: 56, sm: 64 },
+                left: 0,
+                right: 0,
+                zIndex: 1100,
+                px: { xs: 1.5, sm: 3, md: 4 },
+                py: { xs: 1.25, sm: 1.5 },
                 display: 'flex',
-                flexDirection: { xs: 'column', sm: 'row' },
+                alignItems: 'center',
                 justifyContent: 'space-between',
-                alignItems: { xs: 'stretch', sm: 'center' },
-                gap: { xs: 0.75, sm: 1 },
-                background: "linear-gradient(135deg, #f8f9fb 0%, #fdfdff 50%, #ffffff 100%)",
-                borderRadius: 1.5,
-                width: '100%',
+                gap: 1.5,
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                background: 'rgba(255,255,255,0.88)',
+                borderTop: '1px solid rgba(0,0,0,0.08)',
+                boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
             }}
         >
-            {/* ── Left: Title + editing badge ── */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0, width: { xs: '100%', sm: 'auto' } }}>
-
-                {/* Back Button */}
-                <DriveFileMoveRtlIcon sx={{
-                    fontSize: 25,
-                    color: 'var(--primary)',
-                    // '&:hover': {
-                    //     color: 'rgba(0,0,0,0.05)',
-                    // }
-                }} onClick={onCancel} />
-
-                {/* Title */}
-                <Typography
-                    variant="h6"
+            {/* ── Left: Back + Title ── */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0, flex: 1 }}>
+                <Button
+                    variant="text"
+                    onClick={onCancel}
+                    startIcon={<ArrowBackIcon />}
                     sx={{
-                        flex: 1,
-                        minWidth: 0,
+                        color: 'text.secondary',
+                        fontWeight: 500,
+                        fontSize: { xs: 12, sm: 13 },
+                        px: { xs: 1, sm: 1.5 },
+                        whiteSpace: 'nowrap',
+                        flexShrink: 0,
+                        '&:hover': {
+                            color: 'var(--primary)',
+                            backgroundColor: 'rgba(0,0,0,0.04)',
+                            transform: 'translateX(-2px)',
+                        },
+                        transition: 'all 0.2s',
+                    }}
+                >
+                    Back
+                </Button>
+
+                <Divider orientation="vertical" flexItem sx={{ mx: 0.25 }} />
+
+                <Typography
+                    sx={{
+                        fontWeight: 600,
+                        fontSize: { xs: '0.85rem', sm: '0.95rem' },
                         color: 'var(--dark)',
-                        fontWeight: 700,
-                        display: 'flex',
-                        alignItems: 'center',
-                        fontSize: { xs: '1.1rem', sm: '1.25rem' },
-                        wordBreak: 'break-word',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        minWidth: 0,
                     }}
                 >
                     {definition.title || 'Details'}
                 </Typography>
 
-                {/* Editing Chip */}
-                {/* {editing && (
+                {editing && (
                     <Chip
                         label="Editing"
                         size="small"
                         sx={{
                             fontSize: 10,
-                            // height: 20,
+                            fontWeight: 600,
                             textTransform: 'uppercase',
+                            letterSpacing: 0.5,
                             color: 'var(--primary)',
-                            backgroundColor: 'var(--onPrimary)',
+                            backgroundColor: 'var(--primaryLight, #e8f0fe)',
                             border: '1px solid var(--primary)',
-                            '@keyframes fadeSlideIn': {
-                                from: { opacity: 0, transform: 'translateX(-8px)' },
-                                to: { opacity: 1, transform: 'translateX(0)' },
+                            flexShrink: 0,
+                            height: 20,
+                            '@keyframes fadeIn': {
+                                from: { opacity: 0, transform: 'scale(0.85)' },
+                                to: { opacity: 1, transform: 'scale(1)' },
                             },
-                            animation: 'fadeSlideIn 0.25s ease',
+                            animation: 'fadeIn 0.2s ease',
                         }}
                     />
-                )} */}
+                )}
             </Box>
 
             {/* ── Right: Action buttons ── */}
@@ -84,73 +96,31 @@ export default function FormHeader({ definition = {}, submitLabel = "Save", edit
                 sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    flexWrap: 'nowrap',
-                    justifyContent: { xs: 'space-between', sm: 'flex-end' },
-                    gap: { xs: 0.5, sm: 1 },
-                    width: { xs: '100%', sm: 'auto' },
-                    overflow: 'hidden',
-                    pb: 0.1,
+                    gap: { xs: 0.75, sm: 1 },
+                    flexShrink: 0,
                 }}
             >
-
-                {/* Back */}
-                <Button
-                    variant="text"
-                    onClick={onCancel}
-                    startIcon={<ArrowBackIcon />}
-                    sx={{
-                        flex: '0 1 auto',
-                        color: 'text.secondary',
-                        fontWeight: 500,
-                        fontSize: { xs: 11, sm: 14 },
-                        minWidth: 0,
-                        px: { xs: 0.6, sm: 1.5 },
-                        whiteSpace: 'nowrap',
-                        '& .MuiButton-startIcon': {
-                            display: 'inline-flex',
-                            mr: { xs: 0.4, sm: 1 },
-                        },
-                        transition: 'all 0.2s',
-                        '&:hover': {
-                            color: 'var(--primary)',
-                            backgroundColor: 'rgba(0,0,0,0.04)',
-                            transform: 'translateX(-2px)',
-                        },
-                    }}
-                >
-                    Back
-                </Button>
-
                 {submitLabel !== "Create" && (
                     <>
-                        <Divider orientation="vertical" flexItem sx={{ mx: 0.25, display: { xs: 'none', sm: 'block' } }} />
-
                         {/* Copy */}
                         <Button
                             variant="outlined"
                             onClick={onCopy}
                             startIcon={<ContentCopyIcon fontSize="small" />}
                             sx={{
-                                flex: '0 1 auto',
                                 fontSize: { xs: 11, sm: 13 },
                                 fontWeight: 500,
-                                minWidth: 0,
-                                px: { xs: 0.75, sm: 1.5 },
+                                px: { xs: 1, sm: 1.75 },
                                 whiteSpace: 'nowrap',
-                                '& .MuiButton-startIcon': {
-                                    display: 'inline-flex',
-                                    mr: { xs: 0.4, sm: 1 },
-                                },
-                                borderColor: 'var(--primary)',
-                                color: 'var(--primary)',
-                                transition: 'all 0.22s',
+                                borderColor: 'divider',
+                                color: 'text.secondary',
+                                display: { xs: 'none', sm: 'inline-flex' },
                                 '&:hover': {
-                                    backgroundColor: 'var(--primary)',
-                                    color: '#fff',
                                     borderColor: 'var(--primary)',
-                                    transform: 'translateY(-1px)',
-                                    boxShadow: '0 4px 10px rgba(0,0,0,0.14)',
+                                    color: 'var(--primary)',
+                                    backgroundColor: 'var(--primaryLight, #e8f0fe)',
                                 },
+                                transition: 'all 0.2s',
                             }}
                         >
                             Copy
@@ -163,20 +133,14 @@ export default function FormHeader({ definition = {}, submitLabel = "Save", edit
                             startIcon={editing ? <CancelIcon fontSize="small" /> : <EditIcon fontSize="small" />}
                             color={editing ? "error" : "primary"}
                             sx={{
-                                flex: '0 1 auto',
                                 fontSize: { xs: 11, sm: 13 },
                                 fontWeight: 500,
-                                minWidth: 0,
-                                px: { xs: 0.75, sm: 1.5 },
+                                px: { xs: 1.25, sm: 1.75 },
                                 whiteSpace: 'nowrap',
-                                '& .MuiButton-startIcon': {
-                                    display: 'inline-flex',
-                                    mr: { xs: 0.4, sm: 1 },
-                                },
-                                transition: 'all 0.22s',
+                                transition: 'all 0.2s',
                                 '&:hover': {
                                     transform: 'translateY(-1px)',
-                                    boxShadow: '0 4px 10px rgba(0,0,0,0.14)',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
                                 },
                             }}
                         >
@@ -192,27 +156,22 @@ export default function FormHeader({ definition = {}, submitLabel = "Save", edit
                         onClick={onSubmit}
                         startIcon={<SaveIcon fontSize="small" />}
                         sx={{
-                            flex: '0 1 auto',
-                            fontSize: { xs: 11, sm: 13 },
-                            fontWeight: 600,
-                            minWidth: 0,
-                            px: { xs: 0.85, sm: 1.75 },
+                            fontSize: { xs: 12, sm: 13 },
+                            fontWeight: 700,
+                            px: { xs: 1.5, sm: 2.25 },
                             whiteSpace: 'nowrap',
-                            '& .MuiButton-startIcon': {
-                                display: 'inline-flex',
-                                mr: { xs: 0.4, sm: 1 },
+                            background: 'linear-gradient(135deg, var(--primary) 0%, var(--darkMedium, #1a3a6b) 100%)',
+                            boxShadow: '0 3px 10px rgba(0,0,0,0.18)',
+                            letterSpacing: 0.3,
+                            '@keyframes slideUp': {
+                                from: { opacity: 0, transform: 'translateY(6px)' },
+                                to: { opacity: 1, transform: 'translateY(0)' },
                             },
-                            background: 'linear-gradient(135deg, var(--primary) 0%, var(--darkMedium) 100%)',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                            transition: 'all 0.22s',
-                            '@keyframes slideInRight': {
-                                from: { opacity: 0, transform: 'translateX(10px)' },
-                                to: { opacity: 1, transform: 'translateX(0)' },
-                            },
-                            animation: 'slideInRight 0.25s ease',
+                            animation: 'slideUp 0.22s ease',
+                            transition: 'all 0.2s',
                             '&:hover': {
                                 transform: 'translateY(-2px)',
-                                boxShadow: '0 6px 16px rgba(0,0,0,0.22)',
+                                boxShadow: '0 6px 18px rgba(0,0,0,0.22)',
                             },
                             '&:active': {
                                 transform: 'translateY(0)',
@@ -224,6 +183,6 @@ export default function FormHeader({ definition = {}, submitLabel = "Save", edit
                     </Button>
                 )}
             </Box>
-        </Paper>
+        </Box>
     );
 }

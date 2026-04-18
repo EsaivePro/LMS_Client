@@ -3,8 +3,9 @@ import SideBarWithHeader from "./SideBarWithHeader";
 import LoadingScreen from "../common/loading/LoadingScreen";
 import Footer from "./Footer";
 import useCommon from "../../hooks/useCommon";
-import BreadcrumbsNav from "../common/breadcrumbs/BreadcrumbsNav";   // 👈 ADD THIS
+import BreadcrumbsNav from "../common/breadcrumbs/BreadcrumbsNav";
 import GlobalAlert from "../common/alert/GlobalAlert";
+import { FormHeaderProvider } from "../../contexts/FormHeaderContext";
 
 export default function AppLayout({
     children,
@@ -38,15 +39,17 @@ export default function AppLayout({
     }, [children]);
 
     return (
-        <div className="app-root">
-            <SideBarWithHeader footer={<Footer />}>
-                {/* FIXED BREADCRUMB NAV */}
-                <BreadcrumbsNav breadCurmbs={breadCurmbs} />
-                <GlobalAlert />
-                {/* PAGE CONTENT */}
-                <LoadingScreen />
-                {children}
-            </SideBarWithHeader>
-        </div>
+        <FormHeaderProvider>
+            <div className="app-root">
+                <SideBarWithHeader footer={<Footer />}>
+                    {/* FIXED BREADCRUMB / FORM HEADER NAV */}
+                    <BreadcrumbsNav breadCurmbs={breadCurmbs} />
+                    <GlobalAlert />
+                    {/* PAGE CONTENT */}
+                    <LoadingScreen />
+                    {children}
+                </SideBarWithHeader>
+            </div>
+        </FormHeaderProvider>
     );
 }

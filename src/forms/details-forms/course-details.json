@@ -1,0 +1,46 @@
+{
+    "title": "Course Details",
+    "module": "courses",
+    "fetchConfig": {
+        "endpoint": "/form-service/get",
+        "table": "courses",
+        "joins": [],
+        "subJoins": {}
+    },
+    "sections": [
+        {
+            "key": "basic",
+            "title": "Basic Details",
+            "fields": [
+                {
+                    "name": "id",
+                    "label": "ID",
+                    "type": "number",
+                    "readOnly": true
+                },
+                {
+                    "name": "title",
+                    "label": "Course Title",
+                    "type": "text",
+                    "required": true,
+                    "minWidth": 320
+                },
+                {
+                    "name": "description",
+                    "label": "Short Description",
+                    "type": "textarea",
+                    "required": true,
+                    "minWidth": 640
+                },
+                {
+                    "name": "file_id",
+                    "label": "Course Image",
+                    "type": "fileupload",
+                    "accept": "image/*",
+                    "uploadPath": "images/courses",
+                    "buttonLabel": "Upload Image"
+                }
+            ]
+        }
+    ]
+}
