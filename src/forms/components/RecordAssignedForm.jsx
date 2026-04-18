@@ -1,9 +1,12 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import GroupsIcon from "@mui/icons-material/Groups";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DataTableV2 from "../../components/common/table/DataTableV2";
 import axiosInstance from "../../apiClient/axiosInstance";
 import { formatDateTimeWithSeconds } from "../../utils/resolver.utils";
+import useCommon from "../../hooks/useCommon";
 
 /**
  * Resolves a mapData template object into a concrete delta row.
@@ -45,6 +48,8 @@ export default function RecordAssignedForm({
     editing = false,
     onChange,
 }) {
+    const navigate = useNavigate();
+    const { showLoader, hideLoader } = useCommon();
     const assignedConfig = field.assignedConfig || {};
     const identityKey = assignedConfig.identityKey || "id";
     const dragDrop = assignedConfig.dragDrop === true;
@@ -54,7 +59,6 @@ export default function RecordAssignedForm({
     const [isDragOrdered, setIsDragOrdered] = useState(false);
     const [total, setTotal] = useState(0);
     const [assignedCount, setAssignedCount] = useState(0);
-    const [loading, setLoading] = useState(false);
     const [preselectedIds, setPreselectedIds] = useState([]);
 
     // Track which IDs have already been pre-selected to avoid overriding user deselections on refetch
@@ -113,29 +117,61 @@ export default function RecordAssignedForm({
             return base;
         });
 
-        if (!dragDrop) return dataCols;
+        if (dragDrop) {
+            const orderNoCol = {
+                field: "__order_no",
+                headerName: "Order No",
+                type: "number",
+                minWidth: 100,
+                sortable: false,
+                filterable: false,
+                renderCell: (params) => {
+                    const pos = orderedAssignedIds.indexOf(params.row[identityKey]);
+                    return pos >= 0 ? (
+                        <Typography variant="body2" fontWeight={600} color="var(--primary)">
+                            {pos + 1}
+                        </Typography>
+                    ) : (
+                        <Typography variant="body2" color="text.disabled">—</Typography>
+                    );
+                },
+            };
+            dataCols.unshift(orderNoCol);
+        }
 
-        const orderNoCol = {
-            field: "__order_no",
-            headerName: "Order No",
-            type: "number",
-            minWidth: 100,
-            sortable: false,
-            filterable: false,
-            renderCell: (params) => {
-                const pos = orderedAssignedIds.indexOf(params.row[identityKey]);
-                return pos >= 0 ? (
-                    <Typography variant="body2" fontWeight={600} color="var(--primary)">
-                        {pos + 1}
-                    </Typography>
-                ) : (
-                    <Typography variant="body2" color="text.disabled">—</Typography>
-                );
-            },
-        };
+        if (assignedConfig.navigateTo) {
+            const navigateCol = {
+                field: "__navigate",
+                headerName: "",
+                type: "text",
+                width: 56,
+                minWidth: 56,
+                sortable: false,
+                filterable: false,
+                pinned: "right",
+                renderCell: (params) => {
+                    const url = assignedConfig.navigateTo.replace(
+                        /\{(\w+)\}/g,
+                        (_, key) => params.row[key] ?? ""
+                    );
+                    return (
+                        <Tooltip title="Open">
+                            <IconButton
+                                size="small"
+                                onClick={() => navigate(url)}
+                                sx={{ color: "var(--primary)" }}
+                            >
+                                <OpenInNewIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    );
+                },
+            };
+            dataCols.push(navigateCol);
+        }
 
-        return [orderNoCol, ...dataCols];
-    }, [assignedConfig.displayColumns, dragDrop, orderedAssignedIds, identityKey]); // eslint-disable-line
+        return dataCols;
+    }, [assignedConfig.displayColumns, assignedConfig.navigateTo, dragDrop, orderedAssignedIds, identityKey]); // eslint-disable-line
 
     // Called by DataTableV2 whenever page/sort/filter changes
     const handleFetch = useCallback(
@@ -178,7 +214,7 @@ export default function RecordAssignedForm({
                 ...(dragDrop ? { dragDrop: true } : {}),
             };
 
-            setLoading(true);
+            showLoader();
             try {
                 const res = await axiosInstance.post(assignedConfig.endpoint, body);
                 const raw = res?.data || {};
@@ -259,7 +295,7 @@ export default function RecordAssignedForm({
                 setRows([]);
                 setTotal(0);
             } finally {
-                setLoading(false);
+                hideLoader();
             }
         },
         // eslint-disable-next-line
@@ -448,7 +484,7 @@ export default function RecordAssignedForm({
                 serverSide
                 rows={sortedRows}
                 totalCount={total}
-                loading={loading}
+                loading={false}
                 columns={columns}
                 tableKey={`record-assigned-${field.name}-${editing ? "edit" : "view"}`}
                 tableName={assignedConfig.table}
