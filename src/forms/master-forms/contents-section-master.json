@@ -2,6 +2,11 @@
     "baseRoute": "/content-section/manage",
     "tableName": "sections",
     "endpoint": "/common-service/search",
+    "requestParams": {
+        "where": {
+            "modules": "Content"
+        }
+    },
     "readFrom": "response.data",
     "serverSide": true,
     "rowDoubleClick": "/content-section/manage/{id}",

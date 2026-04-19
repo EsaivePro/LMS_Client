@@ -48,6 +48,10 @@ export const API_ENDPOINTS = {
     //Enrollment-service APIs
     GET_ENROLLMENT_COURSES: "/enrollment-service/get-enrollment-courses",
     COURSE_MANUAL_ENROLLMENT: "/enrollment-service/course/manual",
+    // V2 enrollment-service APIs (new table structure)
+    GET_COURSE_DETAILS_V2: "/enrollment-service/course",   // append /:courseId/details (POST)
+    UPDATE_CONTENT_PROGRESS: "/enrollment-service/content/progress",
+    UPDATE_COURSE_PROGRESS_V2: "/enrollment-service/course/progress",
 
     // Category-service APIs
     GET_ALL_CATEGORIES: "/category-service/get-categories",

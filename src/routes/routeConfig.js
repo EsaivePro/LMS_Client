@@ -2,6 +2,7 @@ import FileUploadPage from "../pages/FileUploadPage";
 import AdminDashboard from "../modules/dashboard/pages/AdminDashBoard";
 import CoursesList from "../modules/course/pages/CoursesList";
 import CourseView from "../modules/course/pages/CourseView";
+import CourseViewV2 from "../modules/course/pages/CourseViewV2";
 import CourseEdit from "../modules/course/pages/CourseEdit";
 import CourseCategory from "../modules/course/pages/CourseCategory";
 import GroupPage from "../modules/group/pages/GroupPage";
@@ -52,6 +53,8 @@ import UserList from "../modules/user/pages/UsersList";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import SchoolIcon from "@mui/icons-material/School";
+import QuizIcon from "@mui/icons-material/Quiz";
 
 export const protectedRoutes = [
     // ─────────────────────────────────────────────
@@ -75,12 +78,22 @@ export const protectedRoutes = [
     // Learning Section
     // ─────────────────────────────────────────────
     {
-        path: "/course/view/:id",
+        path: "/course/view-2/:id",
         title: "Course Details",
         description: "View course information, lessons, and learning progress.",
         permission: "course.view",
         layoutProps: { containerCard: false, courseCard: true, footer: false },
         element: <CourseView />,
+        sideMenu: false,
+    },
+
+    {
+        path: "/course/view/:id",
+        title: "Course Details V2",
+        description: "View course information with Vimeo video player (new API structure).",
+        permission: "course.view",
+        layoutProps: { containerCard: false, courseCard: true, footer: false },
+        element: <CourseViewV2 />,
         sideMenu: false,
     },
 
@@ -201,6 +214,8 @@ export const protectedRoutes = [
         icon: <ViewModuleIcon />,
         type: "item",
         matchPath: "/module-category/manage",
+        subGroup: "Course Manage",
+        subGroupIcon: <SchoolIcon />,
     },
 
     // ─────────────────────────────────────────────
@@ -219,6 +234,8 @@ export const protectedRoutes = [
         icon: <LabelIcon />,
         type: "item",
         matchPath: "/topics/manage",
+        subGroup: "Exam Manage",
+        subGroupIcon: <QuizIcon />,
     },
     {
         path: "/courses/manage/:id",
@@ -233,6 +250,7 @@ export const protectedRoutes = [
         icon: <FeedIcon />,
         type: "item",
         matchPath: "/courses/manage",
+        subGroup: "Course Manage",
     },
     {
         path: "/content-library/manage/:id",
@@ -247,6 +265,7 @@ export const protectedRoutes = [
         icon: <CategoryIcon />,
         type: "item",
         matchPath: "/content-library/manage",
+        subGroup: "Course Manage",
     },
     {
         path: "/content-section/manage/:id",
@@ -261,6 +280,7 @@ export const protectedRoutes = [
         icon: <SegmentIcon />,
         type: "item",
         matchPath: "/content-section/manage",
+        subGroup: "Course Manage",
     },
     {
         path: "/questions/manage/:id",
@@ -275,21 +295,23 @@ export const protectedRoutes = [
         icon: <QuestionAnswerIcon />,
         type: "item",
         matchPath: "/questions/manage",
+        subGroup: "Exam Manage",
     },
 
     {
-        path: "/sections/manage/:id",
-        title: "Manage section",
-        description: "Create sections, assign questions and schedule them.",
+        path: "/questions-section/manage/:id",
+        title: "Manage questions section",
+        description: "Create questions sections, assign questions and schedule them.",
         permission: "exam.management",
         element: <QuestionsSectionManage />,
         sideMenu: true,
-        sidePath: "/sections/manage/list",
+        sidePath: "/questions-section/manage/list",
         section: "Manage Configurations",
-        label: "Sections",
+        label: "Questions Section",
         icon: <SegmentIcon />,
         type: "item",
-        matchPath: "/sections/manage",
+        matchPath: "/questions-section/manage",
+        subGroup: "Exam Manage",
     },
 
     {
@@ -305,6 +327,7 @@ export const protectedRoutes = [
         icon: <AssignmentIcon />,
         type: "item",
         matchPath: "/exams/manage",
+        subGroup: "Exam Manage",
     },
     {
         path: "/user-group-assign/manage/:id",
@@ -390,6 +413,7 @@ export const protectedRoutes = [
 export const getMenuFromRoutes = () => {
     const menu = [];
     const seenSections = new Set();
+    const seenSubGroups = new Map(); // "section::subGroup" -> group object
 
     protectedRoutes.forEach((route) => {
         // Skip routes not meant for sidebar
@@ -397,22 +421,37 @@ export const getMenuFromRoutes = () => {
 
         // Add section header if not already added
         if (route.section && !seenSections.has(route.section)) {
-            menu.push({
-                type: "section",
-                label: route.section,
-            });
+            menu.push({ type: "section", label: route.section });
             seenSections.add(route.section);
         }
 
-        // Add route as menu item
-        menu.push({
+        const item = {
             label: route.label,
             icon: route.icon,
             to: (route?.sidePath != null && route?.sidePath != "") ? route.sidePath : route.path,
-            type: route.type || "item",
+            type: "item",
             role: route.permission,
             matchPath: route.matchPath,
-        });
+        };
+
+        // If the route belongs to a sub-group, nest it inside a group entry
+        if (route.subGroup) {
+            const groupKey = `${route.section}::${route.subGroup}`;
+            if (!seenSubGroups.has(groupKey)) {
+                const group = {
+                    type: "group",
+                    label: route.subGroup,
+                    icon: route.subGroupIcon || null,
+                    role: route.permission,
+                    children: [],
+                };
+                seenSubGroups.set(groupKey, group);
+                menu.push(group);
+            }
+            seenSubGroups.get(groupKey).children.push(item);
+        } else {
+            menu.push(item);
+        }
     });
 
     return menu;

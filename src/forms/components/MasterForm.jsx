@@ -102,9 +102,14 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
             return [...prev, ...deduped];
         };
 
+        // Append static `where` filter from config.requestParams if present
+        if (config.requestParams?.where && Object.keys(config.requestParams.where).length > 0) {
+            params.set('where', JSON.stringify(config.requestParams.where));
+        }
+
         showLoader();
         try {
-            const res = await axiosInstance.get(`${config.endpoint}?${queryString}`);
+            const res = await axiosInstance.get(`${config.endpoint}?${params.toString()}`);
             const raw = res?.data || {};
             let dataNode = raw;
             if (config.readFrom) {

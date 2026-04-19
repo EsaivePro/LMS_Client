@@ -5,15 +5,7 @@
         "table": "sections",
         "joins": [
             "contents_section"
-        ],
-        "subJoins": {
-            "contents_section": {
-                "key": "content_id",
-                "column": [
-                    "title"
-                ]
-            }
-        }
+        ]
     },
     "sections": [
         {

@@ -31,6 +31,11 @@ export const httpClient = {
     updateLessonProgress: async (data) => axiosInstance.patch(API_ENDPOINTS.UPDATE_LESSON_PROGRESS, data),
     updateCourseProgress: async (data) => axiosInstance.patch(API_ENDPOINTS.UPDATE_COURSE_PROGRESS, data),
 
+    // V2 APIs (new enrollment-service structure)
+    getCourseDetailsV2: async (courseId, data) => axiosInstance.post(`${API_ENDPOINTS.GET_COURSE_DETAILS_V2}/${courseId}/details`, data),
+    updateContentProgress: async (data) => axiosInstance.patch(API_ENDPOINTS.UPDATE_CONTENT_PROGRESS, data),
+    updateCourseProgressV2: async (data) => axiosInstance.patch(API_ENDPOINTS.UPDATE_COURSE_PROGRESS_V2, data),
+
     updateCourseFavourite: async (data) => axiosInstance.put(API_ENDPOINTS.UPDATE_COURSE_FAVOURITE, data),
 
 

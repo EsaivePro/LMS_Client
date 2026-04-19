@@ -4,8 +4,17 @@
     "fetchConfig": {
         "endpoint": "/form-service/get",
         "table": "courses",
-        "joins": [],
-        "subJoins": {}
+        "joins": [
+            "course_sections"
+        ],
+        "subJoins": {
+            "course_sections": {
+                "key": "section_id",
+                "column": [
+                    "title"
+                ]
+            }
+        }
     },
     "sections": [
         {
@@ -39,6 +48,75 @@
                     "accept": "image/*",
                     "uploadPath": "images/courses",
                     "buttonLabel": "Upload Image"
+                }
+            ]
+        },
+        {
+            "key": "course_sections",
+            "title": "Section Allocation",
+            "fields": [
+                {
+                    "name": "course_sections",
+                    "label": "Sections",
+                    "type": "record-assigned",
+                    "fullWidth": true,
+                    "assignedConfig": {
+                        "singularLabel": "sections",
+                        "maxRecords": 20,
+                        "endpoint": "/form-service/advanced-search",
+                        "table": "sections",
+                        "identityKey": "id",
+                        "orderby": [
+                            {
+                                "table": "course_sections",
+                                "columns": [
+                                    "order_no"
+                                ],
+                                "where": {
+                                    "course_id": "{recordId}"
+                                },
+                                "on": "section_id"
+                            }
+                        ],
+                        "sortby": "created_at",
+                        "order": "desc",
+                        "mapData": {
+                            "id": "{course_sections_id}",
+                            "section_id": "{id}",
+                            "is_deleted": "{is_deleted}",
+                            "order_no": 1,
+                            "assigned": true
+                        },
+                        "dragDrop": true,
+                        "dragOrderBy": "course_sections_order_no",
+                        "navigateTo": "/content-section/manage/{id}",
+                        "displayColumns": [
+                            {
+                                "field": "id",
+                                "headerName": "ID",
+                                "type": "number",
+                                "minWidth": 80
+                            },
+                            {
+                                "field": "title",
+                                "headerName": "Title",
+                                "type": "text",
+                                "minWidth": 220
+                            },
+                            {
+                                "field": "display_name",
+                                "headerName": "Display Name",
+                                "type": "text",
+                                "minWidth": 180
+                            },
+                            {
+                                "field": "description",
+                                "headerName": "Description",
+                                "type": "text",
+                                "minWidth": 240
+                            }
+                        ]
+                    }
                 }
             ]
         }

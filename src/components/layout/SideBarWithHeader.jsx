@@ -56,7 +56,7 @@ const Main = styled("main")(({ theme }) => ({
     padding: theme.spacing(3),
 }));
 
-export default function SideBarWithHeader({ children, fixed = true, footer = null }) {
+export default function SideBarWithHeader({ children, fixed = false, footer = null }) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const location = useLocation();
@@ -104,7 +104,14 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
     // ── Auto-expand group for active child ──────────────────────
     React.useEffect(() => {
         MENU.forEach((item) => {
-            if (item.type === "group" && item.children?.some((c) => c.to === location.pathname)) {
+            if (
+                item.type === "group" &&
+                item.children?.some((c) =>
+                    c.matchPath
+                        ? location.pathname.startsWith(c.matchPath)
+                        : c.to === location.pathname
+                )
+            ) {
                 setExpandedGroup(item.label);
             }
         });
@@ -432,20 +439,29 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                                                             py: 0.7,
                                                             px: 1.5,
                                                             background: isGroupActive
-                                                                ? "rgba(143,0,255,0.15)"
-                                                                : "transparent",
+                                                                ? "rgba(143,0,255,0.14)"
+                                                                : expanded
+                                                                    ? "rgba(255,255,255,0.05)"
+                                                                    : "transparent",
+                                                            borderLeft: isGroupActive || expanded
+                                                                ? "3px solid rgba(143,0,255,0.65)"
+                                                                : "3px solid transparent",
                                                             "&:hover": {
-                                                                background: "rgba(255,255,255,0.06)",
+                                                                background: isGroupActive
+                                                                    ? "rgba(143,0,255,0.18)"
+                                                                    : "rgba(255,255,255,0.07)",
                                                             },
+                                                            transition: "all 0.2s ease",
                                                         }}
                                                     >
                                                         <ListItemIcon
                                                             sx={{
-                                                                color: isGroupActive
-                                                                    ? "#8F00FF"
+                                                                color: isGroupActive || expanded
+                                                                    ? "#b87bff"
                                                                     : "rgba(255,255,255,0.5)",
                                                                 minWidth: 34,
-                                                                "& .MuiSvgIcon-root": { fontSize: 22 },
+                                                                "& .MuiSvgIcon-root": { fontSize: 20 },
+                                                                transition: "color 0.2s ease",
                                                             }}
                                                         >
                                                             {item.icon}
@@ -453,79 +469,119 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                                                         <ListItemText
                                                             primary={item.label}
                                                             primaryTypographyProps={{
-                                                                fontSize: 16,
-                                                                fontWeight: isGroupActive ? 600 : 400,
-                                                                color: "rgba(255,255,255,0.78)",
+                                                                fontSize: 14,
+                                                                fontWeight: isGroupActive || expanded ? 600 : 500,
+                                                                color: isGroupActive || expanded
+                                                                    ? "#b87bff"
+                                                                    : "rgba(255,255,255,0.78)",
+                                                                letterSpacing: 0.3,
                                                             }}
                                                         />
-                                                        {expanded ? (
-                                                            <ExpandLess
-                                                                sx={{ fontSize: 17, color: "rgba(255,255,255,0.4)" }}
-                                                            />
-                                                        ) : (
-                                                            <ExpandMore
-                                                                sx={{ fontSize: 17, color: "rgba(255,255,255,0.4)" }}
-                                                            />
-                                                        )}
+                                                        <Box
+                                                            sx={{
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                                justifyContent: "center",
+                                                                width: 20,
+                                                                height: 20,
+                                                                borderRadius: "50%",
+                                                                background: expanded
+                                                                    ? "rgba(143,0,255,0.2)"
+                                                                    : "rgba(255,255,255,0.06)",
+                                                                flexShrink: 0,
+                                                                transition: "all 0.2s ease",
+                                                            }}
+                                                        >
+                                                            {expanded ? (
+                                                                <ExpandLess sx={{ fontSize: 14, color: isGroupActive || expanded ? "#b87bff" : "rgba(255,255,255,0.4)" }} />
+                                                            ) : (
+                                                                <ExpandMore sx={{ fontSize: 14, color: "rgba(255,255,255,0.4)" }} />
+                                                            )}
+                                                        </Box>
                                                     </ListItemButton>
                                                 </ListItem>
 
                                                 <Collapse in={expanded} timeout="auto" unmountOnExit>
-                                                    <List disablePadding sx={{ pl: 0.5 }}>
-                                                        {item.children.map((child, cIdx) => {
-                                                            const isChildActive = child.matchPath
-                                                                ? location.pathname.startsWith(child.matchPath)
-                                                                : location.pathname === child.to;
-                                                            return (
-                                                                <Link
-                                                                    key={cIdx}
-                                                                    to={child.to}
-                                                                    style={{ textDecoration: "none", color: "inherit" }}
-                                                                    onClick={closeSidebarOnNav}
-                                                                >
-                                                                    <ListItem disablePadding sx={{ mb: 0.25 }}>
-                                                                        <ListItemButton
-                                                                            sx={{
-                                                                                borderRadius: 1.5,
-                                                                                py: 0.6,
-                                                                                pl: 3.5,
-                                                                                background: isChildActive
-                                                                                    ? "linear-gradient(90deg, #8F00FF 0%, #6d00c4 100%)"
-                                                                                    : "transparent",
-                                                                                "&:hover": {
-                                                                                    background: isChildActive
-                                                                                        ? "linear-gradient(90deg, #8F00FF 0%, #6d00c4 100%)"
-                                                                                        : "rgba(255,255,255,0.06)",
-                                                                                },
-                                                                            }}
-                                                                        >
-                                                                            <ListItemIcon
+                                                    <Box
+                                                        sx={{
+                                                            ml: 2.5,
+                                                            pl: 1,
+                                                            borderLeft: "1.5px solid rgba(143,0,255,0.3)",
+                                                            mt: 0.25,
+                                                            mb: 0.5,
+                                                        }}
+                                                    >
+                                                        <List disablePadding>
+                                                            {item.children.map((child, cIdx) => {
+                                                                const isChildActive = child.matchPath
+                                                                    ? location.pathname.startsWith(child.matchPath)
+                                                                    : location.pathname === child.to;
+                                                                return (
+                                                                    <Link
+                                                                        key={cIdx}
+                                                                        to={child.to}
+                                                                        style={{ textDecoration: "none", color: "inherit" }}
+                                                                        onClick={closeSidebarOnNav}
+                                                                    >
+                                                                        <ListItem disablePadding sx={{ mb: 0.2 }}>
+                                                                            <ListItemButton
                                                                                 sx={{
-                                                                                    color: isChildActive
-                                                                                        ? "#fff"
-                                                                                        : "rgba(255,255,255,0.45)",
-                                                                                    minWidth: 30,
-                                                                                    "& .MuiSvgIcon-root": { fontSize: 20 },
+                                                                                    borderRadius: 1.5,
+                                                                                    py: 0.55,
+                                                                                    px: 1.2,
+                                                                                    background: isChildActive
+                                                                                        ? "linear-gradient(90deg, rgba(143,0,255,0.85) 0%, rgba(109,0,196,0.85) 100%)"
+                                                                                        : "transparent",
+                                                                                    boxShadow: isChildActive
+                                                                                        ? "0 1px 6px rgba(143,0,255,0.28)"
+                                                                                        : "none",
+                                                                                    "&:hover": {
+                                                                                        background: isChildActive
+                                                                                            ? "linear-gradient(90deg, rgba(143,0,255,0.9) 0%, rgba(109,0,196,0.9) 100%)"
+                                                                                            : "rgba(255,255,255,0.07)",
+                                                                                    },
+                                                                                    transition: "all 0.15s ease",
                                                                                 }}
                                                                             >
-                                                                                {child.icon}
-                                                                            </ListItemIcon>
-                                                                            <ListItemText
-                                                                                primary={child.label}
-                                                                                primaryTypographyProps={{
-                                                                                    fontSize: 15,
-                                                                                    fontWeight: isChildActive ? 600 : 400,
-                                                                                    color: isChildActive
-                                                                                        ? "#fff"
-                                                                                        : "rgba(255,255,255,0.7)",
-                                                                                }}
-                                                                            />
-                                                                        </ListItemButton>
-                                                                    </ListItem>
-                                                                </Link>
-                                                            );
-                                                        })}
-                                                    </List>
+                                                                                <ListItemIcon
+                                                                                    sx={{
+                                                                                        color: isChildActive
+                                                                                            ? "#fff"
+                                                                                            : "rgba(255,255,255,0.45)",
+                                                                                        minWidth: 28,
+                                                                                        "& .MuiSvgIcon-root": { fontSize: 17 },
+                                                                                    }}
+                                                                                >
+                                                                                    {child.icon}
+                                                                                </ListItemIcon>
+                                                                                <ListItemText
+                                                                                    primary={child.label}
+                                                                                    primaryTypographyProps={{
+                                                                                        fontSize: 13.5,
+                                                                                        fontWeight: isChildActive ? 600 : 400,
+                                                                                        color: isChildActive
+                                                                                            ? "#fff"
+                                                                                            : "rgba(255,255,255,0.72)",
+                                                                                    }}
+                                                                                />
+                                                                                {isChildActive && (
+                                                                                    <Box
+                                                                                        sx={{
+                                                                                            width: 5,
+                                                                                            height: 5,
+                                                                                            borderRadius: "50%",
+                                                                                            background: "rgba(255,255,255,0.85)",
+                                                                                            flexShrink: 0,
+                                                                                        }}
+                                                                                    />
+                                                                                )}
+                                                                            </ListItemButton>
+                                                                        </ListItem>
+                                                                    </Link>
+                                                                );
+                                                            })}
+                                                        </List>
+                                                    </Box>
                                                 </Collapse>
                                             </React.Fragment>
                                         );

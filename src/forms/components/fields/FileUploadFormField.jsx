@@ -29,6 +29,27 @@ export default function FileUploadFormField({ field, value, formValues, onChange
         // Signal a pending upload to the form; handleSubmit will process it
         onChange(field.name, { __pendingFile: file, existingId, fieldConfig: field });
         onChange("imageurl", file.name);
+
+        // Extract video duration if the file is a video
+        if (file.type.startsWith("video/")) {
+            const url = URL.createObjectURL(file);
+            const video = document.createElement("video");
+            video.preload = "metadata";
+            video.onloadedmetadata = () => {
+                URL.revokeObjectURL(url);
+                const totalSeconds = Math.floor(video.duration);
+                const h = Math.floor(totalSeconds / 3600);
+                const m = Math.floor((totalSeconds % 3600) / 60);
+                const s = totalSeconds % 60;
+                const formatted = h > 0
+                    ? `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
+                    : `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+                onChange("duration_formate", formatted);
+                onChange("duration", totalSeconds);
+            };
+            video.src = url;
+        }
+
         clearInvalid(field.name, setInvalidFields);
     };
 

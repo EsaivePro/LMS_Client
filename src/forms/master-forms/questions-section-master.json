@@ -1,10 +1,15 @@
 {
-    "baseRoute": "/sections/manage",
+    "baseRoute": "/questions-section/manage",
     "tableName": "sections",
     "endpoint": "/common-service/search",
+    "requestParams": {
+        "where": {
+            "modules": "Questions"
+        }
+    },
     "readFrom": "response.data",
     "serverSide": true,
-    "rowDoubleClick": "/sections/manage/{id}",
+    "rowDoubleClick": "/questions-section/manage/{id}",
     "manageRoute": false,
     "moreColumn": [
         "Edit",
