@@ -1,0 +1,97 @@
+{
+    "baseRoute": "/enrollment-job/manage",
+    "tableName": "enrollment_job",
+    "endpoint": "/common-service/search",
+    "readFrom": "response.data",
+    "serverSide": true,
+    "rowDoubleClick": "/enrollment-job/manage/{id}",
+    "manageRoute": false,
+    "moreColumn": [
+        "Edit",
+        "Delete"
+    ],
+    "tableKey": "enrollment-job-table",
+    "header": {
+        "title": "Enrollment Jobs",
+        "showCount": true,
+        "buttons": [
+            {
+                "key": "create",
+                "label": "New Job",
+                "variant": "contained"
+            }
+        ]
+    },
+    "fields": [
+        {
+            "key": "id",
+            "label": "Job ID",
+            "type": "string",
+            "maxWidth": 160
+        },
+        {
+            "key": "job_type",
+            "label": "Job Type",
+            "type": "string",
+            "minWidth": 140,
+            "filterable": true
+        },
+        {
+            "key": "status",
+            "label": "Status",
+            "type": "string",
+            "minWidth": 120,
+            "filterable": true,
+            "linkTemplate": "{id}"
+        },
+        {
+            "key": "entity_type",
+            "label": "Entity Type",
+            "type": "string",
+            "minWidth": 120,
+            "filterable": true
+        },
+        {
+            "key": "entity_id",
+            "label": "Entity ID",
+            "type": "number",
+            "maxWidth": 100
+        },
+        {
+            "key": "is_scheduled",
+            "label": "Scheduled",
+            "type": "boolean",
+            "maxWidth": 100
+        },
+        {
+            "key": "scheduled_at",
+            "label": "Scheduled At",
+            "type": "datetime",
+            "minWidth": 180
+        },
+        {
+            "key": "total_count",
+            "label": "Total",
+            "type": "number",
+            "maxWidth": 90
+        },
+        {
+            "key": "processed_count",
+            "label": "Processed",
+            "type": "number",
+            "maxWidth": 100
+        },
+        {
+            "key": "failed_count",
+            "label": "Failed",
+            "type": "number",
+            "maxWidth": 90
+        },
+        {
+            "key": "created_at",
+            "label": "Created At",
+            "type": "datetime",
+            "minWidth": 180
+        }
+    ]
+}

@@ -56,7 +56,7 @@ const Main = styled("main")(({ theme }) => ({
     padding: theme.spacing(3),
 }));
 
-export default function SideBarWithHeader({ children, fixed = false, footer = null }) {
+export default function SideBarWithHeader({ children, fixed = true, footer = null }) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const location = useLocation();

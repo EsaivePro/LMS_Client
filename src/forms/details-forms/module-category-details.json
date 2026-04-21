@@ -28,11 +28,23 @@
                     "createOnly": true
                 },
                 {
+                    "name": "display_name",
+                    "label": "Display Name",
+                    "type": "text",
+                    "required": true
+                },
+                {
                     "name": "description",
                     "label": "Description",
                     "type": "textarea",
                     "fullWidth": true
-                },
+                }
+            ]
+        },
+        {
+            "key": "display-settings",
+            "title": "Display Settings",
+            "fields": [
                 {
                     "name": "file_id",
                     "label": "Card Image",
@@ -40,12 +52,6 @@
                     "accept": "image/*",
                     "uploadPath": "images/module-category",
                     "buttonLabel": "Upload Image"
-                },
-                {
-                    "name": "duration",
-                    "label": "Duration",
-                    "type": "number",
-                    "default": 0
                 }
             ]
         },
@@ -58,6 +64,7 @@
                     "label": "Enrollment Type",
                     "type": "select",
                     "required": true,
+                    "createOnly": true,
                     "options": [
                         {
                             "label": "Assigned",
@@ -68,9 +75,7 @@
                     "conditionalFields": {
                         "scheduled": [
                             "scheduled_start_at",
-                            "scheduled_end_at"
-                        ],
-                        "assigned": [
+                            "scheduled_end_at",
                             "numberofdays"
                         ]
                     }
@@ -79,8 +84,12 @@
                     "name": "enroll_mode",
                     "label": "Enroll Mode",
                     "type": "select",
-                    "required": true,
+                    "createOnly": true,
                     "options": [
+                        {
+                            "label": "Auto",
+                            "value": "auto"
+                        },
                         {
                             "label": "Day Wise",
                             "value": "daywise"
@@ -90,7 +99,7 @@
                             "value": "completionwise"
                         }
                     ],
-                    "default": "daywise"
+                    "default": "auto"
                 },
                 {
                     "name": "numberofdays",

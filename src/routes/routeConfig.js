@@ -29,6 +29,7 @@ import UserGroupAssignManage from "../modules/forms/pages/UserGroupAssignManage"
 import RoleManage from "../modules/forms/pages/RoleManage";
 import UserManage from "../modules/forms/pages/UserManage";
 import ModuleCategoryManage from "../modules/forms/pages/ModuleCategoryManage";
+import EnrollmentJobManage from "../modules/forms/pages/EnrollmentJobManage";
 import AuditLogPage from "../modules/audit/pages/AuditLogPage";
 import UploadFilesPage from "../modules/upload/pages/UploadFilesPage";
 import VimeoDemoPage from "../pages/video/VimeoDemoPage";
@@ -55,6 +56,7 @@ import LiveTvIcon from "@mui/icons-material/LiveTv";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import SchoolIcon from "@mui/icons-material/School";
 import QuizIcon from "@mui/icons-material/Quiz";
+import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
 
 export const protectedRoutes = [
     // ─────────────────────────────────────────────
@@ -209,13 +211,26 @@ export const protectedRoutes = [
         element: <ModuleCategoryManage />,
         sideMenu: true,
         sidePath: "/module-category/manage/list",
-        section: "Manage Configurations",
+        section: "Assigns",
         label: "Category Assign",
         icon: <ViewModuleIcon />,
         type: "item",
-        matchPath: "/module-category/manage",
-        subGroup: "Course Manage",
-        subGroupIcon: <SchoolIcon />,
+        matchPath: "/module-category/manage"
+    },
+
+    {
+        path: "/enrollment-job/manage/:id",
+        title: "Manage Enrollment Jobs",
+        description: "View and manage bulk enrollment jobs, their status, and execution progress.",
+        permission: "enrollment.management",
+        element: <EnrollmentJobManage />,
+        sideMenu: true,
+        sidePath: "/enrollment-job/manage/list",
+        section: "Assigns",
+        label: "Enrollment Jobs",
+        icon: <WorkHistoryIcon />,
+        type: "item",
+        matchPath: "/enrollment-job/manage",
     },
 
     // ─────────────────────────────────────────────
@@ -229,13 +244,11 @@ export const protectedRoutes = [
         element: <TopicManage />,
         sideMenu: true,
         sidePath: "/topics/manage/list",
-        section: "Manage Configurations",
+        section: "General Configurations",
         label: "Topics",
         icon: <LabelIcon />,
         type: "item",
-        matchPath: "/topics/manage",
-        subGroup: "Exam Manage",
-        subGroupIcon: <QuizIcon />,
+        matchPath: "/topics/manage"
     },
     {
         path: "/courses/manage/:id",
@@ -245,12 +258,11 @@ export const protectedRoutes = [
         element: <CourseManage />,
         sideMenu: true,
         sidePath: "/courses/manage/list",
-        section: "Manage Configurations",
+        section: "Manage Courses",
         label: "Courses",
         icon: <FeedIcon />,
         type: "item",
         matchPath: "/courses/manage",
-        subGroup: "Course Manage",
     },
     {
         path: "/content-library/manage/:id",
@@ -260,12 +272,11 @@ export const protectedRoutes = [
         element: <ContentLibraryManage />,
         sideMenu: true,
         sidePath: "/content-library/manage/list",
-        section: "Manage Configurations",
+        section: "Library",
         label: "Content Library",
         icon: <CategoryIcon />,
         type: "item",
         matchPath: "/content-library/manage",
-        subGroup: "Course Manage",
     },
     {
         path: "/content-section/manage/:id",
@@ -275,12 +286,11 @@ export const protectedRoutes = [
         element: <ContentsSectionManage />,
         sideMenu: true,
         sidePath: "/content-section/manage/list",
-        section: "Manage Configurations",
+        section: "Manage Courses",
         label: "Content Sections",
         icon: <SegmentIcon />,
         type: "item",
         matchPath: "/content-section/manage",
-        subGroup: "Course Manage",
     },
     {
         path: "/questions/manage/:id",
@@ -290,12 +300,11 @@ export const protectedRoutes = [
         element: <QuestionManage />,
         sideMenu: true,
         sidePath: "/questions/manage/list",
-        section: "Manage Configurations",
+        section: "Questions Bank",
         label: "Questions Bank",
         icon: <QuestionAnswerIcon />,
         type: "item",
         matchPath: "/questions/manage",
-        subGroup: "Exam Manage",
     },
 
     {
@@ -306,12 +315,11 @@ export const protectedRoutes = [
         element: <QuestionsSectionManage />,
         sideMenu: true,
         sidePath: "/questions-section/manage/list",
-        section: "Manage Configurations",
+        section: "Questions Bank",
         label: "Questions Section",
         icon: <SegmentIcon />,
         type: "item",
         matchPath: "/questions-section/manage",
-        subGroup: "Exam Manage",
     },
 
     {
@@ -322,12 +330,11 @@ export const protectedRoutes = [
         element: <ExamManage />,
         sideMenu: true,
         sidePath: "/exams/manage/list",
-        section: "Manage Configurations",
+        section: "Manage Exams",
         label: "Exams",
         icon: <AssignmentIcon />,
         type: "item",
         matchPath: "/exams/manage",
-        subGroup: "Exam Manage",
     },
     {
         path: "/user-group-assign/manage/:id",
@@ -399,7 +406,7 @@ export const protectedRoutes = [
         description: "Standalone Vimeo video player demo page.",
         permission: "dashboard.view", // Or adjust as needed
         element: <VimeoDemoPage />,
-        sideMenu: true,
+        sideMenu: false,
         section: "Demo",
         label: "Vimeo Video Demo",
         icon: <LiveTvIcon />,

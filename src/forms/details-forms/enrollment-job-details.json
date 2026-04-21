@@ -1,0 +1,133 @@
+{
+    "title": "Enrollment Job Details",
+    "fetchConfig": {
+        "endpoint": "/form-service/get",
+        "table": "enrollment_job"
+    },
+    "sections": [
+        {
+            "key": "basic",
+            "title": "Job Info",
+            "fields": [
+                {
+                    "name": "id",
+                    "label": "Job ID",
+                    "type": "text",
+                    "readOnly": true
+                },
+                {
+                    "name": "job_type",
+                    "label": "Job Type",
+                    "type": "text",
+                    "required": true,
+                    "minWidth": 240
+                },
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "type": "select",
+                    "required": true,
+                    "minWidth": 200,
+                    "options": [
+                        { "value": "pending", "label": "Pending" },
+                        { "value": "processing", "label": "Processing" },
+                        { "value": "completed", "label": "Completed" },
+                        { "value": "failed", "label": "Failed" },
+                        { "value": "cancelled", "label": "Cancelled" }
+                    ]
+                },
+                {
+                    "name": "entity_type",
+                    "label": "Entity Type",
+                    "type": "text",
+                    "required": true,
+                    "minWidth": 200
+                },
+                {
+                    "name": "entity_id",
+                    "label": "Entity ID",
+                    "type": "number",
+                    "minWidth": 160
+                },
+                {
+                    "name": "timezone",
+                    "label": "Timezone",
+                    "type": "text",
+                    "required": true,
+                    "minWidth": 200
+                },
+                {
+                    "name": "payload",
+                    "label": "Payload (JSON)",
+                    "type": "textarea",
+                    "minWidth": 640
+                }
+            ]
+        },
+        {
+            "key": "schedule",
+            "title": "Schedule",
+            "fields": [
+                {
+                    "name": "is_scheduled",
+                    "label": "Is Scheduled",
+                    "type": "checkbox"
+                },
+                {
+                    "name": "scheduled_at",
+                    "label": "Scheduled At",
+                    "type": "datetime",
+                    "minWidth": 240
+                },
+                {
+                    "name": "started_at",
+                    "label": "Started At",
+                    "type": "datetime",
+                    "minWidth": 240,
+                    "readOnly": true
+                },
+                {
+                    "name": "completed_at",
+                    "label": "Completed At",
+                    "type": "datetime",
+                    "minWidth": 240,
+                    "readOnly": true
+                }
+            ]
+        },
+        {
+            "key": "progress",
+            "title": "Progress",
+            "fields": [
+                {
+                    "name": "total_count",
+                    "label": "Total Count",
+                    "type": "number",
+                    "minWidth": 160,
+                    "readOnly": true
+                },
+                {
+                    "name": "processed_count",
+                    "label": "Processed Count",
+                    "type": "number",
+                    "minWidth": 160,
+                    "readOnly": true
+                },
+                {
+                    "name": "failed_count",
+                    "label": "Failed Count",
+                    "type": "number",
+                    "minWidth": 160,
+                    "readOnly": true
+                },
+                {
+                    "name": "error_log",
+                    "label": "Error Log",
+                    "type": "textarea",
+                    "minWidth": 640,
+                    "readOnly": true
+                }
+            ]
+        }
+    ]
+}
