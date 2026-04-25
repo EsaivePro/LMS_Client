@@ -5,7 +5,7 @@ import { API_ENDPOINTS } from "../constants/apiEndPoints";
 
 let BASE_URL = "http://localhost:3003/api-gateway";
 
-BASE_URL = "https://lmsapi-production-3541.up.railway.app/api-gateway";
+// BASE_URL = "https://lmsapi-production-3541.up.railway.app/api-gateway";
 
 const api = axios.create({
     baseURL: BASE_URL,
@@ -50,17 +50,17 @@ api.interceptors.response.use(
             originalRequest._retry = true;
             try {
                 const refreshToken = tokenStorage.getRefreshToken();
-                if (refreshToken) {
-                    const resp = await api.post(API_ENDPOINTS.REFRESH, { refreshToken });
-                    const newAccess = resp?.data?.response?.accessToken || resp?.data?.response?.token;
-                    const newRefresh = resp?.data?.response?.refreshToken || null;
-                    if (newAccess) tokenStorage.setAccessToken(newAccess);
-                    if (newRefresh) tokenStorage.setRefreshToken(newRefresh);
-                    // set new header and retry original request
-                    originalRequest.headers = originalRequest.headers || {};
-                    originalRequest.headers.Authorization = `Bearer ${tokenStorage.getAccessToken()}`;
-                    return api(originalRequest);
-                }
+                // if (refreshToken) {
+                //     const resp = await api.post(API_ENDPOINTS.REFRESH, { refreshToken });
+                //     const newAccess = resp?.data?.response?.accessToken || resp?.data?.response?.token;
+                //     const newRefresh = resp?.data?.response?.refreshToken || null;
+                //     if (newAccess) tokenStorage.setAccessToken(newAccess);
+                //     if (newRefresh) tokenStorage.setRefreshToken(newRefresh);
+                //     // set new header and retry original request
+                //     originalRequest.headers = originalRequest.headers || {};
+                //     originalRequest.headers.Authorization = `Bearer ${tokenStorage.getAccessToken()}`;
+                //     return api(originalRequest);
+                // }
             } catch (refreshErr) {
                 // fall through to reject
             }

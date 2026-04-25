@@ -70,7 +70,7 @@
                     "col": 6
                 },
                 {
-                    "name": "duration_minutes",
+                    "name": "duration",
                     "label": "Duration (mins)",
                     "type": "number",
                     "required": true,

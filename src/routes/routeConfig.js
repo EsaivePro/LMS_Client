@@ -10,6 +10,12 @@ import GroupAssign from "../modules/group/pages/GroupAssign";
 import UserManagement from "../modules/user/pages/UserManagement";
 import UserProfile from "../modules/user/pages/UserProfile";
 import EnrollmentBase from "../modules/enrollment/pages/EnrollmentBase";
+import GroupEnrollmentPage from "../modules/enrollment/pages/GroupEnrollmentPage";
+import EnrollUserPage from "../modules/enrollment/pages/EnrollUserPage";
+import EnrollmentDetailPage from "../modules/enrollment/pages/EnrollmentDetailPage";
+import ModuleCategorySummaryPage from "../modules/enrollment/pages/ModuleCategorySummaryPage";
+import UserEnrollmentProfilePage from "../modules/enrollment/pages/UserEnrollmentProfilePage";
+import AssignUserToGroupPage from "../modules/group/pages/AssignUserToGroupPage";
 import UsersProgress from "../modules/user/pages/UsersProgress";
 import UserCategoryPage from "../pages/user/CategoryPage";
 import QuestionManagement from "../modules/exam/pages/QuestionManagement";
@@ -57,6 +63,14 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import SchoolIcon from "@mui/icons-material/School";
 import QuizIcon from "@mui/icons-material/Quiz";
 import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
+import EnrollmentDashboard from "../modules/enrollments/pages/EnrollmentDashboard";
+import CourseEnrollments from "../modules/enrollments/pages/CourseEnrollments";
+import ExamEnrollments from "../modules/enrollments/pages/ExamEnrollments";
 
 export const protectedRoutes = [
     // ─────────────────────────────────────────────
@@ -226,11 +240,115 @@ export const protectedRoutes = [
         element: <EnrollmentJobManage />,
         sideMenu: true,
         sidePath: "/enrollment-job/manage/list",
-        section: "Assigns",
+        section: "Enrollment",
         label: "Enrollment Jobs",
         icon: <WorkHistoryIcon />,
         type: "item",
         matchPath: "/enrollment-job/manage",
+    },
+
+    // ─────────────────────────────────────────────
+    // My Learning (Learner-facing Dashboard)
+    // ─────────────────────────────────────────────
+    {
+        path: "/my-learning/dashboard",
+        title: "My Learning Dashboard",
+        description: "Learner dashboard: track courses, exams, progress, and upcoming schedules.",
+        permission: "dashboard.view",
+        element: <EnrollmentDashboard />,
+        sideMenu: true,
+        section: "My Learning",
+        label: "Learning Dashboard",
+        icon: <SpaceDashboardIcon />,
+        type: "item",
+    },
+    {
+        path: "/my-learning/courses",
+        title: "My Courses",
+        description: "View all enrolled courses with progress tracking and filters.",
+        permission: "dashboard.view",
+        element: <CourseEnrollments />,
+        sideMenu: true,
+        section: "My Learning",
+        label: "My Courses",
+        icon: <SchoolIcon />,
+        type: "item",
+    },
+    {
+        path: "/my-learning/exams",
+        title: "My Exams",
+        description: "View scheduled, active, and completed exams with countdown timers.",
+        permission: "dashboard.view",
+        element: <ExamEnrollments />,
+        sideMenu: true,
+        section: "My Learning",
+        label: "My Exams",
+        icon: <QuizIcon />,
+        type: "item",
+    },
+
+    // ─────────────────────────────────────────────
+    // Enrollment Service (UC-1 through UC-10)
+    // ─────────────────────────────────────────────
+    {
+        path: "/enrollment/group",
+        title: "Group Enrollment Manager",
+        description: "View unenrolled users, bulk enroll, and track enrollment status per group.",
+        permission: "enrollment.management",
+        element: <GroupEnrollmentPage />,
+        sideMenu: true,
+        section: "Enrollment",
+        label: "Group Enrollment",
+        icon: <PeopleAltIcon />,
+        type: "item",
+    },
+    {
+        path: "/enrollment/enroll",
+        title: "Enroll Single User",
+        description: "Manually enroll one user into a course or exam.",
+        permission: "user.management",
+        element: <EnrollUserPage />,
+        sideMenu: true,
+        section: "Enrollment",
+        label: "Enroll User",
+        icon: <PersonAddIcon />,
+        type: "item",
+    },
+    {
+        path: "/enrollment/category-summary",
+        title: "Module Category Dashboard",
+        description: "View enrollment statistics and progress breakdown per module category.",
+        permission: "user.management",
+        element: <ModuleCategorySummaryPage />,
+        sideMenu: true,
+        section: "Summary",
+        label: "Category Summary",
+        icon: <BarChartIcon />,
+        type: "item",
+    },
+    {
+        path: "/enrollment/:id",
+        title: "Enrollment Detail",
+        description: "View, revoke, reschedule, or re-enroll a single enrollment record.",
+        permission: "user.management",
+        element: <EnrollmentDetailPage />,
+        sideMenu: false,
+    },
+    {
+        path: "/enrollment/user/:userId",
+        title: "User Enrollment Profile",
+        description: "View all enrollments for a specific user with filtering and actions.",
+        permission: "user.management",
+        element: <UserEnrollmentProfilePage />,
+        sideMenu: false,
+    },
+    {
+        path: "/groups/:groupId/assign-user",
+        title: "Assign User to Group",
+        description: "Assign a user to a group and auto-enroll them in linked module categories.",
+        permission: "group.management",
+        element: <AssignUserToGroupPage />,
+        sideMenu: false,
     },
 
     // ─────────────────────────────────────────────

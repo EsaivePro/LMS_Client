@@ -319,27 +319,18 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
                 display: "flex",
                 flexDirection: "column",
                 borderRadius: pickerMode ? 0 : 2,
-                boxShadow: pickerMode ? 'none' : "0 1px 5px rgba(0,0,0,0.08)",
-                mt: pickerMode ? 0 : 3,
                 overflow: "hidden"
             }}
         >
             {/* HEADER — hidden in pickerMode (Drawer has its own header) */}
             {!pickerMode && (
-                <Box
-                    sx={{
-                        bgcolor: "background.paper",
-                        px: 3,
-                        py: 2.5
-                    }}
-                >
+                <Box>
                     <Stack
                         direction="row"
                         justifyContent="space-between"
                         alignItems="center"
                     >
                         <Typography variant="h5" fontWeight={700}>
-                            {title}
                         </Typography>
 
                         <Stack direction="row" spacing={1}>
@@ -364,14 +355,12 @@ export default function MasterForm({ config = {}, total: initialTotal = 0, onCre
             <Box
                 sx={{
                     flex: 1,
-                    bgcolor: "background.paper",
-                    // borderRadius: 2,
                     overflow: "hidden",
                     display: "flex",
                     flexDirection: "column",
                 }}
             >
-                <Box sx={{ flex: 1, overflow: "auto" }}>
+                <Box sx={{ flex: 1, overflow: "auto", mt: 2 }}>
                     <DataTableV1
                         serverSide
                         rows={rows}

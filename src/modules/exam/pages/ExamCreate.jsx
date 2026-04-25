@@ -50,7 +50,7 @@ const ExamCreate = () => {
         description: "",
         total_marks: 0,
         passing_marks: 0,
-        duration_minutes: 30,
+        duration: 30,
         shuffle_questions: true,
         shuffle_options: true,
         is_active: true,
@@ -86,7 +86,7 @@ const ExamCreate = () => {
                 description: values.description || null,
                 total_marks: Number(values.total_marks) || 0,
                 passing_marks: Number(values.passing_marks) || null,
-                duration_minutes: Number(values.duration_minutes) || 0,
+                duration: Number(values.duration) || 0,
                 shuffle_questions: !!values.shuffle_questions,
                 shuffle_options: !!values.shuffle_options,
                 is_active: !!values.is_active

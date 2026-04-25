@@ -50,7 +50,7 @@
             "minWidth": 120
         },
         {
-            "key": "duration_minutes",
+            "key": "duration",
             "label": "Duration (mins)",
             "type": "number",
             "minWidth": 140

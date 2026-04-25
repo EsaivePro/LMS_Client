@@ -24,7 +24,8 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import StyleIcon from '@mui/icons-material/Style';
 import useCourseCategory from "../../../hooks/useCourseCategory";
-import useEnrollment from "../../../hooks/useEnrollment";
+import { useQuery } from "@tanstack/react-query";
+import { enrollmentApi } from "../../../services/enrollmentApi";
 import { useAuth } from "../../../hooks/useAuth";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -391,31 +392,39 @@ function CourseCarousel({ title, courses }) {
 /* ================== MAIN EXPORT ================== */
 
 export default function CourseWidget({ title }) {
-    // use enrollment data for current user instead of global course lists
-    const { enrollmentCoursesByUser, loading: enrollmentLoading } = useEnrollment();
     const { user } = useAuth();
+
+    // Reads from shared react-query cache populated by AdminDashboard — no extra request
+    const { data, isLoading: enrollmentLoading } = useQuery({
+        queryKey: ["user-enrollments", user?.id],
+        queryFn: () => enrollmentApi.getUserEnrollments(user.id, { page: 1, limit: 10 }),
+        enabled: !!user?.id,
+        staleTime: 30_000,
+    });
+
+    const enrollmentCoursesByUser = data?.data ?? (Array.isArray(data) ? data : []);
 
     // Map enrollment records to simplified course-like objects for display
     const courses = useMemo(() => {
-        const rows = ((user && enrollmentCoursesByUser && enrollmentCoursesByUser[user.id]) || [])
+        const rows = (enrollmentCoursesByUser || [])
             .filter((e) => {
-                const s = (e && e.enrollment_status) ? String(e.enrollment_status).toLowerCase() : "";
+                const s = (e && e.status) ? String(e.status).toLowerCase() : "";
                 return s === "active" || s === "inprogress" || s === "completed";
             });
 
         return rows.map((e) => ({
-            id: e.course_id,
-            title: e.title || "Untitled Course",
-            description: e.description || "Untitled description",
+            id: e.module_id,
+            title: e.module_title || "Untitled Course",
+            description: e.module_description || "Untitled description",
             minutes: e.duration || 0,
             lessons: e.total_lessons || 0,
             topics: e.total_topics || [],
             progress: e.progress_percent || 0,
-            imageurl: e.imageurl || null,
+            imageurl: e.file_path || null,
             // include common expiry fields from enrollment record if present
             expiry: e.expiry_date || e.expiry || e.enrollment_end_date || e.expires_at || null,
         }));
-    }, [enrollmentCoursesByUser, user]);
+    }, [enrollmentCoursesByUser]);
 
 
     // if (enrollmentLoading) {

@@ -189,9 +189,9 @@ export default function BreadcrumbsNav({ breadCurmbs = true }) {
                         underline="hover"
                         color="var(--primary)"
                         onClick={() => navigate("/")}
-                        sx={{ display: "flex", alignItems: "center", fontWeight: 500, cursor: "pointer" }}
+                        sx={{ display: "flex", alignItems: "center", fontWeight: 400, cursor: "pointer" }}
                     >
-                        <HomeFilledIcon fontSize="small" sx={{ mr: 0.5, mt: -0.4, verticalAlign: "middle" }} />
+                        {/* <HomeFilledIcon fontSize="small" sx={{ mr: 0.5, mt: -0.4, verticalAlign: "middle" }} /> */}
                         Dashboard
                     </Link>
                     {displayItems.map(({ seg, idx }, index) => {

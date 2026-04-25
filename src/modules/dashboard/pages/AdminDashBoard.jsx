@@ -1,19 +1,19 @@
 import DashboardGrid from "../../../components/dashboard/DashboardGrid";
-import DashboardCustomizer from "../../../components/dashboard/admin/DashboardCustomizer";
 import { Box } from "@mui/material";
-import { useEffect } from "react";
-import useEnrollment from "../../../hooks/useEnrollment";
+import { useQuery } from "@tanstack/react-query";
+import { enrollmentApi } from "../../../services/enrollmentApi";
 import { useAuth } from "../../../hooks/useAuth";
 
 export default function AdminDashboard() {
-    const { fetchEnrollCoursesByUser } = useEnrollment();
     const { user } = useAuth();
 
-    useEffect(() => {
-        if (user && user?.id) {
-            fetchEnrollCoursesByUser(user?.id);
-        }
-    }, [user, fetchEnrollCoursesByUser]);
+    // Prefetch enrollments — CourseWidget reads from the same key (shared cache)
+    useQuery({
+        queryKey: ["user-enrollments", user?.id],
+        queryFn: () => enrollmentApi.getUserEnrollments(user.id, { page: 1, limit: 10 }),
+        enabled: !!user?.id,
+        staleTime: 30_000,
+    });
 
     return (
         <Box>

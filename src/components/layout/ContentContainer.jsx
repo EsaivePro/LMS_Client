@@ -8,7 +8,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import { keyframes } from "@mui/system";
+import { keyframes, Stack } from "@mui/system";
 
 // ICONS
 import SchoolIcon from "@mui/icons-material/School";
@@ -19,6 +19,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
 import PaymentIcon from "@mui/icons-material/Payment";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import GroupsIcon from "@mui/icons-material/Groups";
 import StarIcon from "@mui/icons-material/Star";
 import { useLocation } from "react-router-dom";
 import useCommon from "../../hooks/useCommon";
@@ -26,6 +27,7 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import BreadcrumbsNav from "../common/breadcrumbs/BreadcrumbsNav";
+import { get } from "react-hook-form";
 
 export default function ContentContainer({ children }) {
   const { containerTitle, containerTitleDescription } = useCommon();
@@ -42,12 +44,13 @@ export default function ContentContainer({ children }) {
   // 🔥 AUTO-DETECT HEADER ICON
   // -----------------------------------------------
   const getHeaderIcon = () => {
-    if (title.includes("dashboard")) return <DashboardIcon fontSize="small" sx={{ color: "var(--primary)" }} />;
-    if (title.includes("course")) return <SchoolIcon fontSize="small" sx={{ color: "var(--primary)" }} />;
-    if (title.includes("user management")) return <ManageAccountsIcon fontSize="small" sx={{ color: "var(--primary)" }} />;
-    if (title.includes("enrollment")) return <FolderSharedIcon fontSize="small" sx={{ color: "var(--primary)" }} />;
-    if (title.includes("profile")) return <AccountBoxIcon fontSize="small" sx={{ color: "var(--primary)" }} />;
-    return <StarIcon fontSize="small" />; // ⭐ fallback icon
+    if (title.includes("dashboard")) return <DashboardIcon sx={{ color: "var(--primary)" }} />;
+    if (title.includes("group")) return <GroupsIcon sx={{ color: "var(--primary)" }} />;
+    if (title.includes("course")) return <SchoolIcon sx={{ color: "var(--primary)" }} />;
+    if (title.includes("user management")) return <ManageAccountsIcon sx={{ color: "var(--primary)" }} />;
+    if (title.includes("enrollment")) return <FolderSharedIcon sx={{ color: "var(--primary)" }} />;
+    if (title.includes("profile")) return <AccountBoxIcon sx={{ color: "var(--primary)" }} />;
+    return <StarIcon sx={{ color: "var(--primary)" }} />; // ⭐ fallback icon
   };
 
   const loginAnim = keyframes`
@@ -78,57 +81,38 @@ export default function ContentContainer({ children }) {
   };
 
   return (
-    <Box sx={{ m: 0 }}>
+    <Box>
       <Box height={isMobile ? 27 : 30} />
-      {/* HEADER/HERO SECTION */}
-      {/* <BreadcrumbsNav /> */}
-      {/* <Box
-        sx={{
-          background: "var(--surface)",
-          color: "var(--primary)",
-          px: isMobile ? 2 : 2,
-          py: isMobile ? 3 : 2,
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          alignItems: isMobile ? "flex-start" : "center",
-          gap: 2,
-          width: "100%",
-          borderRadius: 1,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.7, width: isMobile ? "100%" : "auto" }}>
-         
-          <Avatar
-            sx={{
-              bgcolor: "var(--onPrimary)",
-              width: isMobile ? 46 : 30,
-              height: isMobile ? 46 : 30,
-            }}
-          >
+      <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between"
+        alignItems={{ md: "center" }} spacing={2} mb={2.5}>
+        <Box>
+          <Stack direction="row" spacing={1} alignItems="center" mb={0.75}>
             {getHeaderIcon()}
-          </Avatar>
-
-          <Box>
-            <Typography
-              variant={isMobile ? "h6" : "h5"}
-              sx={{ fontWeight: 700, letterSpacing: 0.3 }}
-            >
+            <Typography variant="h5" sx={{ fontWeight: 700 }}>
               {containerTitle}
             </Typography>
+          </Stack>
+          <Typography sx={{ color: "text.secondary" }}>
+            {containerTitleDescription || `Manage all aspects of ${containerTitle.toLowerCase()} here.`}
+          </Typography>
+        </Box>
 
-            <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5 }}>
-            </Typography>
-          </Box>
-        </Box>
-        <Box sx={{ ml: isMobile ? 0 : "auto", mt: isMobile ? 1 : 0, textAlign: isMobile ? "left" : "right", animation: `${loginAnim} 520ms ease both` }}>
-          <Typography variant="caption" sx={{ color: "var(--onPrimary)", display: "block" }}>
-            Last login
-          </Typography>
-          <Typography variant="body2" sx={{ fontWeight: 600, color: "#303030ff" }}>
-            {formatLogin(lastLogin || new Date().toISOString())}
-          </Typography>
-        </Box>
-      </Box> */}
+        <Stack direction="row" spacing={1} alignItems="center">
+          {/* <Chip
+            label={`${rows.length} ${rows.length === 1 ? "file" : "files"}`}
+            sx={{ borderRadius: 2, px: 1, fontWeight: 600 }}
+          />
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={<AddIcon />}
+            onClick={handleCreate}
+            sx={{ borderRadius: 2 }}
+          >
+            New File Record
+          </Button> */}
+        </Stack>
+      </Stack>
 
       {/* PAGE CONTENT */}
       <Box
@@ -137,13 +121,17 @@ export default function ContentContainer({ children }) {
           flexDirection: "column",
           gap: 2,
           minHeight: "calc(100vh - 200px)",
-          // mb: 3,
-          mt: isMobile ? 2 : 2,
-          pt: isMobile ? 0 : 0,
-          // pb: isMobile ? 1 : 3,
-          mb: isMobile ? 2 : 2,
-          borderRadius: 1
+          p: 2.5,
+          borderRadius: 3,
+          border: "1px solid",
+          borderColor: "divider",
+          background: "linear-gradient(180deg, #ffffff 0%, #fbfdff 100%)",
         }}
+      //     sx={{
+      //   bgcolor: "background.paper",
+      //   px: 3,
+      //   py: 2.5
+      // }}
       >
         {children}
       </Box>

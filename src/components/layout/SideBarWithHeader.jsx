@@ -686,7 +686,6 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                         sx={{
                             m: 0,
                             p: 0,
-                            // maxWidth: "100%",
                             ml: fixed && !isMobile && open ? `${drawerWidth}px` : 0,
                             transition: "margin-left 0.3s ease",
                             flex: 1,
@@ -697,15 +696,14 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                         <Box
                             sx={{
                                 m: 0,
-                                px: isMobile ? 1.8 : 4,
-                                mt: isMobile ? 9 : 9,
+                                px: isMobile ? 1.8 : 5,
+                                mt: isMobile ? 9 : 12,
                                 mb: 0,
                                 background:
                                     "linear-gradient(135deg, #f8f9fb 0%, #fdfdff 50%, #ffffff 100%)",
                             }}
                         >
                             {viewContainerCard && <ContentContainer>{children}</ContentContainer>}
-                            {!viewContainerCard && !viewCourseCard && <Box>{children}</Box>}
                         </Box>
                         <Box sx={{ mt: isMobile ? 16 : 16 }}>
                             {viewCourseCard && <CourseContainer>{children}</CourseContainer>}

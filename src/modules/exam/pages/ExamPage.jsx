@@ -154,7 +154,7 @@ export default function ExamPage() {
     useEffect(() => {
         if (!allowAccess || !examDetails || !currentAttempt) return;
 
-        const duration = examDetails.duration_minutes * 60;
+        const duration = examDetails.duration * 60;
         let interval;
 
         async function initTimer() {

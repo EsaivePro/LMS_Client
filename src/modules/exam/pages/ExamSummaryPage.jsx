@@ -357,13 +357,13 @@ export default function ExamSummaryPage() {
                                         </Tooltip>
                                     </>
                                 )}
-                                {exam?.duration_minutes && (
+                                {exam?.duration && (
                                     <>
                                         <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: '#d1d5db', flexShrink: 0 }} />
                                         <Tooltip title="Total allowed duration per attempt" arrow>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, cursor: 'default' }}>
                                                 <AccessTimeIcon sx={{ fontSize: 15, color: '#6b7280' }} />
-                                                <Typography fontSize="1rem" color="text.secondary">{exam.duration_minutes} min</Typography>
+                                                <Typography fontSize="1rem" color="text.secondary">{exam.duration} min</Typography>
                                             </Box>
                                         </Tooltip>
                                     </>
@@ -387,9 +387,9 @@ export default function ExamSummaryPage() {
                                     },
                                     {
                                         icon: <TimelapseIcon fontSize="small" />,
-                                        label: fmtHHMMSS(exam?.duration_minutes),
+                                        label: fmtHHMMSS(exam?.duration),
                                         sub: 'Total Duration',
-                                        tooltip: `Duration: ${fmtHHMMSS(exam?.duration_minutes)} (HH:MM:SS)`,
+                                        tooltip: `Duration: ${fmtHHMMSS(exam?.duration)} (HH:MM:SS)`,
                                     },
                                 ].map((s, i) => (
                                     <Box key={i} sx={{ flex: '1 1 140px' }}>
@@ -808,7 +808,7 @@ export default function ExamSummaryPage() {
                             { label: 'Attempt No.', value: `#${notStartedAttempt?.attempt_no}` },
                             { label: 'Total Marks', value: exam?.total_marks ?? '—' },
                             // { label: 'Passing Marks', value: exam?.passing_marks ?? '—' },
-                            { label: 'Duration', value: fmtHHMMSS(exam?.duration_minutes) },
+                            { label: 'Duration', value: fmtHHMMSS(exam?.duration) },
                             { label: 'Attempts Used', value: `${completedAttempts} of ${maxAttempts ?? '—'}` },
                             { label: 'Remaining', value: remainingAttempts !== null ? `${remainingAttempts} left` : '—' },
                         ].map(({ label, value }) => (

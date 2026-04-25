@@ -17,7 +17,7 @@ import { useFormHeader } from "../../contexts/FormHeaderContext";
 
 const buildInitialValues = (definition, data = {}) => {
     const defaults = {};
-    const overrideNumberDefaults = { duration_minutes: 30 };
+    const overrideNumberDefaults = { duration: 30 };
     (definition.sections || []).forEach((section) => {
         (section.fields || []).forEach((field) => {
             const name = field.name;
