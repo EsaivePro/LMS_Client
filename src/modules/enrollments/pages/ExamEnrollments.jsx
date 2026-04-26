@@ -16,7 +16,7 @@ import EnrollmentFilters from "../components/EnrollmentFilters";
 import EnrollmentCard from "../components/EnrollmentCard";
 import EnrollmentTable from "../components/EnrollmentTable";
 import UpcomingSchedule from "../components/UpcomingSchedule";
-import { useEnrollments } from "../hooks/useEnrollments";
+import { useEnrollmentDashboard } from "../../../hooks/useEnrollment";
 
 const TABS = [
   { value: "all",       label: "All Exams"  },
@@ -90,7 +90,7 @@ export default function ExamEnrollments() {
   const [viewMode,  setViewMode]  = useState("card");
   const [filters,   setFilters]   = useState(EMPTY_FILTERS);
   const [page,      setPage]      = useState(1);
-  const [limit,     setLimit]     = useState(12);
+  const [limit,     setLimit]     = useState(6);
 
   const handleFilter = useCallback((key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -112,7 +112,7 @@ export default function ExamEnrollments() {
     isError,
     error,
     statsLoading,
-  } = useEnrollments(user?.id, {
+  } = useEnrollmentDashboard(user?.id, {
     moduleType:   "exam",
     searchTerm:   filters.search,
     statusFilter: filters.status || null,
@@ -185,6 +185,25 @@ export default function ExamEnrollments() {
               </ToggleButtonGroup>
             </Box>
 
+            {/* ── Pagination bar — top ── */}
+            {!isLoading && pagination.total > 0 && (
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2, px: 0.5, flexWrap: "wrap", gap: 1 }}>
+                <Typography sx={{ fontSize: 13, color: "text.secondary" }}>
+                  Showing <strong>{(page - 1) * limit + 1}–{Math.min(page * limit, pagination.total)}</strong> of <strong>{pagination.total}</strong>
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                  <Pagination
+                    count={totalPages}
+                    page={page}
+                    onChange={(_, p) => setPage(p)}
+                    color="primary"
+                    size="small"
+                    shape="rounded"
+                  />
+                </Box>
+              </Box>
+            )}
+
             <AnimatePresence mode="wait">
               {viewMode === "card" ? (
                 <motion.div key="cards" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
@@ -210,19 +229,6 @@ export default function ExamEnrollments() {
                       ))}
                     </Grid>
                   )}
-
-                  {!isLoading && enrollments.length > 0 && (
-                    <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-                      <Pagination
-                        count={totalPages}
-                        page={page}
-                        onChange={(_, p) => setPage(p)}
-                        color="primary"
-                        size="small"
-                        shape="rounded"
-                      />
-                    </Box>
-                  )}
                 </motion.div>
               ) : (
                 <motion.div key="table" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
@@ -233,6 +239,7 @@ export default function ExamEnrollments() {
                     onPageChange={setPage}
                     onLimitChange={(l) => { setLimit(l); setPage(1); }}
                     onAction={handleAction}
+                    hidePagination
                   />
                 </motion.div>
               )}

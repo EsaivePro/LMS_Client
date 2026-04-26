@@ -1,6 +1,6 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchEnrollmentCourses, fetchEnrollmentCoursesByUser, manualEnrollUsers, setEnrollmentCourses, fetchEnrolledCategoriesByUser, enrollUserToCategory, fetchUserCourses, fetchCourseCategoryAssignmentsForUser } from "../redux/slices/enrollmentSlice";
+import { fetchEnrollmentCourses, fetchEnrollmentCoursesByUser, manualEnrollUsers, setEnrollmentCourses, fetchEnrolledCategoriesByUser, enrollUserToCategory, fetchUserCourses, fetchCourseCategoryAssignmentsForUser, fetchEnrollmentDashboard } from "../redux/slices/enrollmentSlice";
 
 const useEnrollment = () => {
     const dispatch = useDispatch();
@@ -46,3 +46,84 @@ const useEnrollment = () => {
 };
 
 export default useEnrollment;
+
+// Tab → API status mapping. "current" is filtered client-side.
+const TAB_STATUS = {
+    all:       null,
+    current:   null,
+    completed: "completed",
+    future:    "scheduled",
+};
+
+const DEFAULT_INCLUDE = ["list", "stats", "widgets", "tabCounts"];
+
+export function useEnrollmentDashboard(userId, options = {}) {
+    const dispatch = useDispatch();
+    const {
+        moduleType   = null,
+        statusFilter = null,
+        searchTerm   = "",
+        page         = 1,
+        limit        = 12,
+        activeTab    = "all",
+        include      = DEFAULT_INCLUDE,
+    } = options;
+
+    const { dashboardData, dashboardLoading, dashboardError } = useSelector(
+        (s) => s.enrollment || {}
+    );
+
+    const apiStatus = statusFilter || TAB_STATUS[activeTab] || null;
+
+    useEffect(() => {
+        if (!userId) return;
+        dispatch(fetchEnrollmentDashboard({
+            userId,
+            search:      searchTerm,
+            module_type: moduleType,
+            status:      apiStatus,
+            tab:         activeTab,
+            page,
+            limit,
+            include,
+        }));
+    }, [userId, searchTerm, moduleType, apiStatus, activeTab, page, limit, dispatch]);
+
+    const enrollments = useMemo(() => {
+        const rows = dashboardData?.enrollments ?? [];
+        if (activeTab === "current") {
+            return rows.filter((e) => ["active", "inprogress"].includes(e.status));
+        }
+        return rows;
+    }, [dashboardData?.enrollments, activeTab]);
+
+    const refetch = useCallback(() => {
+        if (!userId) return;
+        dispatch(fetchEnrollmentDashboard({
+            userId,
+            search:      searchTerm,
+            module_type: moduleType,
+            status:      apiStatus,
+            tab:         activeTab,
+            page,
+            limit,
+            include,
+        }));
+    }, [userId, searchTerm, moduleType, apiStatus, activeTab, page, limit, dispatch]);
+
+    return {
+        enrollments,
+        pagination:      dashboardData?.pagination      ?? { total: 0, page: 1, limit },
+        stats:           dashboardData?.stats           ?? {},
+        tabCounts:       dashboardData?.tabCounts       ?? {},
+        upcomingExams:   dashboardData?.upcomingExams   ?? [],
+        expiringCourses: dashboardData?.expiringCourses ?? [],
+        allEnrollments:  dashboardData?.enrollments     ?? [],
+        isLoading:       !!dashboardLoading,
+        isFetching:      !!dashboardLoading,
+        isError:         !!dashboardError,
+        error:           dashboardError,
+        statsLoading:    !!dashboardLoading,
+        refetch,
+    };
+}

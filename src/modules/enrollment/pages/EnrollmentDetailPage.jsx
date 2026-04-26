@@ -9,10 +9,6 @@ import useCommon from "../../../hooks/useCommon";
 import { useAuth } from "../../../hooks/useAuth";
 import EnrollmentConfirmModal from "../../../components/enrollment/EnrollmentConfirmModal";
 import useEnrollmentActions from "../../../hooks/useEnrollmentActions";
-import EnrollmentInfoWidget from "../../../components/dashboard/widgets/EnrollmentInfoWidget";
-import UpdateScheduleWidget from "../../../components/dashboard/widgets/UpdateScheduleWidget";
-import ReEnrollWidget from "../../../components/dashboard/widgets/ReEnrollWidget";
-import RevokeEnrollmentWidget from "../../../components/dashboard/widgets/RevokeEnrollmentWidget";
 
 export default function EnrollmentDetailPage() {
     const { id } = useParams();
@@ -77,32 +73,6 @@ export default function EnrollmentDetailPage() {
             </Breadcrumbs>
 
             <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>Enrollment Detail</Typography>
-
-            <Stack spacing={3}>
-                <EnrollmentInfoWidget enrollment={enrollment} id={id} />
-
-                {canSchedule && (
-                    <UpdateScheduleWidget
-                        schedForm={schedForm}
-                        setSchedForm={setSchedForm}
-                        schedError={schedError}
-                        onSave={handleScheduleSave}
-                        loading={!!actLoading[id]}
-                    />
-                )}
-
-                <ReEnrollWidget
-                    onReEnroll={() => setConfirm("reenroll")}
-                    loading={!!actLoading[id]}
-                />
-
-                {!isRevoked && (
-                    <RevokeEnrollmentWidget
-                        onRevoke={() => setConfirm("revoke")}
-                        loading={!!actLoading[id]}
-                    />
-                )}
-            </Stack>
 
             <EnrollmentConfirmModal
                 open={!!confirm}

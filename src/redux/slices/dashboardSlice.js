@@ -8,26 +8,10 @@ const initialState = {
     widgets: {
         // keys must match entries in dashboard.config.js → WIDGETS
         admin: [
-            // ── Overview ──
-            "welcome", "counts", "stat", "chart",
-            // ── Courses ──
-            "myCourses", "courses", "courseCategory", "scheduledCourses",
-            // ── Students ──
-            "studentCounts", "progress",
-            // ── Enrollment dashboard ──
-            "statsCards", "enrollmentFilters", "enrollmentList", "progressAnalytics", "upcomingSchedule",
-            // ── Enrollment detail actions ──
-            "enrollment", "enrollmentInfo", "updateSchedule", "reEnroll", "revokeEnrollment",
+            "welcome", "statsCards", "courseCategory", "enrolledWidget", "progressAnalytics"
         ],
         student: [
-            // ── Overview ──
-            "welcome", "statsCards",
-            // ── Courses ──
-            "myCourses", "courseCategory", "scheduledCourses",
-            // ── Progress & Analytics ──
-            "progressAnalytics", "upcomingSchedule",
-            // ── Enrollments ──
-            "enrollment", "enrollmentInfo", "enrollmentFilters",
+            "welcome", "statsCards", "courseCategory", "progressAnalytics", "enrolledWidget"
         ],
     },
 };

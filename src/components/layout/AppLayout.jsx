@@ -17,6 +17,8 @@ export default function AppLayout({
     containerCard = true,
     courseCard = false,
     breadCurmbs = true,
+    normalCard = false,
+    fixed = true,
 }) {
     const {
         setFooterView,
@@ -41,7 +43,7 @@ export default function AppLayout({
     return (
         <FormHeaderProvider>
             <div className="app-root">
-                <SideBarWithHeader footer={<Footer />}>
+                <SideBarWithHeader footer={<Footer />} fixed={fixed} normalCard={normalCard}>
                     {/* FIXED BREADCRUMB / FORM HEADER NAV */}
                     <BreadcrumbsNav breadCurmbs={breadCurmbs} />
                     <GlobalAlert />

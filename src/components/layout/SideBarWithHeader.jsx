@@ -44,6 +44,7 @@ import { useAdmin } from "../../hooks/useAdmin";
 import { httpClient } from "../../apiClient/httpClient";
 import { tokenStorage } from "../../utils/tokenStorage.utils";
 import { getMenuFromRoutes } from "../../routes/routeConfig";
+import NormalContainer from "./NormalContainer";
 
 const drawerWidth = 240;
 
@@ -56,7 +57,7 @@ const Main = styled("main")(({ theme }) => ({
     padding: theme.spacing(3),
 }));
 
-export default function SideBarWithHeader({ children, fixed = true, footer = null }) {
+export default function SideBarWithHeader({ children, fixed = true, footer = null, normalCard = false }) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const location = useLocation();
@@ -704,6 +705,7 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                             }}
                         >
                             {viewContainerCard && <ContentContainer>{children}</ContentContainer>}
+                            {normalCard && <NormalContainer>{children}</NormalContainer>}
                         </Box>
                         <Box sx={{ mt: isMobile ? 16 : 16 }}>
                             {viewCourseCard && <CourseContainer>{children}</CourseContainer>}

@@ -89,6 +89,7 @@ export default function WelcomeWidget() {
             sx={{
                 borderRadius: 3,
                 p: { xs: 2.5, sm: 3.5 },
+                pt: 0,
                 minHeight: 120,
                 display: "flex",
                 alignItems: "center",

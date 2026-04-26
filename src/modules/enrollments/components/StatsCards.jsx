@@ -126,7 +126,7 @@ function StatCard({ config, value, loading }) {
 
 export default function StatsCards({ stats, loading }) {
   return (
-    <Grid container spacing={2} sx={{ mb: 3 }}>
+    <Grid container spacing={2}>
       {CARDS.map((card, i) => (
         <Grid key={card.key} size={{ xs: 6, sm: 4, md: 2 }}>
           <motion.div

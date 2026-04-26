@@ -4,11 +4,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLayout } from "../../redux/slices/dashboardSlice";
 import WidgetRenderer from "./WidgetRenderer";
 import { Box, Paper } from "@mui/material";
+import { useAuth } from "../../hooks/useAuth";
+import { useEnrollmentDashboard } from "../../hooks/useEnrollment";
 
 export default function DashboardGrid({ role }) {
     const dispatch = useDispatch();
     const layout = useSelector((s) => s.dashboard.layout[role]);
     const widgets = useSelector((s) => s.dashboard.widgets[role]);
+
+    const { user } = useAuth();
+    useEnrollmentDashboard(user?.id);
 
     return (
         <Box>

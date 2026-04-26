@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getEnrollmentCourses, courseManualEnrollment, getEnrollmentCoursesByUserId, getUserEnrolledCourseCategory, enrollUserToCourseCategory, getUserCourses, getCourseCategoryAssignmentsForUser } from "../../services/LMSGateway";
+import { enrollmentApi } from "../../services/enrollmentApi";
 
 export const fetchEnrollmentCourses = createAsyncThunk(
     "enrollment/fetchCourses",
@@ -58,6 +59,13 @@ export const fetchUserCourses = createAsyncThunk(
     }
 );
 
+export const fetchEnrollmentDashboard = createAsyncThunk(
+    "enrollment/fetchDashboard",
+    async ({ userId, ...payload }) => {
+        return await enrollmentApi.getDashboard(userId, payload);
+    }
+);
+
 export const fetchCourseCategoryAssignmentsForUser = createAsyncThunk(
     "enrollment/fetchCategoryAssignments",
     async ({ userId, categoryId }, { dispatch }) => {
@@ -77,6 +85,16 @@ const enrollmentSlice = createSlice({
         loading: false,
         error: false,
         message: null,
+        dashboardData: {
+            enrollments: [],
+            pagination: { total: 0, page: 1, limit: 12 },
+            stats: {},
+            tabCounts: {},
+            upcomingExams: [],
+            expiringCourses: [],
+        },
+        dashboardLoading: false,
+        dashboardError: null,
     },
     reducers: {
         setEnrollmentCourses: (state, action) => {
@@ -170,6 +188,20 @@ const enrollmentSlice = createSlice({
             })
             .addCase(fetchUserCourses.rejected, (state) => {
                 state.loading = false;
+            });
+
+        builder
+            .addCase(fetchEnrollmentDashboard.pending, (state) => {
+                state.dashboardLoading = true;
+                state.dashboardError = null;
+            })
+            .addCase(fetchEnrollmentDashboard.fulfilled, (state, action) => {
+                state.dashboardLoading = false;
+                state.dashboardData = action.payload;
+            })
+            .addCase(fetchEnrollmentDashboard.rejected, (state, action) => {
+                state.dashboardLoading = false;
+                state.dashboardError = action.error;
             });
 
         builder

@@ -81,7 +81,7 @@ export const protectedRoutes = [
         title: "Dashboard",
         description: "View overall system status, key metrics, and quick insights.",
         permission: "dashboard.view",
-        layoutProps: {},
+        layoutProps: { containerCard: false, normalCard: true, fixed: false },
         element: <AdminDashboard />,
         sideMenu: true,
         section: null,

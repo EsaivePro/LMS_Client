@@ -45,7 +45,7 @@ export async function supabasePresignAndUploadFile({ file, key, onProgress } = {
  * Get signed URL for secure/private file access
  * Returns: signedUrl (string)
  */
-export async function getSupabaseSignedUrl({ key, expiresIn = 60 } = {}) {
+export async function getSupabaseSignedUrl({ key, expiresIn = 3600 } = {}) {
     try {
         const res = await axiosInstance.post(
             "/upload-service/supabase/presign",
@@ -54,7 +54,7 @@ export async function getSupabaseSignedUrl({ key, expiresIn = 60 } = {}) {
         if (res.data?.error) {
             throw new Error(res.data.message || "Supabase presign failed");
         }
-        return res.data.signedUrl;
+        return res.data.response.signedUrl;
     } catch (err) {
         console.error("Supabase presign failed:", err);
         throw err;

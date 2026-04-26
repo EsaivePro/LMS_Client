@@ -1,5 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
-
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import {
     Box,
     Typography,
@@ -7,57 +6,59 @@ import {
     Chip,
     Stack,
     LinearProgress,
-    Pagination,
     IconButton,
     CircularProgress,
     useMediaQuery,
     useTheme,
-    Divider,
     Dialog,
     DialogTitle,
     DialogContent,
     DialogActions,
     List,
     ListItem,
-    ListItemText
+    Alert,
+    AlertTitle,
+    Skeleton,
 } from "@mui/material";
-import { keyframes } from "@mui/system";
-import HourglassFullIcon from '@mui/icons-material/HourglassFull';
+import HourglassFullIcon from "@mui/icons-material/HourglassFull";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import StyleIcon from '@mui/icons-material/Style';
+import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
+import CloseIcon from "@mui/icons-material/Close";
+import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
+
 import useCourseCategory from "../../../hooks/useCourseCategory";
 import { httpClient } from "../../../apiClient/httpClient";
 import useEnrollment from "../../../hooks/useEnrollment";
 import { useAuth } from "../../../hooks/useAuth";
-import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { secondsToTime, formatDateTimeWithSeconds } from "../../../utils/resolver.utils";
-import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
-import CloseIcon from '@mui/icons-material/Close';
 import { getSignedUrl } from "../../../services/StorageProvider";
-// import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-// import MenuBookIcon from "@mui/icons-material/MenuBook";
-// import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-// import AccessTimeIcon from "@mui/icons-material/AccessTime";
-
 import THEME from "../../../constants/theme";
 import CountdownTimer from "../../common/CountdownTimer";
 
+/* ─── shared arrow button style ──────────────────────────────────────────── */
+const arrowSx = {
+    color: "#fff",
+    bgcolor: "rgba(0,0,0,0.35)",
+    backdropFilter: "blur(8px)",
+    border: "1px solid rgba(255,255,255,0.18)",
+    transition: "background-color 0.18s ease, transform 0.18s ease",
+    "&:hover": { bgcolor: "rgba(0,0,0,0.62)", transform: "scale(1.08)" },
+};
 
-/* ================== HERO CAROUSEL (Full image) ================== */
-function HeroCarousel({ title, categories = [] }) {
+/* ================== HERO CAROUSEL ======================================= */
+function HeroCarousel({ categories = [] }) {
     const [index, setIndex] = useState(0);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const navigate = useNavigate();
-    const ref = useRef();
     const { user } = useAuth();
-    const { enrollToCategory, fetchEnrollCoursesByUser, enrollmentCoursesByUser, fetchCategoryAssignmentsForUser } = useEnrollment();
+    const { enrollToCategory, fetchEnrollCoursesByUser, fetchCategoryAssignmentsForUser } = useEnrollment();
 
     const [enrollDialogOpen, setEnrollDialogOpen] = useState(false);
     const [enrollLoading, setEnrollLoading] = useState(false);
@@ -66,97 +67,77 @@ function HeroCarousel({ title, categories = [] }) {
     const [enrollProgress, setEnrollProgress] = useState(0);
     const [enrollCompleted, setEnrollCompleted] = useState(false);
     const [overallCourseProgress, setOverallCourseProgress] = useState(null);
-    const enrollProgressRef = React.useRef(null);
     const [isUserEnrolled, setIsUserEnrolled] = useState(false);
+    const enrollProgressRef = useRef(null);
 
-    const cats = Array.isArray(categories) ? categories : (categories && typeof categories === 'object' ? Object.values(categories) : []);
+    const cats = Array.isArray(categories) ? categories : [];
+    const active = cats[index] || {};
 
     const go = (i) => {
-        const len = categories.length || 1;
+        const len = cats.length || 1;
         setIndex(((i % len) + len) % len);
     };
 
-    // removed incorrect async useEffect (can't use `await` at top-level in useEffect)
+    useEffect(() => {
+        setIsUserEnrolled(!!(active?.raw?.user_enroll_status));
+    }, [active]);
+
+    /* auto-enroll */
+    useEffect(() => {
+        let mounted = true;
+        async function autoEnroll() {
+            if (!user?.id || !active?.id || isUserEnrolled) return;
+            if (active?.raw?.user_enroll_status) return;
+            try {
+                await enrollToCategory(user.id, active.id);
+                if (mounted && typeof fetchEnrollCoursesByUser === "function") {
+                    try { await fetchEnrollCoursesByUser(user.id); } catch (_) { }
+                }
+            } catch (_) { }
+        }
+        autoEnroll();
+        return () => { mounted = false; };
+    }, [index, user, active, isUserEnrolled, enrollToCategory, fetchEnrollCoursesByUser]);
+
+    /* cleanup interval on unmount */
+    useEffect(() => () => {
+        if (enrollProgressRef.current) clearInterval(enrollProgressRef.current);
+    }, []);
 
     async function startEnroll() {
-        if (!user || !user.id) {
-            setEnrollError("User not authenticated");
-            return;
-        }
+        if (!user?.id) { setEnrollError("User not authenticated"); return; }
         setEnrollLoading(true);
         setEnrollError(null);
         setEnrollResult(null);
         setEnrollCompleted(false);
         setEnrollProgress(0);
-        // start fake progress until backend finishes
         if (enrollProgressRef.current) clearInterval(enrollProgressRef.current);
         enrollProgressRef.current = setInterval(() => {
-            setEnrollProgress((p) => {
-                // increase slowly up to 90-95 while waiting
-                const next = Math.min(95, p + Math.random() * 6 + 1);
-                return Math.round(next);
-            });
+            setEnrollProgress((p) => Math.round(Math.min(95, p + Math.random() * 6 + 1)));
         }, 300);
         try {
-            if (isUserEnrolled) {
-                // fetch assignments for user in this category
-                const action = await fetchCategoryAssignmentsForUser({ userId: user.id, categoryId: active.id });
-                const payload = action?.payload || action;
-                setEnrollResult(payload);
-                // compute overall course progress (average)
-                try {
-                    const rows = (payload?.res?.data?.response || payload?.res?.data || []) || [];
-                    if (Array.isArray(rows) && rows.length > 0) {
-                        const sum = rows.reduce((s, r) => s + (Number(r.progress_percent) || 0), 0);
-                        setOverallCourseProgress(Math.round(sum / rows.length));
-                    } else {
-                        setOverallCourseProgress(0);
-                    }
-                } catch (e) {
-                    setOverallCourseProgress(0);
-                }
-                // complete progress
-                if (enrollProgressRef.current) {
-                    clearInterval(enrollProgressRef.current);
-                    enrollProgressRef.current = null;
-                }
-                setEnrollProgress(100);
-                setEnrollCompleted(true);
+            const fn = isUserEnrolled ? fetchCategoryAssignmentsForUser : enrollToCategory;
+            const arg = isUserEnrolled
+                ? { userId: user.id, categoryId: active.id }
+                : [user.id, active.id];
+            const action = isUserEnrolled ? await fn(arg) : await fn(...arg);
+            const payload = action?.payload || action;
+            setEnrollResult(payload);
+            const rows = payload?.res?.data?.response || payload?.res?.data || [];
+            if (Array.isArray(rows) && rows.length > 0) {
+                const avg = rows.reduce((s, r) => s + (Number(r.progress_percent) || 0), 0) / rows.length;
+                setOverallCourseProgress(Math.round(avg));
             } else {
-                const action = await enrollToCategory(user.id, active.id);
-                // action may be the fulfilled action; extract payload
-                const payload = action?.payload || action;
-                setEnrollResult(payload);
-                // compute overall course progress (average)
-                try {
-                    const rows = (payload?.res?.data?.response || payload?.res?.data || []) || [];
-                    if (Array.isArray(rows) && rows.length > 0) {
-                        const sum = rows.reduce((s, r) => s + (Number(r.progress_percent) || 0), 0);
-                        setOverallCourseProgress(Math.round(sum / rows.length));
-                    } else {
-                        setOverallCourseProgress(0);
-                    }
-                } catch (e) {
-                    setOverallCourseProgress(0);
-                }
-                // complete progress
-                if (enrollProgressRef.current) {
-                    clearInterval(enrollProgressRef.current);
-                    enrollProgressRef.current = null;
-                }
-                setEnrollProgress(100);
-                setEnrollCompleted(true);
-                // refresh enrollments for the user and mark enrolled
-                if (typeof fetchEnrollCoursesByUser === 'function' && user && user.id) {
-                    try {
-                        await fetchEnrollCoursesByUser(user.id);
-                    } catch (e) {
-                        // ignore refresh errors
-                    }
-                }
+                setOverallCourseProgress(0);
+            }
+            clearInterval(enrollProgressRef.current);
+            enrollProgressRef.current = null;
+            setEnrollProgress(100);
+            setEnrollCompleted(true);
+            if (!isUserEnrolled) {
+                try { await fetchEnrollCoursesByUser(user.id); } catch (_) { }
                 setIsUserEnrolled(true);
             }
-
         } catch (err) {
             setEnrollError(err?.message || String(err));
         } finally {
@@ -164,373 +145,297 @@ function HeroCarousel({ title, categories = [] }) {
         }
     }
 
-    // use shared secondsToTime and formatDateTimeWithSeconds helpers
+    if (!cats.length) return null;
 
-    useEffect(() => {
-        // keep scroll in sync if using ref for any purpose later
-        if (!ref.current) return;
-    }, [index]);
-
-    // cleanup progress interval when unmounting or when dialog closes
-    useEffect(() => {
-        return () => {
-            if (enrollProgressRef.current) {
-                clearInterval(enrollProgressRef.current);
-                enrollProgressRef.current = null;
-            }
-        };
-    }, []);
-
-    const active = cats[index] || {};
-
-    // Auto-enroll when the active category changes:
-    // - only run when we have a logged-in user and a valid active category id
-    // - skip if the user is already enrolled for this category
-    // - safely call async code from inside the effect
-    useEffect(() => {
-        let mounted = true;
-        async function autoEnroll() {
-            if (!user || !user.id) return;
-            if (!active || !active.id) return;
-            if (isUserEnrolled) return;
-            // skip auto-enroll if already enrolled
-            if (active.raw && active.raw.user_enroll_status) return;
-            try {
-                await enrollToCategory(user.id, active.id);
-                // refresh user's enrolled courses if available
-                if (mounted && typeof fetchEnrollCoursesByUser === 'function') {
-                    try {
-                        await fetchEnrollCoursesByUser(user.id);
-                    } catch (e) {
-                        // ignore refresh errors
-                    }
-                }
-            } catch (err) {
-                // Silently ignore auto-enroll errors for now
-            }
-        }
-        autoEnroll();
-        return () => { mounted = false; };
-    }, [index, user, active, isUserEnrolled, enrollToCategory, fetchEnrollCoursesByUser]);
-
-    useEffect(() => {
-        setIsUserEnrolled(!!(active && active.raw && active.raw.user_enroll_status));
-    }, [active]);
-
-    // ensure hooks above always run; return early if no categories to render
-    if (!cats || cats.length <= 0) {
-        return null;
-    }
-
-    // Refresh enrolled courses when user changes (or after enrollment)
-    // useEffect(() => {
-    //     if (user && user?.id && typeof fetchEnrollCoursesByUser === 'function') {
-    //         (async () => {
-    //             try {
-    //                 await fetchEnrollCoursesByUser(user.id);
-    //             } catch (e) {
-    //                 // ignore
-    //             }
-    //         })();
-    //     }
-    // }, [user, fetchEnrollCoursesByUser]);
     const image = active.image || active.banner || "/course/default-course-card.png";
+    const total = cats.length;
+
+    /* timer helpers */
+    const start = active?.raw?.scheduled_start_at ? new Date(active.raw.scheduled_start_at) : null;
+    const end = active?.raw?.scheduled_end_at ? new Date(active.raw.scheduled_end_at) : null;
+    const now = new Date();
 
     return (
-        <Box sx={{ width: '100%' }}>
-            <Box sx={{ position: 'relative', borderRadius: 1, overflow: 'hidden', boxShadow: 3 }}>
-                <Box sx={{ height: isMobile ? 220 : 300, backgroundImage: `url(${image})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+        <Box sx={{ width: "100%" }}>
+            {/* ── Main card ── */}
+            <Box
+                sx={{
+                    position: "relative",
+                    borderRadius: 3,
+                    overflow: "hidden",
+                    boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
+                    userSelect: "none",
+                }}
+            >
+                {/* Background image */}
+                <Box
+                    sx={{
+                        height: isMobile ? 240 : 320,
+                        backgroundImage: `url(${image})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        transition: "background-image 0.35s ease",
+                    }}
+                />
 
-                {/* Overlay content - title/desc left; timer top-right; enroll button bottom-right in full-width bar */}
-                <Box sx={{ position: 'absolute', backgroundColor: "#00000029", inset: 0, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'stretch', px: { xs: 2, md: 8 }, py: { xs: 2, md: 2 }, zIndex: 3 }}>
-                    {/* Left: title + description */}
-                    <Box sx={{ width: { xs: '100%', md: '55%' }, color: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'center', pr: { md: 3 } }}>
-                        <Typography variant={isMobile ? 'h5' : 'h3'} fontWeight={700} sx={{ mb: 1 }}>
-                            {active.name || active.title || active.categoryName || 'Category'}
-                        </Typography>
-                        <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-                            {active.description || active.summary || 'Explore courses in this category.'}
-                        </Typography>
-                    </Box>
+                {/* Cinematic gradient overlays */}
+                <Box sx={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.28) 55%, rgba(0,0,0,0.10) 100%)", zIndex: 1 }} />
+                <Box sx={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(0,0,0,0.45) 0%, transparent 55%)", zIndex: 1 }} />
 
-                    {/* Right: timer at top-right and bottom bar with enroll aligned right */}
-                    <Box sx={{ width: { xs: '100%', md: '45%' }, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'stretch', py: { xs: 2, md: 0 } }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            {(() => {
-                                const start = active.raw && active.raw.scheduled_start_at ? new Date(active.raw.scheduled_start_at) : null;
-                                const end = active.raw && active.raw.scheduled_end_at ? new Date(active.raw.scheduled_end_at) : null;
-                                const now = new Date();
-
-                                if (start && now < start) {
-                                    return (
-                                        <Box sx={{ textAlign: 'right', mt: 2 }}>
-                                            <CountdownTimer targetDate={start} variant="small" />
-                                            <Typography variant="body1" sx={{ mb: 1, width: "100%", borderRadius: 1, color: "#ffffff", py: 1 }} >Starts At</Typography>
-                                        </Box>
-                                    );
-                                }
-
-                                if (!start || now >= start) {
-                                    if (end && now <= end) {
-                                        return (
-                                            <Box sx={{ textAlign: 'right', mt: 2 }}>
-                                                <CountdownTimer targetDate={end} variant="small" />
-                                                <Typography variant="body1" sx={{ mb: 1, width: "100%", borderRadius: 1, color: "#ffffff", py: 1 }} >Expried On</Typography>
-                                            </Box>
-                                        );
-                                    }
-                                }
-
-                                return null;
-                            })()}
-                        </Box>
-
-                        {/* Bottom bar that spans right column width; button aligned to right */}
-                        <Box sx={{ mt: { xs: 2, md: 0 } }}>
-                            <Box sx={{ width: '100%', py: { xs: 1, md: 1.5 }, px: 2, borderRadius: 1, display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' }, alignItems: 'center' }}>
-                                {(() => {
-                                    const start = active.raw && active.raw.scheduled_start_at ? new Date(active.raw.scheduled_start_at) : null;
-                                    const now = new Date();
-                                    if (!start || now >= start) {
-                                        // If user is already enrolled show "View Courses", otherwise show "Enroll Now"
-                                        return (
-                                            <>
-                                                {/* <Button
-                                                    variant="contained"
-                                                    startIcon={isUserEnrolled ? <CollectionsBookmarkIcon sx={{ color: '#ffffff' }} /> : <PlayArrowIcon sx={{ color: isMobile ? '#ffffff' : '#000' }} />}
-                                                    onClick={() => {
-                                                        setEnrollDialogOpen(true);
-                                                        startEnroll();
-                                                    }}
-                                                    sx={{
-                                                        backgroundColor: isMobile ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.95)',
-                                                        color: '#ffffff',
-                                                        textTransform: 'none',
-                                                        fontWeight: 700,
-                                                        borderRadius: 1,
-                                                        fontSize: { xs: 14, md: 16 },
-                                                        px: { xs: 2.5, md: 3 },
-                                                        py: { xs: 0.8, md: 1 },
-                                                        minWidth: { xs: 170, md: 'auto' },
-                                                        boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
-                                                        '&:hover': { boxShadow: '0 8px 22px rgba(0,0,0,0.16)', transform: 'scale(1.03)' },
-                                                    }}
-                                                >
-                                                    {isUserEnrolled ? "Category Progress" : "Enroll Now"}
-                                                </Button> */}
-
-                                                <Dialog
-                                                    open={enrollDialogOpen}
-                                                    onClose={(e, reason) => {
-                                                        // prevent closing on backdrop click or escape
-                                                        if (reason === 'backdropClick' || reason === 'escapeKeyDown') return;
-                                                        setEnrollDialogOpen(false);
-                                                    }}
-                                                    fullScreen={isMobile}
-                                                    fullWidth
-                                                    maxWidth="lg"
-                                                    PaperProps={{ sx: { minHeight: isMobile ? '100vh' : 420 } }}
-                                                >
-                                                    <DialogTitle>
-                                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                                                <Typography variant="h6">
-                                                                    {active?.name || active?.title || active?.categoryName || 'Category'}
-                                                                </Typography>
-                                                                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                                                                    {isUserEnrolled ? "Course Progress" : "Enrollment Progress"}
-                                                                </Typography>
-                                                            </Box>
-                                                            <IconButton aria-label="close" onClick={() => setEnrollDialogOpen(false)} sx={{ color: 'inherit' }}>
-                                                                <CloseIcon />
-                                                            </IconButton>
-                                                        </Box>
-                                                    </DialogTitle>
-                                                    <DialogContent
-                                                        dividers
-                                                        sx={{
-                                                            maxHeight: isMobile ? 'calc(100vh - 112px)' : '60vh',
-                                                            overflowY: 'auto',
-                                                            minHeight: isMobile ? 'calc(100vh - 112px)' : 300,
-                                                            px: isMobile ? 2 : undefined,
-                                                        }}
-                                                    >
-                                                        {/* show linear progress with message */}
-                                                        <Box sx={{ width: '100%', mt: 1 }}>
-                                                            {!isUserEnrolled && <Typography sx={{ mb: 1 }}>
-                                                                {enrollLoading && !enrollCompleted && 'Enrollment in progress...'}
-                                                                {enrollCompleted && 'Enrollment completed'}
-                                                            </Typography>}
-                                                            {isUserEnrolled && <Typography sx={{ mb: 1 }}>
-                                                                {enrollCompleted && 'Course progress details'}
-                                                            </Typography>}
-                                                            <Box sx={{ width: '100%', mb: 1 }}>
-                                                                {!enrollCompleted ? (
-                                                                    <LinearProgress
-                                                                        variant="determinate"
-                                                                        value={enrollProgress}
-                                                                        sx={{
-                                                                            height: 10,
-                                                                            borderRadius: 6,
-                                                                            transition: 'all 400ms linear',
-                                                                            backgroundColor: 'rgba(0,0,0,0.08)',
-                                                                            '& .MuiLinearProgress-bar': { backgroundColor: 'var(--primary)' }
-                                                                        }}
-                                                                    />
-                                                                ) : (
-                                                                    <Box>
-                                                                        <LinearProgress
-                                                                            variant="determinate"
-                                                                            value={overallCourseProgress ?? 0}
-                                                                            sx={{
-                                                                                height: 10,
-                                                                                borderRadius: 6,
-                                                                                transition: 'all 400ms linear',
-                                                                                backgroundColor: 'var(--darkLight)',
-                                                                                '& .MuiLinearProgress-bar': { backgroundColor: 'var(--primary)' }
-                                                                            }}
-                                                                        />
-                                                                        <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5 }}>{`Overall course progress: ${overallCourseProgress ?? 0}%`}</Typography>
-                                                                    </Box>
-                                                                )}
-                                                            </Box>
-
-                                                            {enrollError && <Typography color="error">{enrollError}</Typography>}
-
-                                                            {enrollResult && (
-                                                                <Box sx={{ mt: 1 }}>
-                                                                    {!isUserEnrolled && <Typography sx={{ mb: 1 }}>{enrollResult?.res?.data?.message || 'Result'}</Typography>}
-                                                                    <List>
-                                                                        {(enrollResult?.res?.data?.response || enrollResult?.res?.data || []).map((row, i) => {
-                                                                            const status = (row.status || '').toLowerCase();
-                                                                            const canView = ['active', 'in_progress', 'inprogress', 'completed', 'complete'].includes(status);
-                                                                            const isScheduled = (row.enrollment_type || '').toLowerCase() === 'scheduled' && row.scheduled_start_at;
-                                                                            return (
-                                                                                <ListItem key={i} divider sx={{ alignItems: 'center' }}>
-                                                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
-                                                                                        <Box sx={{ position: 'relative', width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                                                            <CircularProgress variant="determinate" sx={{ color: 'var(--primary)' }} value={Math.min(100, Math.max(0, row.progress_percent || 1))} size={56} />
-                                                                                            <Box sx={{ position: 'absolute', fontSize: 12 }}>{`${Math.round(row.progress_percent || 0)}%`}</Box>
-                                                                                        </Box>
-
-                                                                                        <Box sx={{ flex: 1 }}>
-                                                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                                                                                                <Typography sx={{ fontWeight: 700 }}>{row.title || `Course ${row.course_id}`}</Typography>
-                                                                                                {row.enrollment_result && !isUserEnrolled && (
-                                                                                                    <Chip label={row.enrollment_result} size="small" variant="outlined" sx={{ ml: 1 }} />
-                                                                                                )}
-                                                                                                {canView && row.status && (
-                                                                                                    <Chip label={row.status} size="small" color="success" sx={{ ml: 1 }} />
-                                                                                                )}
-                                                                                            </Box>
-
-                                                                                            {!canView && isScheduled && (
-                                                                                                <Box sx={{ mt: 0.5 }}>
-                                                                                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>{`Scheduled Start: ${formatDateTimeWithSeconds(row.scheduled_start_at)}`}</Typography>
-                                                                                                </Box>
-                                                                                            )}
-
-                                                                                            <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>{row.description}</Typography>
-                                                                                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>{`Duration: ${secondsToTime(row.duration)} • Lessons: ${row.total_lessons || 0}`}</Typography>
-
-                                                                                            <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary', mt: 0.5 }}>{`Expires: ${formatDateTimeWithSeconds(row.expires_at)}`}</Typography>
-                                                                                        </Box>
-
-                                                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                                                            {canView ? (
-                                                                                                <Button variant="contained" onClick={() => navigate(`/course/view/${row.course_id}`)}>View</Button>
-                                                                                            ) : (
-                                                                                                // show placeholder for non-viewable items
-                                                                                                <Button variant="outline" disabled>{row.enrollment_result === "NOT_ENROLLED" ? "Not Enrolled" : "Pending"}</Button>
-                                                                                            )}
-                                                                                        </Box>
-                                                                                    </Box>
-                                                                                </ListItem>
-                                                                            );
-                                                                        })}
-                                                                    </List>
-                                                                </Box>
-                                                            )}
-                                                            {!enrollResult && !enrollError && !enrollLoading && <Typography>No result yet.</Typography>}
-                                                        </Box>
-                                                    </DialogContent>
-                                                    <DialogActions>
-                                                        <Button variant="outlined" onClick={() => setEnrollDialogOpen(false)}>Close</Button>
-                                                    </DialogActions>
-                                                </Dialog>
-                                            </>
-                                        );
-                                    }
-
-                                    return null;
-                                })()}
-                            </Box>
-                        </Box>
-                    </Box>
-                </Box>
-
-                {/* Gradient (visual only - behind overlay) */}
-                <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.18) 40%, rgba(0,0,0,0.02) 100%)', pointerEvents: 'none', zIndex: 2 }} />
-
-                {/* Arrows */}
-                <IconButton onClick={() => go(index - 1)} sx={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#fff', bgcolor: 'rgba(0,0,0,0.3)', zIndex: 4 }}>
-                    <ArrowBackIosNewIcon />
-                </IconButton>
-                <IconButton onClick={() => go(index + 1)} sx={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: '#fff', bgcolor: 'rgba(0,0,0,0.3)', zIndex: 4 }}>
-                    <ArrowForwardIosIcon />
-                </IconButton>
-            </Box>
-
-            {/* Dots */}
-            <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center', gap: 1, zIndex: 5 }}>
-                {cats.map((c, i) => (
-                    <Box
-                        key={i}
-                        onClick={() => go(i)}
+                {/* ── Top-left: counter badge ── */}
+                <Box sx={{ position: "absolute", top: 14, left: 14, zIndex: 3 }}>
+                    <Chip
+                        icon={<CollectionsBookmarkIcon sx={{ fontSize: "14px !important", color: "#fff !important" }} />}
+                        label={`${index + 1} / ${total}`}
+                        size="small"
                         sx={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: '50%',
-                            bgcolor: i === index ? 'var(--primaryMedium)' : 'rgba(0,0,0,0.65)',
-                            cursor: 'pointer',
-                            border: i === index ? '2px solid rgba(255,255,255,0.15)' : 'none',
-                            transition: 'transform .12s ease',
-                            transform: i === index ? 'scale(1.15)' : 'scale(1)'
+                            bgcolor: "rgba(0,0,0,0.40)",
+                            backdropFilter: "blur(8px)",
+                            color: "#fff",
+                            fontWeight: 700,
+                            fontSize: "0.72rem",
+                            border: "1px solid rgba(255,255,255,0.22)",
+                            height: 24,
                         }}
                     />
-                ))}
+                </Box>
+
+                {/* ── Top-right: countdown timer ── */}
+                {start && now < start && (
+                    <Box sx={{ position: "absolute", top: 14, right: 14, zIndex: 3, textAlign: "right" }}>
+                        <CountdownTimer targetDate={start} variant="small" />
+                        <Typography sx={{ fontSize: 11, color: "rgba(255,255,255,0.75)", mt: 0.25 }}>Starts in</Typography>
+                    </Box>
+                )}
+                {(!start || now >= start) && end && now <= end && (
+                    <Box sx={{ position: "absolute", top: 14, right: 14, zIndex: 3, textAlign: "right" }}>
+                        <CountdownTimer targetDate={end} variant="small" />
+                        <Typography sx={{ fontSize: 11, color: "rgba(255,255,255,0.75)", mt: 0.25 }}>Expires in</Typography>
+                    </Box>
+                )}
+
+                {/* ── Bottom content: title + description ── */}
+                <Box
+                    sx={{
+                        position: "absolute",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        px: { xs: 2.5, md: 3 },
+                        pb: { xs: 2.5, md: 3 },
+                        pt: 5,
+                        zIndex: 2,
+                    }}
+                >
+                    <Typography
+                        sx={{
+                            color: "#fff",
+                            fontSize: { xs: 20, md: 26 },
+                            fontWeight: 800,
+                            lineHeight: 1.25,
+                            textShadow: "0 2px 8px rgba(0,0,0,0.55)",
+                            mb: 0.75,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                        }}
+                    >
+                        {active.name || active.title || active.categoryName || "Category"}
+                    </Typography>
+
+                    <Typography
+                        sx={{
+                            color: "rgba(255,255,255,0.82)",
+                            fontSize: { xs: 13, md: 14 },
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                        }}
+                    >
+                        {active.description || active.summary || "Explore courses in this category."}
+                    </Typography>
+
+                    {/* Course count chip if available */}
+                    {active?.raw?.total_courses > 0 && (
+                        <Chip
+                            icon={<SchoolOutlinedIcon sx={{ fontSize: "13px !important", color: "rgba(255,255,255,0.9) !important" }} />}
+                            label={`${active.raw.total_courses} Courses`}
+                            size="small"
+                            sx={{
+                                mt: 1.25,
+                                bgcolor: "rgba(255,255,255,0.15)",
+                                backdropFilter: "blur(6px)",
+                                color: "#fff",
+                                fontSize: "0.72rem",
+                                fontWeight: 600,
+                                border: "1px solid rgba(255,255,255,0.2)",
+                                height: 22,
+                            }}
+                        />
+                    )}
+                </Box>
+
+                {/* ── Enroll dialog (hidden trigger, dialog kept) ── */}
+                <Dialog
+                    open={enrollDialogOpen}
+                    onClose={(_, reason) => {
+                        if (reason === "backdropClick" || reason === "escapeKeyDown") return;
+                        setEnrollDialogOpen(false);
+                    }}
+                    fullScreen={isMobile}
+                    fullWidth
+                    maxWidth="lg"
+                    PaperProps={{ sx: { minHeight: isMobile ? "100vh" : 420, borderRadius: isMobile ? 0 : 3 } }}
+                >
+                    <DialogTitle>
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                            <Box>
+                                <Typography variant="h6" fontWeight={700}>
+                                    {active?.name || active?.title || "Category"}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                    {isUserEnrolled ? "Course Progress" : "Enrollment Progress"}
+                                </Typography>
+                            </Box>
+                            <IconButton onClick={() => setEnrollDialogOpen(false)}>
+                                <CloseIcon />
+                            </IconButton>
+                        </Box>
+                    </DialogTitle>
+                    <DialogContent dividers sx={{ maxHeight: isMobile ? "calc(100vh - 112px)" : "60vh", overflowY: "auto" }}>
+                        <Box sx={{ width: "100%", mt: 1 }}>
+                            <Typography sx={{ mb: 1 }}>
+                                {enrollLoading && !enrollCompleted && "Enrollment in progress…"}
+                                {enrollCompleted && (isUserEnrolled ? "Course progress details" : "Enrollment completed")}
+                            </Typography>
+                            <Box sx={{ mb: 1 }}>
+                                {!enrollCompleted ? (
+                                    <LinearProgress
+                                        variant="determinate"
+                                        value={enrollProgress}
+                                        sx={{ height: 10, borderRadius: 6, "& .MuiLinearProgress-bar": { bgcolor: "var(--primary)" } }}
+                                    />
+                                ) : (
+                                    <Box>
+                                        <LinearProgress
+                                            variant="determinate"
+                                            value={overallCourseProgress ?? 0}
+                                            sx={{ height: 10, borderRadius: 6, bgcolor: "var(--darkLight)", "& .MuiLinearProgress-bar": { bgcolor: "var(--primary)" } }}
+                                        />
+                                        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block" }}>
+                                            Overall progress: {overallCourseProgress ?? 0}%
+                                        </Typography>
+                                    </Box>
+                                )}
+                            </Box>
+                            {enrollError && <Typography color="error">{enrollError}</Typography>}
+                            {enrollResult && (
+                                <List>
+                                    {(enrollResult?.res?.data?.response || enrollResult?.res?.data || []).map((row, i) => {
+                                        const status = (row.status || "").toLowerCase();
+                                        const canView = ["active", "in_progress", "inprogress", "completed", "complete"].includes(status);
+                                        const scheduled = (row.enrollment_type || "").toLowerCase() === "scheduled" && row.scheduled_start_at;
+                                        return (
+                                            <ListItem key={i} divider sx={{ alignItems: "center" }}>
+                                                <Box sx={{ display: "flex", alignItems: "center", gap: 2, width: "100%" }}>
+                                                    <Box sx={{ position: "relative", width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                                        <CircularProgress variant="determinate" value={Math.min(100, Math.max(0, row.progress_percent || 1))} size={56} sx={{ color: "var(--primary)" }} />
+                                                        <Box sx={{ position: "absolute", fontSize: 11, fontWeight: 700 }}>{Math.round(row.progress_percent || 0)}%</Box>
+                                                    </Box>
+                                                    <Box sx={{ flex: 1 }}>
+                                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                                                            <Typography sx={{ fontWeight: 700 }}>{row.title || `Course ${row.course_id}`}</Typography>
+                                                            {!isUserEnrolled && row.enrollment_result && (
+                                                                <Chip label={row.enrollment_result} size="small" variant="outlined" />
+                                                            )}
+                                                            {canView && row.status && <Chip label={row.status} size="small" color="success" />}
+                                                        </Box>
+                                                        {!canView && scheduled && (
+                                                            <Typography variant="body2" color="text.secondary">
+                                                                Scheduled: {formatDateTimeWithSeconds(row.scheduled_start_at)}
+                                                            </Typography>
+                                                        )}
+                                                        <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
+                                                            Duration: {secondsToTime(row.duration)} · Lessons: {row.total_lessons || 0}
+                                                        </Typography>
+                                                        <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
+                                                            Expires: {formatDateTimeWithSeconds(row.expires_at)}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box>
+                                                        {canView ? (
+                                                            <Button variant="contained" size="small" onClick={() => navigate(`/course/view/${row.course_id}`)}>View</Button>
+                                                        ) : (
+                                                            <Button variant="outlined" size="small" disabled>
+                                                                {row.enrollment_result === "NOT_ENROLLED" ? "Not Enrolled" : "Pending"}
+                                                            </Button>
+                                                        )}
+                                                    </Box>
+                                                </Box>
+                                            </ListItem>
+                                        );
+                                    })}
+                                </List>
+                            )}
+                            {!enrollResult && !enrollError && !enrollLoading && (
+                                <Typography color="text.secondary">No result yet.</Typography>
+                            )}
+                        </Box>
+                    </DialogContent>
+                    <DialogActions sx={{ px: 3, py: 1.5 }}>
+                        <Button variant="outlined" onClick={() => setEnrollDialogOpen(false)}>Close</Button>
+                    </DialogActions>
+                </Dialog>
+
+                {/* ── Navigation arrows ── */}
+                {total > 1 && (
+                    <>
+                        <IconButton onClick={() => go(index - 1)} size="small" sx={{ ...arrowSx, position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", zIndex: 4 }}>
+                            <ArrowBackIosNewIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton onClick={() => go(index + 1)} size="small" sx={{ ...arrowSx, position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", zIndex: 4 }}>
+                            <ArrowForwardIosIcon fontSize="small" />
+                        </IconButton>
+                    </>
+                )}
             </Box>
+
+            {/* ── Animated pill dots ── */}
+            {total > 1 && (
+                <Box sx={{ mt: 1.5, display: "flex", justifyContent: "center", alignItems: "center", gap: 0.75 }}>
+                    {cats.map((_, i) => (
+                        <Box
+                            key={i}
+                            onClick={() => go(i)}
+                            sx={{
+                                width: i === index ? 28 : 8,
+                                height: 8,
+                                borderRadius: 4,
+                                bgcolor: i === index ? "primary.main" : "action.disabled",
+                                cursor: "pointer",
+                                transition: "width 0.28s cubic-bezier(.4,0,.2,1), background-color 0.28s ease",
+                                flexShrink: 0,
+                            }}
+                        />
+                    ))}
+                </Box>
+            )}
         </Box>
     );
 }
 
-/* ================== MAIN EXPORT ================== */
-
+/* ================== MAIN EXPORT ======================================== */
 export default function CourseCategoryWidget({ title }) {
-    // use enrollment data for current user instead of global course lists
-    const { enrollmentCoursesByUser, loading: enrollmentLoading } = useEnrollment();
     const { user } = useAuth();
     const [categories, setCategories] = useState([]);
     const [loadingCategories, setLoadingCategories] = useState(false);
     const [categoriesError, setCategoriesError] = useState(null);
 
-    // Map enrollment records to simplified course-like objects for display
-    const courses = useMemo(() => {
-        const rows = (user && enrollmentCoursesByUser && enrollmentCoursesByUser[user.id]) || [];
-        return rows.map((e) => ({
-            id: e.course_id,
-            title: e.title || "Untitled Course",
-            description: e.description || "Untitled description",
-            minutes: e.duration || 0,
-            lessons: e.total_lessons || 0,
-            topics: e.total_topics || [],
-            progress: e.progress_percent || 0,
-        }));
-    }, [enrollmentCoursesByUser, user]);
-
-    // Fetch enrolled categories for current user only
     useEffect(() => {
         let mounted = true;
+
         function normalizeArray(payload) {
             if (!payload) return [];
             if (Array.isArray(payload)) return payload;
@@ -541,33 +446,32 @@ export default function CourseCategoryWidget({ title }) {
             if (Array.isArray(payload.rows)) return payload.rows;
             if (Array.isArray(payload.categories)) return payload.categories;
             const vals = Object.values(payload);
-            if (vals.every(v => typeof v === 'object')) return vals;
+            if (vals.every((v) => typeof v === "object")) return vals;
             return [];
         }
 
         async function load() {
+            if (!user?.id) { if (mounted) setCategories([]); return; }
+            if (mounted) setLoadingCategories(true);
             try {
-                // setLoadingCategories(true);
-                if (!user || !user.id) {
-                    if (mounted) setCategories([]);
-                    return;
-                }
-
                 const resp = await httpClient.getUserEnrolledCourseCategory(user.id);
                 const arr = normalizeArray(resp?.data ?? resp ?? {});
-                const mapped = await Promise.all(arr.map(async (it) => ({
-                    id: it.id,
-                    title: it.title || it.name || it.categoryName || `Category ${it.id}`,
-                    description: it.description || it.summary || "",
-                    image: await getSignedUrl({ key: it?.imageurl }) || "/course/default-course-card.png",
-                    raw: it,
-                })));
-
+                const mapped = await Promise.all(
+                    arr.map(async (it) => ({
+                        id: it.id,
+                        title: it.title || it.name || it.categoryName || `Category ${it.id}`,
+                        description: it.description || it.summary || "",
+                        image: it.file_path
+                            ? await getSignedUrl({ key: it.file_path })
+                            : "/course/default-course-card.png",
+                        raw: it,
+                    }))
+                );
                 if (mounted) setCategories(mapped);
             } catch (err) {
-                if (mounted) setCategoriesError(err?.message || err);
+                if (mounted) setCategoriesError(err?.message || String(err));
             } finally {
-                // if (mounted) setLoadingCategories(false);
+                if (mounted) setLoadingCategories(false);
             }
         }
 
@@ -575,21 +479,67 @@ export default function CourseCategoryWidget({ title }) {
         return () => { mounted = false; };
     }, [user]);
 
+    if (title !== "Course Categories") return null;
+
     return (
         <Box sx={{ width: "100%" }}>
-
-            {title == "Course Categories" && (
-                <Box sx={{ mt: 1 }}>
-                    {loadingCategories ? (
-                        <Box sx={{ minHeight: 240, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <CircularProgress sx={{ color: 'var(--primary)' }} />
-                        </Box>
-                    ) : (
-                        <HeroCarousel title="Course Categories" categories={categories || []} />
-                    )}
+            {loadingCategories ? (
+                /* ── Loading skeleton ── */
+                <Box>
+                    <LinearProgress
+                        sx={{
+                            mb: 1.5,
+                            height: 3,
+                            borderRadius: 4,
+                            bgcolor: "action.hover",
+                            "& .MuiLinearProgress-bar": { borderRadius: 4 },
+                        }}
+                    />
+                    <Skeleton
+                        variant="rectangular"
+                        height={320}
+                        animation="wave"
+                        sx={{ borderRadius: 3 }}
+                    />
+                    <Box sx={{ display: "flex", justifyContent: "center", gap: 0.75, mt: 1.5 }}>
+                        {[0, 1, 2].map((i) => (
+                            <Skeleton key={i} variant="rounded" width={i === 0 ? 28 : 8} height={8} sx={{ borderRadius: 4 }} />
+                        ))}
+                    </Box>
                 </Box>
+            ) : categoriesError ? (
+                /* ── Error state ── */
+                <Alert severity="error" sx={{ borderRadius: 3 }}>
+                    <AlertTitle sx={{ fontWeight: 700 }}>Failed to load categories</AlertTitle>
+                    {categoriesError}
+                </Alert>
+            ) : categories.length === 0 ? (
+                /* ── Empty state ── */
+                <Alert
+                    severity="info"
+                    icon={<CollectionsBookmarkIcon sx={{ fontSize: 28, mt: 0.25 }} />}
+                    sx={{
+                        borderRadius: 3,
+                        py: 2.5,
+                        px: 3,
+                        alignItems: "flex-start",
+                        bgcolor: "#e3f2fd",
+                        border: "1px solid #bbdefb",
+                        "& .MuiAlert-icon": { color: "#1565c0" },
+                    }}
+                >
+                    <AlertTitle sx={{ fontWeight: 700, fontSize: "1rem", color: "#0d47a1", mb: 0.5 }}>
+                        No Categories Enrolled
+                    </AlertTitle>
+                    <Typography sx={{ fontSize: 14, color: "#1565c0" }}>
+                        You haven&apos;t been enrolled in any course categories yet.
+                        Please contact your administrator to get started.
+                    </Typography>
+                </Alert>
+            ) : (
+                /* ── Carousel ── */
+                <HeroCarousel categories={categories} />
             )}
-
         </Box>
     );
 }

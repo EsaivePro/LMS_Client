@@ -182,12 +182,13 @@ function TableSkeleton({ cols }) {
 }
 
 export default function EnrollmentTable({
-  enrollments   = [],
-  pagination    = { total: 0, page: 1, limit: 10 },
-  loading       = false,
+  enrollments    = [],
+  pagination     = { total: 0, page: 1, limit: 6 },
+  loading        = false,
   onPageChange,
   onLimitChange,
   onAction,
+  hidePagination = false,
 }) {
   const [rowSelection, setRowSelection] = useState({});
   const [sorting,      setSorting]      = useState([]);
@@ -278,38 +279,40 @@ export default function EnrollmentTable({
         </TableContainer>
       </Paper>
 
-      {/* Pagination footer */}
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 2, px: 0.5 }}>
-        <Typography variant="caption" color="text.secondary">
-          {pagination.total > 0
-            ? `Showing ${(pagination.page - 1) * pagination.limit + 1}–${Math.min(pagination.page * pagination.limit, pagination.total)} of ${pagination.total}`
-            : "0 results"}
-        </Typography>
+      {/* Pagination footer — shown only when not managed by a parent widget */}
+      {!hidePagination && (
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 2, px: 0.5 }}>
+          <Typography variant="caption" color="text.secondary">
+            {pagination.total > 0
+              ? `Showing ${(pagination.page - 1) * pagination.limit + 1}–${Math.min(pagination.page * pagination.limit, pagination.total)} of ${pagination.total}`
+              : "0 results"}
+          </Typography>
 
-        <Stack direction="row" spacing={2} alignItems="center">
-          <FormControl size="small" variant="outlined" sx={{ minWidth: 76 }}>
-            <InputLabel>Rows</InputLabel>
-            <Select
-              label="Rows"
-              value={pagination.limit}
-              onChange={(e) => onLimitChange?.(Number(e.target.value))}
-            >
-              {[10, 20, 50].map((n) => (
-                <MenuItem key={n} value={n}>{n}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <FormControl size="small" variant="outlined" sx={{ minWidth: 76 }}>
+              <InputLabel>Rows</InputLabel>
+              <Select
+                label="Rows"
+                value={pagination.limit}
+                onChange={(e) => onLimitChange?.(Number(e.target.value))}
+              >
+                {[6, 12, 24].map((n) => (
+                  <MenuItem key={n} value={n}>{n}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          <Pagination
-            count={totalPages}
-            page={pagination.page}
-            onChange={(_, p) => onPageChange?.(p)}
-            color="primary"
-            size="small"
-            shape="rounded"
-          />
+            <Pagination
+              count={totalPages}
+              page={pagination.page}
+              onChange={(_, p) => onPageChange?.(p)}
+              color="primary"
+              size="small"
+              shape="rounded"
+            />
+          </Stack>
         </Stack>
-      </Stack>
+      )}
     </Box>
   );
 }

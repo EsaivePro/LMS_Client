@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { Box, Container, Grid, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
-import { useEnrollments } from "../hooks/useEnrollments";
+import { useEnrollmentDashboard } from "../../../hooks/useEnrollment";
 import StatsCardsWidget from "../../../components/dashboard/widgets/StatsCardsWidget";
 import EnrollmentFiltersWidget from "../../../components/dashboard/widgets/EnrollmentFiltersWidget";
 import EnrollmentListWidget from "../../../components/dashboard/widgets/EnrollmentListWidget";
@@ -46,7 +46,7 @@ export default function EnrollmentDashboard() {
         isError,
         error,
         statsLoading,
-    } = useEnrollments(user?.id, {
+    } = useEnrollmentDashboard(user?.id, {
         searchTerm:   filters.search,
         statusFilter: filters.status || null,
         activeTab,

@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { Box, Container, Grid, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
-import { useEnrollments } from "../hooks/useEnrollments";
+import { useEnrollmentDashboard } from "../../../hooks/useEnrollment";
 import StatsCardsWidget from "../../../components/dashboard/widgets/StatsCardsWidget";
 import EnrollmentFiltersWidget from "../../../components/dashboard/widgets/EnrollmentFiltersWidget";
 import EnrollmentListWidget from "../../../components/dashboard/widgets/EnrollmentListWidget";
@@ -16,9 +16,9 @@ export default function EnrollmentDashboard() {
     const { user } = useAuth();
 
     const [activeTab, setActiveTab] = useState("all");
-    const [filters, setFilters]     = useState(EMPTY_FILTERS);
-    const [page, setPage]           = useState(1);
-    const [limit, setLimit]         = useState(12);
+    const [filters, setFilters] = useState(EMPTY_FILTERS);
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(6);
 
     const handleFilterChange = useCallback((key, value) => {
         setFilters((prev) => ({ ...prev, [key]: value }));
@@ -46,8 +46,8 @@ export default function EnrollmentDashboard() {
         isError,
         error,
         statsLoading,
-    } = useEnrollments(user?.id, {
-        searchTerm:   filters.search,
+    } = useEnrollmentDashboard(user?.id, {
+        searchTerm: filters.search,
         statusFilter: filters.status || null,
         activeTab,
         page,
@@ -61,10 +61,6 @@ export default function EnrollmentDashboard() {
     return (
         <Box sx={{ minHeight: "100vh", bgcolor: "var(--surface,#fbfbfb)" }}>
             <Container maxWidth="xl" sx={{ py: 3 }}>
-
-                {/* ── KPI Stats ── */}
-                <StatsCardsWidget stats={stats} loading={statsLoading} />
-
                 {isError && (
                     <Alert severity="error" sx={{ mb: 2 }}>
                         {error?.message ?? "Failed to load enrollments. Please try again."}
@@ -74,31 +70,29 @@ export default function EnrollmentDashboard() {
                 <Grid container spacing={3}>
                     {/* ── Main content ── */}
                     <Grid size={{ xs: 12, md: 9 }}>
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
 
-                        {/* ── Filters ── */}
-                        <EnrollmentFiltersWidget
-                            filters={filters}
-                            onFilterChange={handleFilterChange}
-                            onClear={handleClear}
-                        />
+                            {/* ── Filters ── */}
+                            <EnrollmentFiltersWidget
+                                filters={filters}
+                                onFilterChange={handleFilterChange}
+                                onClear={handleClear}
+                            />
 
-                        {/* ── Tabs + view toggle + list + pagination ── */}
-                        <EnrollmentListWidget
-                            enrollments={enrollments}
-                            pagination={pagination}
-                            isLoading={isLoading}
-                            activeTab={activeTab}
-                            onTabChange={handleTabChange}
-                            page={page}
-                            onPageChange={setPage}
-                            limit={limit}
-                            onLimitChange={(l) => { setLimit(l); setPage(1); }}
-                            onAction={handleAction}
-                        />
+                            {/* ── Tabs + view toggle + list + pagination ── */}
+                            <EnrollmentListWidget
+                                enrollments={enrollments}
+                                pagination={pagination}
+                                isLoading={isLoading}
+                                activeTab={activeTab}
+                                onTabChange={handleTabChange}
+                                page={page}
+                                onPageChange={setPage}
+                                limit={limit}
+                                onLimitChange={(l) => { setLimit(l); setPage(1); }}
+                                onAction={handleAction}
+                            />
 
-                        {/* ── Analytics ── */}
-                        <Box sx={{ mt: 4 }}>
-                            <ProgressAnalyticsWidget enrollments={allEnrollments} stats={stats} />
                         </Box>
                     </Grid>
 
