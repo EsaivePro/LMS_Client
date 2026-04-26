@@ -1,58 +1,24 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react";
-import { Box, Grid, Alert } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useCallback } from "react";
+import { Box, Container, Grid, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
-import { fetchEnrollmentDashboard } from "../../../redux/slices/enrollmentSlice";
+import { useEnrollmentDashboard } from "../../../hooks/useEnrollment";
+import StatsCardsWidget from "./StatsCardsWidget";
 import EnrollmentFiltersWidget from "./EnrollmentFiltersWidget";
 import EnrollmentListWidget from "./EnrollmentListWidget";
+import ProgressAnalyticsWidget from "./ProgressAnalyticsWidget";
+import UpcomingScheduleWidget from "./UpcomingScheduleWidget";
 
 const EMPTY_FILTERS = { search: "", status: "", quick: "" };
 
-const TAB_STATUS = {
-    all:       null,
-    current:   null,
-    completed: "completed",
-    future:    "scheduled",
-};
-
 export default function EnrolledWidget() {
-    const dispatch  = useDispatch();
-    const navigate  = useNavigate();
-    const { user }  = useAuth();
+    const navigate = useNavigate();
+    const { user } = useAuth();
 
     const [activeTab, setActiveTab] = useState("all");
-    const [filters,   setFilters]   = useState(EMPTY_FILTERS);
-    const [page,      setPage]      = useState(1);
-    const [limit,     setLimit]     = useState(6);
-
-    const dashboardData    = useSelector((s) => s.enrollment?.dashboardData    ?? {});
-    const dashboardLoading = useSelector((s) => s.enrollment?.dashboardLoading ?? false);
-    const dashboardError   = useSelector((s) => s.enrollment?.dashboardError   ?? null);
-
-    const apiStatus = filters.status || TAB_STATUS[activeTab] || null;
-
-    useEffect(() => {
-        if (!user?.id) return;
-        dispatch(fetchEnrollmentDashboard({
-            userId: user.id,
-            search: filters.search,
-            status: apiStatus,
-            tab:    activeTab,
-            page,
-            limit,
-        }));
-    }, [user?.id, filters.search, apiStatus, activeTab, page, limit, dispatch]);
-
-    const enrollments = useMemo(() => {
-        const rows = dashboardData?.enrollments ?? [];
-        if (activeTab === "current") {
-            return rows.filter((e) => ["active", "inprogress"].includes(e.status));
-        }
-        return rows;
-    }, [dashboardData?.enrollments, activeTab]);
-
-    const pagination = dashboardData?.pagination ?? { total: 0, page: 1, limit };
+    const [filters, setFilters] = useState(EMPTY_FILTERS);
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(12);
 
     const handleFilterChange = useCallback((key, value) => {
         setFilters((prev) => ({ ...prev, [key]: value }));
@@ -69,28 +35,48 @@ export default function EnrolledWidget() {
         setPage(1);
     }, []);
 
+    const {
+        enrollments,
+        pagination,
+        stats,
+        upcomingExams,
+        expiringCourses,
+        allEnrollments,
+        isLoading,
+        isError,
+        error,
+        statsLoading,
+        tabCounts,
+    } = useEnrollmentDashboard(user?.id, {
+        searchTerm: filters.search,
+        statusFilter: filters.status || null,
+        activeTab,
+        page,
+        limit,
+    });
+
     const handleAction = useCallback((action, enrollment) => {
         if (action === "view_details") navigate(`/enrollment/${enrollment.id}`);
     }, [navigate]);
 
     return (
         <Box sx={{ minHeight: "30vh" }}>
-            {dashboardError && (
+            {isError && (
                 <Alert severity="error" sx={{ mb: 2 }}>
-                    {dashboardError?.message ?? "Failed to load enrollments. Please try again."}
+                    {error?.message ?? "Failed to load enrollments. Please try again."}
                 </Alert>
             )}
-
             <EnrollmentFiltersWidget
                 filters={filters}
                 onFilterChange={handleFilterChange}
                 onClear={handleClear}
             />
             <Grid container>
+                {/* ── Tabs + view toggle + list + pagination ── */}
                 <EnrollmentListWidget
                     enrollments={enrollments}
                     pagination={pagination}
-                    isLoading={dashboardLoading}
+                    isLoading={isLoading}
                     activeTab={activeTab}
                     onTabChange={handleTabChange}
                     page={page}
@@ -99,6 +85,7 @@ export default function EnrolledWidget() {
                     onLimitChange={(l) => { setLimit(l); setPage(1); }}
                     onAction={handleAction}
                     toggleWant={false}
+                    tabCounts={tabCounts}
                 />
             </Grid>
         </Box>
