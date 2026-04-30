@@ -5,7 +5,7 @@ import { API_ENDPOINTS } from "../constants/apiEndPoints";
 
 let BASE_URL = "http://localhost:3003/api-gateway";
 
-BASE_URL = "https://lms-api-3x0a.onrender.com/api-gateway";
+BASE_URL = "https://esai-lmsapi-production.up.railway.app/api-gateway";
 
 const api = axios.create({
     baseURL: BASE_URL,
