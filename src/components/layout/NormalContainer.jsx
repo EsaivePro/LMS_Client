@@ -86,21 +86,8 @@ export default function NormalContainer({ children }) {
       {/* PAGE CONTENT */}
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          minHeight: "calc(100vh - 200px)",
-          p: 2.5,
-          borderRadius: 3,
-          border: "1px solid",
-          borderColor: "divider",
-          background: "linear-gradient(180deg, #ffffff 0%, #fbfdff 100%)",
+          minHeight: "calc(100vh - 200px)"
         }}
-      //     sx={{
-      //   bgcolor: "background.paper",
-      //   px: 3,
-      //   py: 2.5
-      // }}
       >
         {children}
       </Box>

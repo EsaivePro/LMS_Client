@@ -118,10 +118,7 @@ export default function DashboardGrid({ role }) {
                         <div key={id}>
                             <Paper
                                 sx={{
-                                    mt: 3,
-                                    mx: { xs: 0.5, md: 3 },
-                                    mb: { xs: 1, md: 1 },
-                                    p: 0.5,
+                                    my: 3,
                                     height: "100%",
                                     boxShadow: 0,
                                     borderRadius: 1,
@@ -129,7 +126,18 @@ export default function DashboardGrid({ role }) {
                                 }}
                             >
                                 <WidgetTitle id={id} title={title} />
-                                <WidgetRenderer widgetId={id} />
+                                <Box sx={{
+                                    // display: "flex",
+                                    // flexDirection: "column",
+                                    // gap: 2,
+                                    // p: 2.5,
+                                    // borderRadius: 3,
+                                    // border: "1px solid",
+                                    // borderColor: "divider",
+                                    // background: "linear-gradient(180deg, #ffffff 0%, #fbfdff 100%)",
+                                }}>
+                                    <WidgetRenderer widgetId={id} />
+                                </Box>
                             </Paper>
                         </div>
                     );

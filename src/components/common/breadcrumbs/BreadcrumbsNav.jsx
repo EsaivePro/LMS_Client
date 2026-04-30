@@ -184,30 +184,7 @@ export default function BreadcrumbsNav({ breadCurmbs = true }) {
     return (
         <Fade in timeout={700}>
             <Box sx={{ ...sharedBoxSx, borderRadius: 2 }}>
-                <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />}>
-                    <Link
-                        underline="hover"
-                        color="var(--primary)"
-                        onClick={() => navigate("/")}
-                        sx={{ display: "flex", alignItems: "center", fontWeight: 400, cursor: "pointer" }}
-                    >
-                        {/* <HomeFilledIcon fontSize="small" sx={{ mr: 0.5, mt: -0.4, verticalAlign: "middle" }} /> */}
-                        Dashboard
-                    </Link>
-                    {displayItems.map(({ seg, idx }, index) => {
-                        const to = "/" + rawPathnames.slice(0, idx + 1).join("/");
-                        const isLast = index === displayItems.length - 1;
-                        return isLast ? (
-                            <Typography key={to} color="text.primary" sx={{ fontWeight: 600 }}>
-                                {decodeURI(seg)}
-                            </Typography>
-                        ) : (
-                            <Link key={to} underline="hover" color="inherit" onClick={() => navigate(to)} sx={{ cursor: "pointer" }}>
-                                {decodeURI(seg)}
-                            </Link>
-                        );
-                    })}
-                </Breadcrumbs>
+
             </Box>
         </Fade>
     );

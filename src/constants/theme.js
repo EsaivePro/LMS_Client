@@ -1,61 +1,112 @@
 export const THEME = {
     colors: {
-        primary: "#8F00FF", //"#aa2c44", // #ff9800 
-        primaryMedium: "#9000ff49",
-        primaryLight: "#fbf5ff", //"rgba(162, 122, 255, 0.09)", // rgba(255, 152, 0, 0.04)
+        /* Brand Core */
+        primary: "#4F46E5",          // Deep Indigo
+        primaryHover: "#4338CA",
+        primaryMedium: "#6366F1",
+        primaryLight: "#EEF2FF",
 
-        dark: "#212121",
-        darkMedium: "#434242ff", //"#c33f57ff",
-        darkLight: "#666666ff", //"#c33f57ff",
+        secondary: "#38BDF8",        // Sky Blue
+        secondaryLight: "#E0F2FE",
 
-        // primaryDark: "#1565C0",
-        // primaryLight: "#434242ff", //"#c33f57ff",
-        secondary: "#9ACD32",
-        background: "#ffffff",
-        surface: "#fbfbfbff",
-        surface2: "rgb(249, 249, 249)",
-        surface3: "#f0f2f5",
-        surface4: "#f0f2f5",
-        lightgrey: "#f5f5f5ff",
-        textPrimary: "#212121",
-        textSecondary: "#616161",
-        onPrimary: "#ffffff",
-        onSurface: "#212121",
-        accent: "#9ACD32",
-        danger: "#E53935",
-        // Card palette (light pastel colors for cards) - card1 .. card20
-        card1: "#83acffff",
-        card2: "#fe808dff",
-        card3: "#a27affff",
-        card4: "#face75ff",
-        card5: "#7dffc5ff",
-        card6: "#cfe9ffff",
-        card7: "#ffd6e6ff",
-        card8: "#f7d8baff",
-        card9: "#e6d7ffff",
-        card10: "#fff3b0ff",
-        card11: "#d6f5e0ff",
-        card12: "#e9e0ffff",
-        card13: "#ffdfd0ff",
-        card14: "#d0f0ffff",
-        card15: "#f0e6ffff",
-        card16: "#ffe8ccff",
-        card17: "#e0fff4ff",
-        card18: "#fbe7ffff",
-        card19: "#e8f6ffff",
-        card20: "#f6fff0ff",
+        accent: "#10B981",           // Emerald CTA
+        accentLight: "#DCFCE7",
+
+        /* Backgrounds */
+        background: "#F8FAFC",       // Soft Gray
+        surface: "#FFFFFF",
+        surface2: "#F1F5F9",
+        surface3: "#E2E8F0",
+        surface4: "#CBD5E1",
+
+        /* Sidebar / Dark */
+        dark: "#111827",             // Sidebar dark slate
+        darkMedium: "#1E293B",
+        darkLight: "#334155",
+
+        /* Text */
+        textPrimary: "#0F172A",      // Slate
+        textSecondary: "#64748B",
+        textMuted: "#94A3B8",
+
+        onPrimary: "#FFFFFF",
+        onSurface: "#0F172A",
+
+        /* Status */
+        success: "#10B981",
+        warning: "#F59E0B",
+        danger: "#EF4444",
+        info: "#38BDF8",
+
+        /* Utility */
+        border: "#E2E8F0",
+        lightgrey: "#F8FAFC",
+
+        /* Dashboard Card Palette */
+        card1: "#DBEAFE", // Courses Blue
+        card2: "#DCFCE7", // Progress Green
+        card3: "#EDE9FE", // Analytics Purple
+        card4: "#FEF3C7", // Assignments Amber
+        card5: "#D1FAE5",
+        card6: "#E0F2FE",
+        card7: "#F1F5F9",
+        card8: "#F5F3FF",
+        card9: "#CCFBF1",
+        card10: "#FCE7F3",
+        card11: "#F0FDF4",
+        card12: "#EFF6FF",
+        card13: "#FFF7ED",
+        card14: "#ECFEFF",
+        card15: "#EEF2FF",
+        card16: "#F8FAFC",
+        card17: "#E6FFFA",
+        card18: "#F3E8FF",
+        card19: "#E0F7FF",
+        card20: "#F0FDF4",
+
+        /* Gradients */
+        heroGradient:
+            "linear-gradient(135deg, #4F46E5 0%, #38BDF8 100%)",
+
+        premiumGradient:
+            "linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)",
     },
+
+    shadows: {
+        sm: "0 2px 8px rgba(15,23,42,0.05)",
+        md: "0 6px 20px rgba(15,23,42,0.08)",
+        lg: "0 12px 30px rgba(15,23,42,0.12)",
+    },
+
+    radius: {
+        sm: "8px",
+        md: "12px",
+        lg: "16px",
+        xl: "24px",
+    },
+
     manifest: {
         name: "Esai",
         short_name: "esai",
-        description: "Learning platform with Esai.",
-        theme_color: "#aa2c44",
-        background_color: "#ffffff",
+        description: "Premium Learning and CRM Platform with Esai",
+        theme_color: "#4F46E5",
+        background_color: "#F8FAFC",
+
         icons: [
-            { src: "logo/Esai-new-logo.png", sizes: "192x192", type: "image/png" },
-            { src: "logo/Esai-new-logo.png", sizes: "512x512", type: "image/png" }
+            {
+                src: "logo/lms.png",
+                sizes: "192x192",
+                type: "image/png",
+            },
+            {
+                src: "logo/lms.png",
+                sizes: "512x512",
+                type: "image/png",
+            },
         ],
-        width: "100",
+
+        width: "50",
+
         contact: {
             email: "support@esailms.com",
             phone: "+91 7530078007",

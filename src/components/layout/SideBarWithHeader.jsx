@@ -242,7 +242,7 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                         left: open ? 0 : -drawerWidth,
                         width: drawerWidth,
                         height: "calc(100vh - 64px)",
-                        background: "#1a1d23",
+                        background: "var(--dark)",
                         transition: "left 0.3s ease",
                         zIndex: (theme) => theme.zIndex.drawer,
                         display: "flex",
@@ -374,14 +374,11 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                                                             py: 0.7,
                                                             px: 1.5,
                                                             background: isActive
-                                                                ? "linear-gradient(90deg, #8F00FF 0%, #6d00c4 100%)"
+                                                                ? "var(--primaryMedium)"
                                                                 : "transparent",
-                                                            boxShadow: isActive
-                                                                ? "0 2px 8px rgba(143,0,255,0.35)"
-                                                                : "none",
                                                             "&:hover": {
                                                                 background: isActive
-                                                                    ? "linear-gradient(90deg, #8F00FF 0%, #6d00c4 100%)"
+                                                                    ? "var(--primaryMedium)"
                                                                     : "rgba(255,255,255,0.06)",
                                                             },
                                                             transition: "all 0.15s ease",
@@ -698,7 +695,7 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                             sx={{
                                 m: 0,
                                 px: isMobile ? 1.8 : 5,
-                                mt: isMobile ? 9 : 12,
+                                mt: isMobile ? 9 : 7,
                                 mb: 0,
                                 background:
                                     "linear-gradient(135deg, #f8f9fb 0%, #fdfdff 50%, #ffffff 100%)",
