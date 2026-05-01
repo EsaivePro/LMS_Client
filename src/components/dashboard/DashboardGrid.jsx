@@ -78,11 +78,6 @@ function WidgetTitle({ id, title }) {
 
             {/* Left-accent + text */}
             <Box
-                sx={{
-                    borderLeft: `3px solid ${color}`,
-                    pl: 1.5,
-                    borderRadius: "0 2px 2px 0",
-                }}
             >
                 <Typography
                     sx={{
@@ -125,7 +120,7 @@ export default function DashboardGrid({ role }) {
                                     backgroundColor: "transparent",
                                 }}
                             >
-                                <WidgetTitle id={id} title={title} />
+                                {/* <WidgetTitle id={id} title={title} /> */}
                                 <Box sx={{
                                     // display: "flex",
                                     // flexDirection: "column",

@@ -2,7 +2,7 @@ export const WIDGETS = {
     // ── Original dashboard widgets ──
     welcome: { type: "welcome" },
     counts: { type: "count", title: "Counts" },
-    myCourses: { type: "course", title: "Your Learning" },
+    myCourses: { type: "course", title: "My Courses" },
     courses: { type: "course", title: "Available Courses" },
     courseCategory: { type: "courseCategory", title: "Course Categories" },
     scheduledCourses: { type: "scheduledCourses", title: "Upcoming" },

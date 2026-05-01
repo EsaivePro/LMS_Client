@@ -11,7 +11,7 @@ const initialState = {
             "welcome", "statsCards", "courseCategory", "enrolledWidget", "progressAnalytics"
         ],
         student: [
-            "welcome", "statsCards", "enrolledWidget", "progressAnalytics"
+            "welcome", "statsCards", "myCourses", "upcomingSchedule"
         ],
     },
 };

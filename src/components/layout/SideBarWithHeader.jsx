@@ -695,7 +695,7 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                             sx={{
                                 m: 0,
                                 px: isMobile ? 1.8 : 5,
-                                mt: isMobile ? 9 : 7,
+                                mt: isMobile ? 9 : 3,
                                 mb: 0,
                                 background:
                                     "linear-gradient(135deg, #f8f9fb 0%, #fdfdff 50%, #ffffff 100%)",
