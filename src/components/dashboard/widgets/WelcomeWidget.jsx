@@ -11,6 +11,7 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import dayjs from "dayjs";
 import THEME from "../../../constants/theme";
 import { useSelector } from "react-redux";
+import useDashboard from "../../../hooks/useDashboard";
 import LoginIcon from "@mui/icons-material/Login";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
@@ -65,8 +66,9 @@ const shimmer = keyframes`
 
 export default function WelcomeWidget() {
     const { user, isAuthenticated } = useAuth();
+    const { lastSession } = useDashboard();
     const reduxLastLogin = useSelector((s) => s.auth?.user?.lastLogin || s.user?.lastLogin || null);
-    const lastLoginRaw = reduxLastLogin || localStorage.getItem("lastLogin") || user?.lastLogin || user?.last_login_at || null;
+    const lastLoginRaw = lastSession?.logged_in_at || reduxLastLogin || localStorage.getItem("lastLogin") || user?.lastLogin || user?.last_login_at || null;
 
     const [name, setName] = useState("");
     const [tod, setTod] = useState(getTimeOfDay());

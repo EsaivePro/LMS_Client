@@ -1,4 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { getDashboardStatus as getDashboardStatusAPI } from "../../services/LMSGateway";
+
+export const fetchDashboardStatus = createAsyncThunk(
+    "dashboard/fetchStatus",
+    async (data, { dispatch }) => {
+        const res = await getDashboardStatusAPI(dispatch, data);
+        return res;
+    }
+);
 
 const initialState = {
     layout: {
@@ -13,6 +22,18 @@ const initialState = {
         student: [
             "welcome", "statsCards", "myCourses", "upcomingSchedule"
         ],
+    },
+    status: {
+        counts: null,
+        enrolledCourses: [],
+        enrolledExams: [],
+        upcoming: [],
+        expiringSoon: [],
+        lastSession: null,
+        meta: null,
+        loading: false,
+        error: false,
+        message: null,
     },
 };
 
@@ -32,6 +53,31 @@ const dashboardSlice = createSlice({
                 ? list.filter(w => w !== widgetId)
                 : [...list, widgetId];
         },
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchDashboardStatus.pending, (state) => {
+                state.status.loading = true;
+            })
+            .addCase(fetchDashboardStatus.fulfilled, (state, action) => {
+                state.status.loading = false;
+                state.status.error = action?.payload?.data?.error || action?.payload?.isError || false;
+                state.status.message = action?.payload?.data?.message;
+                if (!state.status.error) {
+                    const response = action?.payload?.data?.response;
+                    state.status.counts = response?.counts || null;
+                    state.status.enrolledCourses = response?.enrolled_courses || [];
+                    state.status.enrolledExams = response?.enrolled_exams || [];
+                    state.status.upcoming = response?.upcoming || [];
+                    state.status.expiringSoon = response?.expiring_soon || [];
+                    state.status.lastSession = response?.last_session || null;
+                    state.status.meta = response?.meta || null;
+                }
+            })
+            .addCase(fetchDashboardStatus.rejected, (state) => {
+                state.status.loading = false;
+                state.status.error = true;
+            });
     },
 });
 

@@ -19,10 +19,8 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import { useQuery } from "@tanstack/react-query";
-import { enrollmentApi } from "../../../services/enrollmentApi";
-import { useAuth } from "../../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import useDashboard from "../../../hooks/useDashboard";
 import { formatDateTimeWithSeconds } from "../../../utils/resolver.utils";
 import THEME from "../../../constants/theme";
 
@@ -758,20 +756,10 @@ function CourseGrid({ title, courses }) {
    MAIN EXPORT
 ═══════════════════════════════════════════════════════════════════════════ */
 export default function CourseWidget({ title }) {
-    const { user } = useAuth();
-
-    const { data } = useQuery({
-        queryKey: ["user-enrollments", user?.id],
-        queryFn: () =>
-            enrollmentApi.getUserEnrollments(user.id, { page: 1, limit: 10 }),
-        enabled: !!user?.id,
-        staleTime: 30_000,
-    });
-
-    const enrollmentCoursesByUser = data?.data ?? (Array.isArray(data) ? data : []);
+    const { enrolledCourses } = useDashboard();
 
     const courses = useMemo(() => {
-        const rows = (enrollmentCoursesByUser || []).filter((e) => {
+        const rows = (enrolledCourses || []).filter((e) => {
             const s = e?.status ? String(e.status).toLowerCase() : "";
             return s === "active" || s === "inprogress" || s === "completed";
         });
@@ -784,12 +772,11 @@ export default function CourseWidget({ title }) {
             lessons: e.total_lessons || 0,
             topics: e.total_topics || [],
             progress: e.progress_percent || 0,
-            imageurl: e.file_path || null,
+            imageurl: e.thumbnail_url || null,
             instructor: e.instructor_name || e.instructor || null,
-            expiry:
-                e.expiry_date || e.expiry || e.enrollment_end_date || e.expires_at || null,
+            expiry: e.expires_at || null,
         }));
-    }, [enrollmentCoursesByUser]);
+    }, [enrolledCourses]);
 
     return (
         <Box sx={{ width: "100%" }}>

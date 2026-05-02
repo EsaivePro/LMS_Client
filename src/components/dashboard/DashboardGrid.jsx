@@ -7,6 +7,7 @@ import { Box, Paper, Typography, Divider } from "@mui/material";
 import { useAuth } from "../../hooks/useAuth";
 import { useEnrollmentDashboard } from "../../hooks/useEnrollment";
 import { WIDGETS } from "../../modules/dashboard/dashboard.config";
+import useDashboard from "../../hooks/useDashboard";
 
 /* ── Icon imports ──────────────────────────────────────────────────────── */
 import WavingHandIcon from "@mui/icons-material/WavingHand";
@@ -97,12 +98,13 @@ function WidgetTitle({ id, title }) {
 
 /* ── Main grid ──────────────────────────────────────────────────────────── */
 export default function DashboardGrid({ role }) {
-    const dispatch = useDispatch();
     const layout = useSelector((s) => s.dashboard.layout[role]);
     const widgets = useSelector((s) => s.dashboard.widgets[role]);
+    const { loadDashboardStatus } = useDashboard();
 
-    const { user } = useAuth();
-    useEnrollmentDashboard(user?.id);
+    useEffect(() => {
+        loadDashboardStatus({});
+    }, []);
 
     return (
         <Box>

@@ -59,6 +59,7 @@ export const httpClient = {
     // Enrollment APIs
     getEnrollmentCourses: async () => axiosInstance.get(API_ENDPOINTS.GET_ENROLLMENT_COURSES),
     courseManualEnrollment: async (data) => axiosInstance.post(API_ENDPOINTS.COURSE_MANUAL_ENROLLMENT, data),
+    getDashboardStatus: async (data) => axiosInstance.post(API_ENDPOINTS.DASHBOARD_STATUS, data),
     getEnrollmentCoursesByUserId: async (userId) => axiosInstance.get(API_ENDPOINTS.GET_ENROLLMENT_COURSES_BY_USER_ID + "/" + userId),
     enrollUserToCourseCategory: async (userId, categoryId) => axiosInstance.post(`${API_ENDPOINTS.ENROLL_COURSE_CATEGORY}/${userId}/${categoryId}`),
     getUserCourses: async (userId, statuses) => {

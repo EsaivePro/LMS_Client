@@ -122,6 +122,10 @@ export async function getEnrollmentCourses(dispatch) {
     return await apiHandler(dispatch, httpClient.getEnrollmentCourses);
 }
 
+export async function getDashboardStatus(dispatch, data) {
+    return await apiHandler(dispatch, httpClient.getDashboardStatus, data);
+}
+
 export async function courseManualEnrollment(dispatch, data) {
     return await apiHandler(dispatch, httpClient.courseManualEnrollment, data);
 }
