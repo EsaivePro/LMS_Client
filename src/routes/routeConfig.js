@@ -13,6 +13,7 @@ import EnrollmentBase from "../modules/enrollment/pages/EnrollmentBase";
 import GroupEnrollmentPage from "../modules/enrollment/pages/GroupEnrollmentPage";
 import EnrollUserPage from "../modules/enrollment/pages/EnrollUserPage";
 import EnrollmentDetailPage from "../modules/enrollment/pages/EnrollmentDetailPage";
+import EnrollmentManagePage from "../modules/enrollment/pages/EnrollmentManagePage";
 import ModuleCategorySummaryPage from "../modules/enrollment/pages/ModuleCategorySummaryPage";
 import UserEnrollmentProfilePage from "../modules/enrollment/pages/UserEnrollmentProfilePage";
 import AssignUserToGroupPage from "../modules/group/pages/AssignUserToGroupPage";
@@ -157,14 +158,6 @@ export const protectedRoutes = [
         element: <UserProfile />,
         sideMenu: false,
     },
-    {
-        path: "/user/enrollment/*",
-        title: "Enrollment Management",
-        description: "Assign users to courses and manage enrollments.",
-        permission: "enrollment.management",
-        element: <EnrollmentBase />,
-        sideMenu: false,
-    },
     // Role management
     {
         path: "/roles/manage/:id",
@@ -180,6 +173,22 @@ export const protectedRoutes = [
         type: "item",
         matchPath: "/roles/manage",
     },
+
+    // ─────────────────────────────────────────────
+    // Enrollment Service (UC-1 through UC-10)
+    // ─────────────────────────────────────────────
+    {
+        path: "/enrollment/manage",
+        title: "Enrollment Manager",
+        description: "Manage user enrollments, group enrollments, and view enrollment details.",
+        permission: "enrollment.management",
+        element: <EnrollmentManagePage />,
+        sideMenu: true,
+        section: "Enrollment",
+        label: "Enrollment Manager",
+        icon: <PersonAddIcon />,
+        type: "item",
+    },
     // Report and analytics
     {
         path: "/users/learing-insights",
@@ -187,7 +196,7 @@ export const protectedRoutes = [
         description: "View enrollment and progress summary for users.",
         permission: "user.management",
         element: <UsersProgress />,
-        sideMenu: true,
+        sideMenu: false,
         section: "Reports/Analytics",
         label: "Learning Insights",
         icon: <InsightsIcon />,
@@ -199,7 +208,7 @@ export const protectedRoutes = [
         description: "Review actions, status, and entity-level changes across the platform.",
         permission: "user.management",
         element: <AuditLogPage />,
-        sideMenu: true,
+        sideMenu: false,
         section: "Reports/Analytics",
         label: "Audit logs",
         icon: <ReceiptLongIcon />,
@@ -211,7 +220,7 @@ export const protectedRoutes = [
         description: "Browse, add, edit, and remove tracked file records.",
         permission: "user.management",
         element: <UploadFilesPage />,
-        sideMenu: true,
+        sideMenu: false,
         section: "Reports/Analytics",
         label: "File Uploads",
         icon: <CloudUploadIcon />,
@@ -238,7 +247,7 @@ export const protectedRoutes = [
         description: "View and manage bulk enrollment jobs, their status, and execution progress.",
         permission: "enrollment.management",
         element: <EnrollmentJobManage />,
-        sideMenu: true,
+        sideMenu: false,
         sidePath: "/enrollment-job/manage/list",
         section: "Enrollment",
         label: "Enrollment Jobs",
@@ -250,18 +259,6 @@ export const protectedRoutes = [
     // ─────────────────────────────────────────────
     // My Learning (Learner-facing Dashboard)
     // ─────────────────────────────────────────────
-    {
-        path: "/my-learning/dashboard",
-        title: "My Learning Dashboard",
-        description: "Learner dashboard: track courses, exams, progress, and upcoming schedules.",
-        permission: "dashboard.view",
-        element: <EnrollmentDashboard />,
-        sideMenu: true,
-        section: "My Learning",
-        label: "Learning Dashboard",
-        icon: <SpaceDashboardIcon />,
-        type: "item",
-    },
     {
         path: "/my-learning/courses",
         title: "My Courses",
@@ -286,41 +283,13 @@ export const protectedRoutes = [
         icon: <QuizIcon />,
         type: "item",
     },
-
-    // ─────────────────────────────────────────────
-    // Enrollment Service (UC-1 through UC-10)
-    // ─────────────────────────────────────────────
-    {
-        path: "/enrollment/group",
-        title: "Group Enrollment Manager",
-        description: "View unenrolled users, bulk enroll, and track enrollment status per group.",
-        permission: "enrollment.management",
-        element: <GroupEnrollmentPage />,
-        sideMenu: true,
-        section: "Enrollment",
-        label: "Group Enrollment",
-        icon: <PeopleAltIcon />,
-        type: "item",
-    },
-    {
-        path: "/enrollment/enroll",
-        title: "Enroll Single User",
-        description: "Manually enroll one user into a course or exam.",
-        permission: "user.management",
-        element: <EnrollUserPage />,
-        sideMenu: true,
-        section: "Enrollment",
-        label: "Enroll User",
-        icon: <PersonAddIcon />,
-        type: "item",
-    },
     {
         path: "/enrollment/category-summary",
         title: "Module Category Dashboard",
         description: "View enrollment statistics and progress breakdown per module category.",
         permission: "user.management",
         element: <ModuleCategorySummaryPage />,
-        sideMenu: true,
+        sideMenu: false,
         section: "Summary",
         label: "Category Summary",
         icon: <BarChartIcon />,

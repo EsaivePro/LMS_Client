@@ -15,6 +15,9 @@ import ProgressAnalyticsWidget from "./widgets/ProgressAnalyticsWidget";
 import UpcomingScheduleWidget from "./widgets/UpcomingScheduleWidget";
 import EnrolledWidget from "./widgets/EnrolledWidget";
 
+// ── Exam dashboard widget ──
+import ExamWidget from "./widgets/ExamWidget";
+
 const WIDGET_MAP = {
 
     enrolledWidget: EnrolledWidget,
@@ -31,6 +34,9 @@ const WIDGET_MAP = {
     enrollmentList: EnrollmentListWidget,
     progressAnalytics: ProgressAnalyticsWidget,
     upcomingSchedule: UpcomingScheduleWidget,
+
+    // ── Exam ──
+    examWidget: ExamWidget,
 };
 
 export default function WidgetRenderer({ widgetId }) {

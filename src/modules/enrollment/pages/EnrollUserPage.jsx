@@ -150,16 +150,7 @@ export default function EnrollUserPage() {
     };
 
     return (
-        <Box sx={{ p: 3, maxWidth: 620, mx: "auto" }}>
-            {/* Breadcrumb */}
-            <Breadcrumbs sx={{ mb: 2 }}>
-                <Link underline="hover" color="inherit" onClick={() => navigate("/")} sx={{ cursor: "pointer" }}>Home</Link>
-                <Typography color="text.secondary">Enrollment</Typography>
-                <Typography color="text.primary">Enroll User</Typography>
-            </Breadcrumbs>
-
-            <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>Enroll Single User</Typography>
-
+        <Box sx={{ width: "100%" }}>
             {successMsg && <Alert severity="success" sx={{ mb: 2 }}>{successMsg}</Alert>}
             {warnMsg && <Alert severity="warning" sx={{ mb: 2 }}>{warnMsg}</Alert>}
 

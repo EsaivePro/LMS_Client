@@ -691,7 +691,7 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                             overflowX: "clip"  // clip (not hidden) — overflow:hidden/auto creates a scroll container that breaks position:sticky
                         }}
                     >
-                        <Box
+                        {normalCard && <Box
                             sx={{
                                 m: 0,
                                 px: isMobile ? 1.8 : 5,
@@ -701,9 +701,22 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                                     "linear-gradient(135deg, #f8f9fb 0%, #fdfdff 50%, #ffffff 100%)",
                             }}
                         >
-                            {viewContainerCard && <ContentContainer>{children}</ContentContainer>}
                             {normalCard && <NormalContainer>{children}</NormalContainer>}
-                        </Box>
+                        </Box>}
+
+                        {viewContainerCard && <Box
+                            sx={{
+                                m: 0,
+                                px: isMobile ? 1.8 : 5,
+                                mt: isMobile ? 9 : 7,
+                                mb: 0,
+                                background:
+                                    "linear-gradient(135deg, #f8f9fb 0%, #fdfdff 50%, #ffffff 100%)",
+                            }}
+                        >
+                            {viewContainerCard && <ContentContainer>{children}</ContentContainer>}
+                        </Box>}
+
                         <Box sx={{ mt: isMobile ? 16 : 16 }}>
                             {viewCourseCard && <CourseContainer>{children}</CourseContainer>}
                         </Box>

@@ -20,7 +20,7 @@ const initialState = {
             "welcome", "statsCards", "courseCategory", "enrolledWidget", "progressAnalytics"
         ],
         student: [
-            "welcome", "statsCards", "myCourses", "upcomingSchedule"
+            "welcome", "statsCards", "myCourses", "examWidget", "upcomingSchedule"
         ],
     },
     status: {

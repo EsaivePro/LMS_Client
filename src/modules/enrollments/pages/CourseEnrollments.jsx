@@ -17,10 +17,10 @@ import UpcomingSchedule from "../components/UpcomingSchedule";
 import { useEnrollmentDashboard } from "../../../hooks/useEnrollment";
 
 const TABS = [
-  { value: "all",       label: "All Courses" },
-  { value: "current",   label: "Active"      },
-  { value: "completed", label: "Completed"   },
-  { value: "future",    label: "Upcoming"    },
+  { value: "all", label: "All Courses" },
+  { value: "current", label: "Active" },
+  { value: "completed", label: "Completed" },
+  { value: "future", label: "Upcoming" },
 ];
 
 const EMPTY_FILTERS = { search: "", status: "", quick: "" };
@@ -30,10 +30,10 @@ export default function CourseEnrollments() {
   const { user } = useAuth();
 
   const [activeTab, setActiveTab] = useState("all");
-  const [viewMode,  setViewMode]  = useState("card");
-  const [filters,   setFilters]   = useState(EMPTY_FILTERS);
-  const [page,      setPage]      = useState(1);
-  const [limit,     setLimit]     = useState(6);
+  const [viewMode, setViewMode] = useState("card");
+  const [filters, setFilters] = useState(EMPTY_FILTERS);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(6);
 
   const handleFilter = useCallback((key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -56,8 +56,8 @@ export default function CourseEnrollments() {
     error,
     statsLoading,
   } = useEnrollmentDashboard(user?.id, {
-    moduleType:   "course",
-    searchTerm:   filters.search,
+    moduleType: "course",
+    searchTerm: filters.search,
     statusFilter: filters.status || null,
     activeTab,
     page,
@@ -89,10 +89,10 @@ export default function CourseEnrollments() {
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             <Box
               sx={{
-                bgcolor:      "var(--primaryLight,#fbf5ff)",
+                bgcolor: "var(--primaryLight,#fbf5ff)",
                 borderRadius: 2,
-                p:            1,
-                display:      "flex",
+                p: 1,
+                display: "flex",
               }}
             >
               <SchoolIcon sx={{ color: "var(--primary,#8F00FF)", fontSize: 28 }} />

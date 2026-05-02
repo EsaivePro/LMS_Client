@@ -13,4 +13,7 @@ export const WIDGETS = {
     enrolledWidget: { type: "enrolledWidget", title: "Your Enrollments" },
     progressAnalytics: { type: "progressAnalytics", title: "Learning Analytics" },
     upcomingSchedule: { type: "upcomingSchedule", title: "Schedule & Deadlines" },
+
+    // ── Exam dashboard widget ──
+    examWidget: { type: "examWidget", title: "Assessments & Exams" },
 };

@@ -572,7 +572,7 @@ function CourseCarousel({ courses }) {
                         >
                             <ArrowForwardIosIcon sx={{ fontSize: 12 }} />
                         </IconButton>
-                        <Box
+                        {/* <Box
                             sx={{
                                 display: "flex",
                                 alignItems: "center",
@@ -591,7 +591,7 @@ function CourseCarousel({ courses }) {
                                 View all
                             </Typography>
                             <ChevronRightIcon sx={{ fontSize: 16, color: colors.primary }} />
-                        </Box>
+                        </Box> */}
                     </Box>
                 </Box>
 

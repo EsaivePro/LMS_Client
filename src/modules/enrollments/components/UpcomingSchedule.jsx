@@ -57,12 +57,12 @@ function UpcomingPanel({ items, loading }) {
         <Typography sx={{ fontSize: "1.5rem", fontWeight: 700, color: "text.primary", lineHeight: 1.2 }}>
           Upcoming Schedule
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.2, cursor: "pointer", color: "primary.main", "&:hover": { textDecoration: "underline" } }}>
+        {/* <Box sx={{ display: "flex", alignItems: "center", gap: 0.2, cursor: "pointer", color: "primary.main", "&:hover": { textDecoration: "underline" } }}>
           <Typography variant="caption" sx={{ fontWeight: 600, fontSize: "0.8rem", color: "primary.main" }}>
             View all
           </Typography>
           <ChevronRightIcon sx={{ fontSize: 16 }} />
-        </Box>
+        </Box> */}
       </Box>
 
       {loading ? (
@@ -158,12 +158,12 @@ function ExpiringPanel({ items, loading }) {
         <Typography sx={{ fontSize: "1.5rem", fontWeight: 700, color: "text.primary", lineHeight: 1.2 }}>
           Expiring Soon
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.2, cursor: "pointer", color: "primary.main", "&:hover": { textDecoration: "underline" } }}>
+        {/* <Box sx={{ display: "flex", alignItems: "center", gap: 0.2, cursor: "pointer", color: "primary.main", "&:hover": { textDecoration: "underline" } }}>
           <Typography variant="caption" sx={{ fontWeight: 600, fontSize: "0.8rem", color: "primary.main" }}>
             View all
           </Typography>
           <ChevronRightIcon sx={{ fontSize: 16 }} />
-        </Box>
+        </Box> */}
       </Box>
 
       {loading ? (

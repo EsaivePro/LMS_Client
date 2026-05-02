@@ -5,7 +5,6 @@ import {
     TextField,
     Button,
     Typography,
-    Paper,
     FormControlLabel,
     Checkbox,
     Link,
@@ -14,13 +13,13 @@ import {
     DialogContent,
     DialogActions,
     IconButton,
-    InputAdornment
+    InputAdornment,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import ErrorOutline from '@mui/icons-material/ErrorOutline';
-
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
 import { useAdmin } from "../../../hooks/useAdmin";
@@ -31,47 +30,209 @@ import GlobalAlert from "../../../components/common/alert/GlobalAlert.jsx";
 import THEME from "../../../constants/theme";
 import deviceUtils from "../../../utils/device.utils";
 
+const BRAND_GRADIENT = `linear-gradient(145deg, #0d0760 0%, ${THEME.colors.primary} 50%, #4158e0 100%)`;
+
+/* ── Shared input field style ─────────────────────────────────────────────── */
+function inputSx(primary) {
+    return {
+        "& .MuiOutlinedInput-root": {
+            borderRadius: "12px",
+            fontSize: "0.92rem",
+            bgcolor: "#fff",
+            "& fieldset": { borderColor: "#e2e8f0" },
+            "&:hover fieldset": { borderColor: "#94a3b8" },
+            "&.Mui-focused fieldset": { borderColor: primary, borderWidth: 2 },
+        },
+        "& input[type=password]::-ms-reveal": { display: "none" },
+        "& input[type=password]::-ms-clear": { display: "none" },
+    };
+}
+
+/* ── Login form (shared between mobile & desktop) ─────────────────────────── */
+function LoginForm({ loginData, showPassword, formError, onUserChange, onPasswordChange,
+    onTogglePassword, onSubmit, onForgotOpen, onTermsOpen, onRememberChange, navigate, isMobile }) {
+    const primary = THEME.colors.primary;
+
+    return (
+        <form
+            onSubmit={onSubmit}
+            onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                    const tag = e.target?.tagName?.toLowerCase();
+                    if (tag === "input" || tag === "textarea") { e.preventDefault(); onSubmit(e); }
+                }
+            }}
+            noValidate
+        >
+            {/* Heading */}
+            <Typography sx={{ fontSize: isMobile ? "1.6rem" : "1.85rem", fontWeight: 800, color: "#0f172a", mb: 0.75, textAlign: "center", letterSpacing: "-0.01em" }}>
+                Welcome back! 👋
+            </Typography>
+            <Typography sx={{ fontSize: "0.92rem", color: "#64748b", mb: isMobile ? 2.5 : 3.5, textAlign: "center" }}>
+                Sign in to your account
+            </Typography>
+
+            {/* Error banner */}
+            {formError && (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2.5, px: 1.75, py: 1.1, bgcolor: "#fef2f2", border: "1px solid #fecaca", borderRadius: "10px" }}>
+                    <Box sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: "#ef4444", flexShrink: 0 }} />
+                    <Typography sx={{ fontSize: "0.83rem", color: "#dc2626" }}>{formError}</Typography>
+                </Box>
+            )}
+
+            {/* Email */}
+            <Typography sx={{ fontSize: "0.83rem", fontWeight: 700, color: "#1e293b", mb: 0.8 }}>
+                Email address
+            </Typography>
+            <TextField
+                placeholder="Enter your email"
+                fullWidth
+                value={loginData.user}
+                onChange={onUserChange}
+                error={!!formError && !loginData.user}
+                sx={{ mb: 2, ...inputSx(primary) }}
+                InputProps={{
+                    sx: { py: 0.2 },
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <EmailOutlinedIcon sx={{ fontSize: 18, color: "#94a3b8" }} />
+                        </InputAdornment>
+                    ),
+                }}
+            />
+
+            {/* Password */}
+            <Typography sx={{ fontSize: "0.83rem", fontWeight: 700, color: "#1e293b", mb: 0.8 }}>
+                Password
+            </Typography>
+            <TextField
+                placeholder="Enter your password"
+                type={showPassword ? "text" : "password"}
+                fullWidth
+                value={loginData.password}
+                onChange={onPasswordChange}
+                error={!!formError && !loginData.password}
+                sx={{ mb: isMobile ? 2.5 : 1.5, ...inputSx(primary) }}
+                InputProps={{
+                    sx: { py: 0.2 },
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <LockOutlinedIcon sx={{ fontSize: 18, color: "#94a3b8" }} />
+                        </InputAdornment>
+                    ),
+                    endAdornment: (
+                        <InputAdornment position="end" sx={{ gap: 0.5 }}>
+                            <Link
+                                component="button"
+                                type="button"
+                                underline="none"
+                                onClick={onForgotOpen}
+                                sx={{ fontSize: "0.8rem", fontWeight: 600, color: primary, whiteSpace: "nowrap", mr: 0.5, "&:hover": { textDecoration: "underline", bgcolor: "transparent" } }}
+                            >
+                                Forgot password?
+                            </Link>
+                            <IconButton size="small" onClick={onTogglePassword} edge="end" sx={{ mr: -0.5 }}>
+                                {showPassword
+                                    ? <Visibility sx={{ fontSize: 18, color: "#94a3b8" }} />
+                                    : <VisibilityOff sx={{ fontSize: 18, color: "#94a3b8" }} />}
+                            </IconButton>
+                        </InputAdornment>
+                    ),
+                }}
+            />
+
+            {/* Remember me — desktop only */}
+            {!isMobile && (
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={loginData.remember}
+                            onChange={onRememberChange}
+                            size="small"
+                            sx={{ color: "#cbd5e1", "&.Mui-checked": { color: primary } }}
+                        />
+                    }
+                    label={<Typography sx={{ fontSize: "0.83rem", color: "#64748b" }}>Remember me</Typography>}
+                    sx={{ mb: 2.5 }}
+                />
+            )}
+
+            {/* Sign In */}
+            <Button
+                fullWidth
+                variant="contained"
+                type="submit"
+                sx={{
+                    py: 1.5, fontWeight: 700, fontSize: "1rem", textTransform: "none",
+                    borderRadius: "12px", bgcolor: THEME.colors.dark, letterSpacing: "0.01em",
+                    boxShadow: `0 6px 20px ${THEME.colors.dark}50`,
+                    "&:hover": { bgcolor: THEME.colors.darkMedium, boxShadow: `0 8px 24px ${THEME.colors.dark}65` },
+                }}
+            >
+                Sign In
+            </Button>
+
+            {/* Sign up */}
+            <Typography sx={{ textAlign: "center", mt: 2.5, fontSize: "0.87rem", color: "#64748b" }}>
+                Don't have an account?{" "}
+                <Link
+                    component="button" type="button" underline="none"
+                    onClick={() => navigate("/user/register")}
+                    sx={{ fontWeight: 700, color: THEME.colors.secondary || "#f59e0b", "&:hover": { textDecoration: "underline", bgcolor: "transparent" } }}
+                >
+                    Sign up
+                </Link>
+            </Typography>
+
+            {/* Terms */}
+            <Typography sx={{ textAlign: "center", mt: 1.5, fontSize: "0.75rem", color: "#94a3b8" }}>
+                By signing in you agree to our{" "}
+                <Link
+                    component="button" type="button" underline="hover"
+                    onClick={onTermsOpen}
+                    sx={{ color: "#94a3b8", "&:hover": { bgcolor: "transparent" } }}
+                >
+                    Terms and Conditions
+                </Link>
+            </Typography>
+        </form>
+    );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MAIN PAGE
+═══════════════════════════════════════════════════════════════════════════ */
 export default function LoginPage() {
     const navigate = useNavigate();
     const { login, user } = useAuth();
     const { setPermissionsAPI } = useAdmin();
     const { showLoader, hideLoader } = useCommon();
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
     const [alert, setAlert] = useState({ open: false, type: "", message: "" });
-    const [loginData, setLoginData] = useState({
-        user: "",
-        password: "",
-        remember: false
-    });
-    const [errors, setErrors] = useState({});
-    const [openForgot, setOpenForgot] = useState(false);
-    const [openTerms, setOpenTerms] = useState(false);
+    const [loginData, setLoginData] = useState({ user: "", password: "", remember: false });
     const [showPassword, setShowPassword] = useState(false);
     const [formError, setFormError] = useState("");
+    const [openForgot, setOpenForgot] = useState(false);
+    const [openTerms, setOpenTerms] = useState(false);
 
     const validate = () => {
-        // show single, form-level error when either field is missing
         if (!loginData.user || !loginData.password) {
-            setFormError("Username and Password are required.");
-            setErrors({});
+            setFormError("Username and password are required.");
             return false;
         }
         setFormError("");
-        setErrors({});
         return true;
     };
 
     const handleUserChange = (e) => {
-        const value = e.target.value;
-        setLoginData((s) => ({ ...s, user: value }));
+        setLoginData((s) => ({ ...s, user: e.target.value }));
         if (formError) setFormError("");
     };
 
     const handlePasswordChange = (e) => {
-        const value = e.target.value;
-        setLoginData((s) => ({ ...s, password: value }));
+        setLoginData((s) => ({ ...s, password: e.target.value }));
         if (formError) setFormError("");
     };
 
@@ -79,18 +240,10 @@ export default function LoginPage() {
         e.preventDefault();
         if (!validate()) return;
         try {
-            // attach device info to login payload
             const device_id = deviceUtils.getDeviceId();
             const { device_type, device_info } = deviceUtils.getDeviceInfo();
             const ip_address = await deviceUtils.getPublicIp();
-
-            const payload = {
-                ...loginData,
-                device_id,
-                device_type,
-                device_info,
-                ip_address,
-            };
+            const payload = { ...loginData, device_id, device_type, device_info, ip_address };
 
             const resultAction = await login(payload);
             if (!resultAction?.type?.endsWith("/fulfilled")) {
@@ -111,7 +264,7 @@ export default function LoginPage() {
             } else {
                 navigate("/unauthorized", { replace: true });
             }
-        } catch (err) {
+        } catch {
             setAlert({ open: true, type: "error", message: "Login failed" });
             navigate("/unauthorized", { replace: true });
         } finally {
@@ -119,357 +272,220 @@ export default function LoginPage() {
         }
     };
 
-    // If already authenticated, redirect to dashboard
     useEffect(() => {
-        if (user && (user.id || user.userId)) {
-            navigate("/", { replace: true });
-        }
+        if (user && (user.id || user.userId)) navigate("/", { replace: true });
     }, [user, navigate]);
 
+    const logoSrc = THEME?.manifest?.icons?.[0]?.src
+        ? `/${THEME.manifest.icons[0].src}`
+        : "/logo/EsaiLogo.png";
+
+    const formProps = {
+        loginData, showPassword, formError,
+        onUserChange: handleUserChange,
+        onPasswordChange: handlePasswordChange,
+        onTogglePassword: () => setShowPassword((s) => !s),
+        onRememberChange: (e) => setLoginData((s) => ({ ...s, remember: e.target.checked })),
+        onSubmit: handleSubmit,
+        onForgotOpen: () => setOpenForgot(true),
+        onTermsOpen: () => setOpenTerms(true),
+        navigate,
+    };
+
+    /* ════════════════════════════════════════════════════════════════════════
+       MOBILE LAYOUT  —  brand top + white bottom sheet
+    ════════════════════════════════════════════════════════════════════════ */
+    if (isMobile) {
+        return (
+            <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%", bgcolor: "#0d0760" }}>
+
+                {/* ── Top: brand section ── */}
+                <Box
+                    sx={{
+                        background: BRAND_GRADIENT,
+                        pt: "52px",
+                        px: 3,
+                        pb: 0,
+                        display: "flex",
+                        flexDirection: "column",
+                        minHeight: "52vh",
+                        position: "relative",
+                        overflow: "hidden",
+                    }}
+                >
+                    {/* Radial highlight */}
+                    <Box sx={{
+                        position: "absolute", top: -60, right: -60,
+                        width: 300, height: 300, borderRadius: "50%",
+                        background: "radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)",
+                        pointerEvents: "none",
+                    }} />
+
+                    {/* Logo */}
+                    <Box
+                        component="img"
+                        src={logoSrc}
+                        alt="logo"
+                        sx={{ width: 120, mb: 2.5, filter: "brightness(0) invert(1)", opacity: 0.95 }}
+                    />
+
+                    {/* Tagline */}
+                    <Typography sx={{ fontSize: "2rem", fontWeight: 800, color: "#fff", lineHeight: 1.2, mb: 1.25, letterSpacing: "-0.02em" }}>
+                        Learn. Grow.<br />Achieve.
+                    </Typography>
+                    <Typography sx={{ fontSize: "0.95rem", color: "rgba(255,255,255,0.72)", lineHeight: 1.6, mb: 0 }}>
+                        The all-in-one platform for<br />learning and growth.
+                    </Typography>
+
+                    {/* Illustration anchored to bottom of this section */}
+                    <Box sx={{ flex: 1, display: "flex", alignItems: "flex-end", justifyContent: "center", mt: 2 }}>
+                        <Box
+                            component="img"
+                            src="/login/lms.png"
+                            alt="LMS illustration"
+                            sx={{
+                                width: "92%",
+                                maxWidth: 380,
+                                display: "block",
+                                mx: "auto",
+                                filter: "drop-shadow(0 16px 32px rgba(0,0,0,0.3))",
+                                userSelect: "none",
+                                pointerEvents: "none",
+                            }}
+                        />
+                    </Box>
+                </Box>
+
+                {/* ── Bottom: white form sheet ── */}
+                <Box
+                    sx={{
+                        bgcolor: "#fff",
+                        borderRadius: "28px 28px 0 0",
+                        mt: "-24px",
+                        flex: 1,
+                        px: 3,
+                        pt: 2,
+                        pb: 5,
+                        overflowY: "auto",
+                    }}
+                >
+                    {/* Drag handle */}
+                    <Box sx={{ width: 40, height: 4, borderRadius: 2, bgcolor: "#e2e8f0", mx: "auto", mb: 2.5 }} />
+
+                    <LoginForm {...formProps} isMobile={true} />
+                </Box>
+
+                <GlobalAlert alert={alert} setAlert={setAlert} />
+                <ForgotDialog open={openForgot} onClose={() => setOpenForgot(false)} />
+                <TermsDialog open={openTerms} onClose={() => setOpenTerms(false)} />
+            </Box>
+        );
+    }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       DESKTOP LAYOUT  —  left brand panel + right form panel
+    ════════════════════════════════════════════════════════════════════════ */
     return (
-        <Box
-            sx={{
-                // Account for a global --app-scale CSS variable (if present)
-                // so scaled UI doesn't cause an extra vertical scrollbar.
-                minHeight: "calc(100vh / var(--app-scale, 1))",
-                width: "100%",
-                backgroundImage: "url(/login/l5.jpg)",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: { xs: "center", md: "end" },
-                position: "relative",
-                overflow: "hidden"
-            }}
-        >
-            {/* THEME OVERLAY */}
+        <Box sx={{ display: "flex", minHeight: "100vh", width: "100%", bgcolor: "#f0f2ff" }}>
+
+            {/* ── Left: brand panel ── */}
             <Box
                 sx={{
-                    position: "absolute",
-                    inset: 0,
-                    background: `linear-gradient(
-                        180deg,
-                        ${THEME.colors.dark}CC,
-                        ${THEME.colors.darkMedium}AA
-                    )`
-                }}
-            />
-
-            {/* LOGIN CARD */}
-            <Paper
-                elevation={8}
-                sx={{
+                    width: "55%",
+                    flexShrink: 0,
                     position: "relative",
-                    zIndex: 1,
-                    width: "100%",
-                    // Use calc with app-scale on large screens as well
-                    height: { xs: "auto", md: "calc(100vh / var(--app-scale, 1))" },
-                    maxWidth: { xs: 400, md: 500 },
-                    mx: { xs: 2, md: 0 },
-                    // my: { xs: 4, md: 0 },
-                    p: { xs: 2, md: 4 },
+                    overflow: "hidden",
                     display: "flex",
                     flexDirection: "column",
-                    justifyContent: "center",
-                    borderRadius: 2,
-                    backgroundColor: "#ffffffd7",
-                    overflow: 'hidden'
+                    borderRadius: "0 40px 40px 0",
+                    background: BRAND_GRADIENT,
+                    p: { md: "40px 48px 0", lg: "48px 60px 0" },
                 }}
             >
-                <form
-                    onSubmit={handleSubmit}
-                    // Only submit when Enter is pressed while focus is on an input/textarea
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                            const tag = e.target?.tagName?.toLowerCase();
-                            if (tag === "input" || tag === "textarea") {
-                                e.preventDefault();
-                                handleSubmit(e);
-                            }
-                        }
-                    }}
-                    noValidate
-                >
-                    {/* LOGO */}
-                    <Box sx={{ mb: 3, textAlign: "center" }}>
-                        <img
-                            src={
-                                THEME?.manifest?.icons?.[0]?.src
-                                    ? `/${THEME.manifest.icons[0].src}`
-                                    : "/logo/EsaiLogo.png"
-                            }
-                            alt="logo"
-                            width={160}
-                        />
-                    </Box>
+                <Box sx={{ position: "absolute", top: -80, right: -80, width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
 
-                    <Typography
-                        variant={isMobile ? "h6" : "h5"}
-                        fontWeight={isMobile ? 500 : 500}
-                        sx={{ color: THEME.colors.dark, mb: 1, textAlign: "center", wordBreak: 'break-word' }}
-                    >
-                        Welcome back to {THEME.manifest?.name || ""}!
-                    </Typography>
+                <Box component="img" src={logoSrc} alt="logo"
+                    sx={{ width: 140, mb: { md: 5, lg: 6 }, filter: "brightness(0) invert(1)", opacity: 0.95, display: "block" }}
+                />
 
-                    <Typography
-                        variant="body1"
-                        sx={{
-                            color: THEME.colors.textSecondary,
-                            mb: 2,
-                            textAlign: "center"
-                        }}
-                    >
-                        Sign in to continue
-                    </Typography>
+                <Typography sx={{ fontSize: { md: "2.4rem", lg: "3rem" }, fontWeight: 800, color: "#fff", lineHeight: 1.2, mb: 2, letterSpacing: "-0.02em" }}>
+                    Learn. Grow.<br />Achieve.
+                </Typography>
 
-                    {formError && (
-                        <Typography variant="body2" color="error" sx={{ mb: 2, textAlign: 'center' }}>
-                            {formError}
-                        </Typography>
-                    )}
+                <Typography sx={{ fontSize: { md: "1rem", lg: "1.1rem" }, color: "rgba(255,255,255,0.72)", lineHeight: 1.7, maxWidth: 380, mb: 4 }}>
+                    The all-in-one platform for learning and growth.
+                </Typography>
 
-                    {/* USERNAME */}
-                    <TextField
-                        label="Username"
-                        fullWidth
-                        margin="normal"
-                        value={loginData.user}
-                        onChange={handleUserChange}
-                        error={!!errors.user}
-                        InputProps={{
-                            startAdornment: (
-                                formError ? (
-                                    <InputAdornment position="start">
-                                        <ErrorOutline sx={{ color: THEME.colors.danger }} />
-                                    </InputAdornment>
-                                ) : null
-                            )
-                        }}
-
-                        sx={{
-                            "& .MuiOutlinedInput-root": {
-                                "& fieldset": {
-                                    borderColor: THEME.colors.darkLight
-                                },
-                                "&:hover fieldset": {
-                                    borderColor: THEME.colors.darkMedium
-                                },
-                                "&.Mui-focused fieldset": {
-                                    borderColor: THEME.colors.dark
-                                }
-                            }
-                        }}
+                <Box sx={{ flex: 1, display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
+                    <Box component="img" src="/login/lms.png" alt="LMS illustration"
+                        sx={{ width: "100%", maxWidth: { md: 420, lg: 520 }, display: "block", mx: "auto", filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.3))", userSelect: "none", pointerEvents: "none" }}
                     />
+                </Box>
+            </Box>
 
-                    {/* PASSWORD */}
-                    <TextField
-                        label="Password"
-                        type={showPassword ? "text" : "password"}
-                        fullWidth
-                        margin="normal"
-                        value={loginData.password}
-                        onChange={handlePasswordChange}
-                        error={!!errors.password}
-                        sx={{
-                            "& .MuiOutlinedInput-root": {
-                                "& fieldset": {
-                                    borderColor: THEME.colors.darkLight
-                                },
-                                "&:hover fieldset": {
-                                    borderColor: THEME.colors.darkMedium
-                                },
-                                "&.Mui-focused fieldset": {
-                                    borderColor: THEME.colors.dark
-                                }
-                            },
-                            // Hide built-in browser password reveal/clear buttons
-                            '& input[type=password]::-ms-reveal': { display: 'none' },
-                            '& input[type=password]::-ms-clear': { display: 'none' },
-                            '& input[type=password]::-webkit-textfield-decoration-container': { display: 'none' },
-                            '& input::-webkit-credentials-auto-fill-button': { display: 'none' },
-                            '& input::-webkit-autofill-button': { display: 'none' }
-                        }}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        onClick={() => setShowPassword((s) => !s)}
-                                        edge="end"
-                                    >
-                                        {showPassword ? <Visibility /> : <VisibilityOff />}
-                                    </IconButton>
-                                </InputAdornment>
-                            )
-                        }}
-                    />
-
-                    {/* REMEMBER / FORGOT - single line */}
-                    <Box
-                        sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            mt: 1,
-                            flexWrap: 'nowrap'
-                        }}
-                    >
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={loginData.remember}
-                                    onChange={(e) =>
-                                        setLoginData({
-                                            ...loginData,
-                                            remember: e.target.checked
-                                        })
-                                    }
-                                    size="small"
-                                />
-                            }
-                            label="Remember me"
-                            sx={{ whiteSpace: 'nowrap', mr: 2 }}
-                        />
-
-                        <Link
-                            component="button"
-                            underline="hover"
-                            sx={{
-                                color: THEME.colors.primary,
-                                whiteSpace: 'nowrap',
-                                ml: 'auto',
-                                '&:hover': { backgroundColor: "transparent" }
-                            }}
-                            type="button"
-                            onClick={() => setOpenForgot(true)}
-                        >
-                            Forgot password?
-                        </Link>
-                    </Box>
-
-                    {/* SIGN IN */}
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        sx={{
-                            mt: 3,
-                            py: 1.3,
-                            fontWeight: 700,
-                            backgroundColor: THEME.colors.dark,
-                            "&:hover": {
-                                backgroundColor: THEME.colors.darkMedium
-                            }
-                        }}
-                        type="submit"
-                    >
-                        Sign in
-                    </Button>
-
-                    <Button
-                        fullWidth
-                        variant="outlined"
-                        sx={{
-                            mt: 1,
-                            py: 1.1,
-                            fontWeight: 700,
-                            borderColor: THEME.colors.dark,
-                            color: THEME.colors.dark,
-                        }}
-                        type="button"
-                        onClick={() => navigate("/user/register")}
-                    >
-                        Create account
-                    </Button>
-
-                    <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-                        By signing in you agree to our{" "}
-                        <Link
-                            component="button"
-                            underline="hover"
-                            sx={{ color: THEME.colors.primary, '&:hover': { backgroundColor: "transparent" } }}
-                            type="button"
-                            onClick={() => setOpenTerms(true)}
-                        >
-                            Terms and Conditions
-                        </Link>
-                    </Typography>
-                </form>
-            </Paper>
+            {/* ── Right: form panel ── */}
+            <Box sx={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", bgcolor: "#fff", minHeight: "100vh", overflowY: "auto" }}>
+                <Box sx={{ width: "100%", maxWidth: 420, px: { md: 5 }, py: { md: 0 } }}>
+                    <LoginForm {...formProps} isMobile={false} />
+                </Box>
+            </Box>
 
             <GlobalAlert alert={alert} setAlert={setAlert} />
-
-            {/* FORGOT PASSWORD */}
-            <Dialog open={openForgot} onClose={() => setOpenForgot(false)} fullWidth maxWidth="sm">
-                <DialogTitle>
-                    Forgot Password
-                    <IconButton
-                        onClick={() => setOpenForgot(false)}
-                        sx={{ position: "absolute", right: 8, top: 8 }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                </DialogTitle>
-                <DialogContent dividers>
-                    <Typography>
-                        Please contact your system administrator or IT support team to reset your password.
-                    </Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenForgot(false)}>Close</Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* TERMS */}
-            <Dialog open={openTerms} onClose={() => setOpenTerms(false)} fullWidth maxWidth="md">
-                <DialogTitle>
-                    Terms and Conditions
-                    <IconButton
-                        onClick={() => setOpenTerms(false)}
-                        sx={{ position: "absolute", right: 8, top: 8 }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                </DialogTitle>
-                <DialogContent dividers>
-                    <Box component="ol" sx={{ pl: 3 }}>
-                        <Box component="li" sx={{ mb: 1 }}>
-                            <Typography variant="body2">Authorized access only: this platform is for registered users with valid credentials.</Typography>
-                        </Box>
-                        <Box component="li" sx={{ mb: 1 }}>
-                            <Typography variant="body2">Account security: you are responsible for safeguarding your login and must not share credentials.</Typography>
-                        </Box>
-                        <Box component="li" sx={{ mb: 1 }}>
-                            <Typography variant="body2">Acceptable use: use the system only for legitimate learning and work-related activities.</Typography>
-                        </Box>
-                        <Box component="li" sx={{ mb: 1 }}>
-                            <Typography variant="body2">Prohibited behaviour: harassment, misuse, or disruption of services is forbidden.</Typography>
-                        </Box>
-                        <Box component="li" sx={{ mb: 1 }}>
-                            <Typography variant="body2">Intellectual property: course content is owned or licensed and must not be redistributed without permission.</Typography>
-                        </Box>
-                        <Box component="li" sx={{ mb: 1 }}>
-                            <Typography variant="body2">Privacy: personal data is processed according to your organization’s privacy policy.</Typography>
-                        </Box>
-                        <Box component="li" sx={{ mb: 1 }}>
-                            <Typography variant="body2">Data retention: usage and progress data may be logged and retained for administrative purposes.</Typography>
-                        </Box>
-                        <Box component="li" sx={{ mb: 1 }}>
-                            <Typography variant="body2">Compliance: you must comply with applicable laws and organizational policies while using the LMS.</Typography>
-                        </Box>
-                        <Box component="li" sx={{ mb: 1 }}>
-                            <Typography variant="body2">Consequences: violations may result in access suspension, disciplinary action, or legal remedies.</Typography>
-                        </Box>
-                        <Box component="li">
-                            <Typography variant="body2">Support: contact your administrator or IT support for issues, access requests, or policy questions.</Typography>
-                        </Box>
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenTerms(false)}>Close</Button>
-                </DialogActions>
-            </Dialog>
+            <ForgotDialog open={openForgot} onClose={() => setOpenForgot(false)} />
+            <TermsDialog open={openTerms} onClose={() => setOpenTerms(false)} />
         </Box>
+    );
+}
+
+/* ── Dialog components ───────────────────────────────────────────────────── */
+function ForgotDialog({ open, onClose }) {
+    return (
+        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+            <DialogTitle>
+                Forgot Password
+                <IconButton onClick={onClose} sx={{ position: "absolute", right: 8, top: 8 }}><CloseIcon /></IconButton>
+            </DialogTitle>
+            <DialogContent dividers>
+                <Typography>Please contact your system administrator or IT support team to reset your password.</Typography>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={onClose}>Close</Button>
+            </DialogActions>
+        </Dialog>
+    );
+}
+
+function TermsDialog({ open, onClose }) {
+    const terms = [
+        "Authorized access only: this platform is for registered users with valid credentials.",
+        "Account security: you are responsible for safeguarding your login and must not share credentials.",
+        "Acceptable use: use the system only for legitimate learning and work-related activities.",
+        "Prohibited behaviour: harassment, misuse, or disruption of services is forbidden.",
+        "Intellectual property: course content is owned or licensed and must not be redistributed without permission.",
+        "Privacy: personal data is processed according to your organization's privacy policy.",
+        "Data retention: usage and progress data may be logged and retained for administrative purposes.",
+        "Compliance: you must comply with applicable laws and organizational policies while using the LMS.",
+        "Consequences: violations may result in access suspension, disciplinary action, or legal remedies.",
+        "Support: contact your administrator or IT support for issues, access requests, or policy questions.",
+    ];
+    return (
+        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+            <DialogTitle>
+                Terms and Conditions
+                <IconButton onClick={onClose} sx={{ position: "absolute", right: 8, top: 8 }}><CloseIcon /></IconButton>
+            </DialogTitle>
+            <DialogContent dividers>
+                <Box component="ol" sx={{ pl: 3 }}>
+                    {terms.map((text, i) => (
+                        <Box component="li" key={i} sx={{ mb: 1 }}>
+                            <Typography variant="body2">{text}</Typography>
+                        </Box>
+                    ))}
+                </Box>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={onClose}>Close</Button>
+            </DialogActions>
+        </Dialog>
     );
 }

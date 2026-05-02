@@ -25,6 +25,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { getUserExamDetails } from '../../../components/exam/handlers/Handler';
 import TimelapseIcon from '@mui/icons-material/Timelapse';
 import useCommon from '../../../hooks/useCommon';
+import { useAuth } from '../../../hooks/useAuth';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -234,7 +235,8 @@ export default function ExamSummaryPage() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
-    const userId = searchParams.get('userid') || searchParams.get('user');
+    const { user } = useAuth();
+    const userId = user?.id ?? user?.user_id ?? user?.userId;
     const attemptId = searchParams.get('attemptid');
 
     const { showLoader, hideLoader, showError } = useCommon();
