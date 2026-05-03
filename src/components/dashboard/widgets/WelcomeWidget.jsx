@@ -199,12 +199,12 @@ export default function WelcomeWidget() {
                             {name}!
                         </Typography>
 
-                        <WavingHandIcon sx={{
+                        {/* <WavingHandIcon sx={{
                             fontSize: 24,
                             color: colors.warning,
                             animation: `${wave} 2.2s ease-in-out infinite`,
                             transformOrigin: "70% 70%",
-                        }} />
+                        }} /> */}
                     </Box>
 
                     {/* Quote */}

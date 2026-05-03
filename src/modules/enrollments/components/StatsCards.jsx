@@ -13,6 +13,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import QuizIcon from "@mui/icons-material/Quiz";
+import LockClockIcon from '@mui/icons-material/LockClock';
 
 const CARDS = [
   {
@@ -25,21 +26,21 @@ const CARDS = [
   {
     key: "completed",
     label: "Completed",
-    icon: PlayCircleOutlineIcon,
+    icon: CheckCircleOutlineIcon,
     color: "#10B981",
     bg: "rgba(16,185,129,.10)"
   },
   {
     key: "inprogress",
     label: "In Progress",
-    icon: CheckCircleOutlineIcon,
+    icon: PlayCircleOutlineIcon,
     color: "#2563EB",
     bg: "rgba(37,99,235,.10)"
   },
   {
     key: "scheduled",
     label: "Upcoming Exams",
-    icon: QuizIcon,
+    icon: LockClockIcon,
     color: "#7C3AED",
     bg: "rgba(124,58,237,.10)"
   }

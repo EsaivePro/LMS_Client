@@ -76,16 +76,16 @@ function LoginForm({ loginData, showPassword, formError, onUserChange, onPasswor
             {formError && (
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2.5, px: 1.75, py: 1.1, bgcolor: "#fef2f2", border: "1px solid #fecaca", borderRadius: "10px" }}>
                     <Box sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: "#ef4444", flexShrink: 0 }} />
-                    <Typography sx={{ fontSize: "0.83rem", color: "#dc2626" }}>{formError}</Typography>
+                    <Typography sx={{ fontSize: "1rem", color: "#dc2626" }}>{formError}</Typography>
                 </Box>
             )}
 
             {/* Email */}
-            <Typography sx={{ fontSize: "0.83rem", fontWeight: 700, color: "#1e293b", mb: 0.8 }}>
-                Email address
+            <Typography sx={{ fontSize: "1rem", fontWeight: 700, color: "#1e293b", mb: 0.8 }}>
+                Username / Email address
             </Typography>
             <TextField
-                placeholder="Enter your email"
+                placeholder="Enter your username / email"
                 fullWidth
                 value={loginData.user}
                 onChange={onUserChange}
@@ -102,7 +102,7 @@ function LoginForm({ loginData, showPassword, formError, onUserChange, onPasswor
             />
 
             {/* Password */}
-            <Typography sx={{ fontSize: "0.83rem", fontWeight: 700, color: "#1e293b", mb: 0.8 }}>
+            <Typography sx={{ fontSize: "1rem", fontWeight: 700, color: "#1e293b", mb: 0.8 }}>
                 Password
             </Typography>
             <TextField
@@ -121,16 +121,7 @@ function LoginForm({ loginData, showPassword, formError, onUserChange, onPasswor
                         </InputAdornment>
                     ),
                     endAdornment: (
-                        <InputAdornment position="end" sx={{ gap: 0.5 }}>
-                            <Link
-                                component="button"
-                                type="button"
-                                underline="none"
-                                onClick={onForgotOpen}
-                                sx={{ fontSize: "0.8rem", fontWeight: 600, color: primary, whiteSpace: "nowrap", mr: 0.5, "&:hover": { textDecoration: "underline", bgcolor: "transparent" } }}
-                            >
-                                Forgot password?
-                            </Link>
+                        <InputAdornment position="end">
                             <IconButton size="small" onClick={onTogglePassword} edge="end" sx={{ mr: -0.5 }}>
                                 {showPassword
                                     ? <Visibility sx={{ fontSize: 18, color: "#94a3b8" }} />
@@ -141,21 +132,32 @@ function LoginForm({ loginData, showPassword, formError, onUserChange, onPasswor
                 }}
             />
 
-            {/* Remember me — desktop only */}
-            {!isMobile && (
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={loginData.remember}
-                            onChange={onRememberChange}
-                            size="small"
-                            sx={{ color: "#cbd5e1", "&.Mui-checked": { color: primary } }}
-                        />
-                    }
-                    label={<Typography sx={{ fontSize: "0.83rem", color: "#64748b" }}>Remember me</Typography>}
-                    sx={{ mb: 2.5 }}
-                />
-            )}
+            {/* Remember me + Forgot password row */}
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2.5 }}>
+                {!isMobile && (
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={loginData.remember}
+                                onChange={onRememberChange}
+                                size="small"
+                                sx={{ color: "#cbd5e1", "&.Mui-checked": { color: primary } }}
+                            />
+                        }
+                        label={<Typography sx={{ fontSize: "1rem", color: "#64748b" }}>Remember me</Typography>}
+                        sx={{ m: 0 }}
+                    />
+                )}
+                <Link
+                    component="button"
+                    type="button"
+                    underline="none"
+                    onClick={onForgotOpen}
+                    sx={{ fontSize: "0.8rem", fontWeight: 600, color: primary, ml: "auto", "&:hover": { textDecoration: "underline", bgcolor: "transparent" } }}
+                >
+                    Forgot password?
+                </Link>
+            </Box>
 
             {/* Sign In */}
             <Button
@@ -338,7 +340,7 @@ export default function LoginPage() {
                     </Typography>
 
                     {/* Illustration anchored to bottom of this section */}
-                    <Box sx={{ flex: 1, display: "flex", alignItems: "flex-end", justifyContent: "center", mt: 2 }}>
+                    <Box sx={{ flex: 1, display: "flex", alignItems: "flex-end", justifyContent: "center", mt: 5 }}>
                         <Box
                             component="img"
                             src="/login/lms.png"

@@ -62,8 +62,9 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const location = useLocation();
     const isCourseViewPage = location.pathname.startsWith("/course/view/");
+    const isExamPage = /^\/exam\/\d+\/user\/\d+/.test(location.pathname);
 
-    const [open, setOpen] = React.useState(() => fixed && !isMobile && !isCourseViewPage);
+    const [open, setOpen] = React.useState(() => fixed && !isMobile && !isCourseViewPage && !isExamPage);
     const [expandedGroup, setExpandedGroup] = React.useState(null);
     const [search, setSearch] = React.useState("");
     const [collapsedSections, setCollapsedSections] = React.useState(new Set());
@@ -118,12 +119,12 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
         });
     }, [location.pathname]);
 
-    // Keep sidebar default closed when entering course view page.
+    // Keep sidebar closed on course view and exam pages.
     React.useEffect(() => {
-        if (isCourseViewPage) {
+        if (isCourseViewPage || isExamPage) {
             setOpen(false);
         }
-    }, [isCourseViewPage]);
+    }, [isCourseViewPage, isExamPage]);
 
     // ── Outside click closes sidebar (overlay mode / mobile) ────
     React.useEffect(() => {

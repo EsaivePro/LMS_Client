@@ -171,7 +171,7 @@ export default function UserList() {
                             fontWeight: 500,
                             "&:hover": { textDecoration: "underline" },
                         }}
-                        onClick={() => navigate(`/users/view/${params.row.id}`)}
+                        onClick={() => navigate(`/enrollment/user/${params.row.id}`)}
                     >
                         {params.row.username}
                     </Typography>

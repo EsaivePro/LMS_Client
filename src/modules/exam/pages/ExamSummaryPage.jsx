@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import {
     Box, Typography, Card, CardContent, Chip, Divider, Button, Tooltip,
     Table, TableHead, TableBody, TableRow, TableCell, TableContainer,
-    Grid, LinearProgress,
+    Grid, LinearProgress, Backdrop, CircularProgress,
     Dialog, DialogTitle, DialogContent, DialogActions, IconButton
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -245,6 +245,9 @@ export default function ExamSummaryPage() {
     const [viewAttempt, setViewAttempt] = useState(null);
     const [startConfirmOpen, setStartConfirmOpen] = useState(false);
     const [examApi, setExamApi] = useState(false);
+    const [examLive, setExamLive] = useState(false);
+    const childWindowRef = useRef(null);
+    const pollRef = useRef(null);
     useEffect(() => {
         async function load() {
             setExamApi(true);
@@ -296,26 +299,94 @@ export default function ExamSummaryPage() {
     const isResume = !!inProgressAttempt;
     const isNextAttempt = !inProgressAttempt && !!notStartedAttempt && completedAttempts > 0;
 
+    function openExamWindow(attemptId) {
+        const url = `${window.location.origin}/exam/${examid}/user/${userId}?attemptid=${attemptId}`;
+        const features = 'width=1280,height=800,left=80,top=60,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no';
+        const child = window.open(url, `exam_${examid}_${attemptId}`, features);
+        if (!child) {
+            // Popup was blocked — fall back to same-tab navigation
+            navigate(`/exam/${examid}/user/${userId}?attemptid=${attemptId}`);
+            return;
+        }
+        childWindowRef.current = child;
+        setExamLive(true);
+
+        // Close child when parent unloads
+        const onUnload = () => child.close();
+        window.addEventListener('beforeunload', onUnload);
+
+        // Poll until child is closed
+        pollRef.current = setInterval(() => {
+            if (child.closed) {
+                clearInterval(pollRef.current);
+                setExamLive(false);
+                window.removeEventListener('beforeunload', onUnload);
+            }
+        }, 500);
+    }
+
     function handleStartExam() {
         if (!activeAttempt) return;
         if (isResume) {
-            // Resume in-progress attempt — no confirmation needed
-            navigate(`/exam/${examid}/user/${userId}?attemptid=${activeAttempt.attempt_id}`);
+            openExamWindow(activeAttempt.attempt_id);
         } else {
-            // New attempt — show confirmation first
             setStartConfirmOpen(true);
         }
     }
 
     function handleConfirmStart() {
         setStartConfirmOpen(false);
-        navigate(`/exam/${examid}/user/${userId}?attemptid=${activeAttempt.attempt_id}`);
+        openExamWindow(activeAttempt.attempt_id);
     }
 
     const totalQuestions = sections?.reduce((s, x) => s + (x.question_count || 0), 0) ?? 0;
 
     return (
         <Box sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3, md: 4 } }}>
+
+            {/* ── Exam-live backdrop ── */}
+            <Backdrop
+                open={examLive}
+                sx={{ zIndex: (theme) => theme.zIndex.drawer + 100, flexDirection: 'column', gap: 3, bgcolor: 'rgba(15,23,42,0.82)' }}
+            >
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2.5 }}>
+                    {/* Pulsing live ring */}
+                    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                        <CircularProgress size={80} thickness={2} sx={{ color: '#4F46E5', opacity: 0.25, position: 'absolute', top: 0, left: 0 }} variant="determinate" value={100} />
+                        <CircularProgress size={80} thickness={2.5} sx={{ color: '#4F46E5', animationDuration: '1.8s' }} />
+                        <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <SecurityIcon sx={{ fontSize: 32, color: '#fff' }} />
+                        </Box>
+                    </Box>
+
+                    <Box sx={{ textAlign: 'center' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 0.75 }}>
+                            <FiberManualRecordIcon sx={{ fontSize: 10, color: '#ef4444', animation: 'pulse 1.2s ease-in-out infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.3 } } }} />
+                            <Typography fontWeight={700} fontSize="0.78rem" letterSpacing="0.12em" sx={{ color: '#ef4444', textTransform: 'uppercase' }}>
+                                Live
+                            </Typography>
+                        </Box>
+                        <Typography fontWeight={800} fontSize="1.5rem" sx={{ color: '#fff', lineHeight: 1.2 }}>
+                            Exam in Progress
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#94a3b8', mt: 0.75 }}>
+                            {exam?.display_name || exam?.title}
+                        </Typography>
+                    </Box>
+
+                    <Button
+                        variant="outlined"
+                        onClick={() => {
+                            if (childWindowRef.current && !childWindowRef.current.closed) {
+                                childWindowRef.current.focus();
+                            }
+                        }}
+                        sx={{ color: '#fff', borderColor: 'rgba(255,255,255,0.3)', textTransform: 'none', fontWeight: 600, '&:hover': { borderColor: '#fff', bgcolor: 'rgba(255,255,255,0.08)' } }}
+                    >
+                        Return to exam window
+                    </Button>
+                </Box>
+            </Backdrop>
 
             {/* ── 1. Exam Info Card ─────────────────────────────────────── */}
             <Card sx={{ mb: 2.5, borderRadius: 2.5, boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }}>
