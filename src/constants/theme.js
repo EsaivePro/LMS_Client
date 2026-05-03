@@ -1,12 +1,15 @@
+const PRIMARY = process.env.REACT_APP_PRIMARY_COLOR || "#4F46E5";
+const SECONDARY = process.env.REACT_APP_SECONDARY_COLOR || "#38BDF8";
+
 export const THEME = {
     colors: {
         /* Brand Core */
-        primary: "#4F46E5",          // Deep Indigo
+        primary: PRIMARY,
         primaryHover: "#4338CA",
         primaryMedium: "#6366F1",
         primaryLight: "#EEF2FF",
 
-        secondary: "#38BDF8",        // Sky Blue
+        secondary: SECONDARY,
         secondaryLight: "#E0F2FE",
 
         accent: "#10B981",           // Emerald CTA
@@ -86,31 +89,28 @@ export const THEME = {
     },
 
     manifest: {
-        name: "Esai",
-        short_name: "esai",
-        description: "Premium Learning and CRM Platform with Esai",
-        theme_color: "#4F46E5",
-        background_color: "#F8FAFC",
-
+        name: process.env.REACT_APP_APP_NAME,
+        short_name: process.env.REACT_APP_APP_SHORT_NAME,
+        description: process.env.REACT_APP_APP_DESCRIPTION,
         icons: [
             {
-                src: "logo/lms.png",
+                src: process.env.REACT_APP_APP_ICON_SRC,
                 sizes: "192x192",
                 type: "image/png",
             },
             {
-                src: "logo/lms.png",
+                src: process.env.REACT_APP_APP_ICON_SRC,
                 sizes: "512x512",
                 type: "image/png",
             },
         ],
 
-        width: "50",
+        width: process.env.REACT_APP_APP_ICON_WIDTH,
 
         contact: {
-            email: "support@esailms.com",
-            phone: "+91 7530078007",
-            location: "Chennai, India",
+            email: process.env.REACT_APP_CONTACT_EMAIL,
+            phone: process.env.REACT_APP_CONTACT_PHONE,
+            location: process.env.REACT_APP_CONTACT_LOCATION,
         },
     },
 };

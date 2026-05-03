@@ -31,7 +31,7 @@ export default function Footer({ compView = false }) {
         width: "100%",
       }}
     >
-      <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, justifyContent: "space-between", gap: 4, alignItems: { xs: 'center', md: 'flex-start' } }}>
+      {/* <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, justifyContent: "space-between", gap: 4, alignItems: { xs: 'center', md: 'flex-start' } }}>
 
         <Box sx={{ width: { xs: '100%', md: 'auto' } }}>
           <Typography
@@ -107,7 +107,6 @@ export default function Footer({ compView = false }) {
           <Typography variant="h7" sx={{ fontWeight: 400, color: 'var(--onPrimary)' }}>
             {THEME?.manifest?.description ? THEME.manifest.description : 'LMS'}
           </Typography>
-          {/* SOCIAL ICONS */}
           <Box
             sx={{
               display: "flex",
@@ -137,7 +136,7 @@ export default function Footer({ compView = false }) {
             ))}
           </Box>
         </Box>
-      </Box>
+      </Box> */}
 
       {/* ================= COPYRIGHT ================= */}
       <Box
