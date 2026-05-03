@@ -114,10 +114,9 @@
                         "columns": [
                             {
                                 "name": "option_text",
-                                "label": "Option Text",
+                                "label": "Options",
                                 "type": "text",
-                                "minWidth": 400,
-                                "required": true
+                                "minWidth": 300
                             },
                             {
                                 "name": "is_correct",
@@ -129,11 +128,11 @@
                                 "name": "actions",
                                 "label": "",
                                 "type": "actions",
-                                "minWidth": 60
+                                "minWidth": 80
                             }
                         ],
                         "addButton": {
-                            "label": "Add Option",
+                            "label": "Add Options",
                             "mode": "inline"
                         },
                         "layout": "cards",

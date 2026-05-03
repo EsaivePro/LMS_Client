@@ -45,7 +45,7 @@ export default function AppLayout({
             <div className="app-root">
                 <SideBarWithHeader footer={<Footer />} fixed={fixed} normalCard={normalCard}>
                     {/* FIXED BREADCRUMB / FORM HEADER NAV */}
-                    {/* <BreadcrumbsNav breadCurmbs={breadCurmbs} /> */}
+                    <BreadcrumbsNav breadCurmbs={breadCurmbs} />
                     <GlobalAlert />
                     {/* PAGE CONTENT */}
                     <LoadingScreen />

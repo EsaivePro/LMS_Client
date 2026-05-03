@@ -246,8 +246,51 @@ export default function ExamSummaryPage() {
     const [startConfirmOpen, setStartConfirmOpen] = useState(false);
     const [examApi, setExamApi] = useState(false);
     const [examLive, setExamLive] = useState(false);
+    const [reloadTrigger, setReloadTrigger] = useState(0);
     const childWindowRef = useRef(null);
     const pollRef = useRef(null);
+    const onUnloadRef = useRef(null);
+
+    function closeChildIfOpen() {
+        if (childWindowRef.current && !childWindowRef.current.closed) {
+            childWindowRef.current.close();
+        }
+    }
+
+    function reloadExamData() {
+        if (pollRef.current) {
+            clearInterval(pollRef.current);
+            pollRef.current = null;
+        }
+        if (onUnloadRef.current) {
+            window.removeEventListener('beforeunload', onUnloadRef.current);
+            onUnloadRef.current = null;
+        }
+        setExamApi(false);
+        setExamLive(false);
+        setReloadTrigger(t => t + 1);
+    }
+
+    useEffect(() => {
+        function handleMessage(event) {
+            if (event.origin !== window.location.origin) return;
+            if (event.data?.type === 'EXAM_COMPLETED') {
+                reloadExamData();
+            }
+        }
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, []);
+
+    // Close child window when navigating away from this page (SPA route change)
+    useEffect(() => {
+        return () => {
+            closeChildIfOpen();
+            if (pollRef.current) clearInterval(pollRef.current);
+            if (onUnloadRef.current) window.removeEventListener('beforeunload', onUnloadRef.current);
+        };
+    }, []);
+
     useEffect(() => {
         async function load() {
             setExamApi(true);
@@ -272,7 +315,7 @@ export default function ExamSummaryPage() {
         if (examApi === false) {
             load();
         }
-    }, [examid, userId]);
+    }, [examid, userId, reloadTrigger]);
 
     if (!examData) return null;
 
@@ -301,8 +344,14 @@ export default function ExamSummaryPage() {
 
     function openExamWindow(attemptId) {
         const url = `${window.location.origin}/exam/${examid}/user/${userId}?attemptid=${attemptId}`;
-        const features = 'width=1280,height=800,left=80,top=60,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no';
+        const w = screen.availWidth;
+        const h = screen.availHeight;
+        const features = `width=${w},height=${h},left=0,top=0,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no`;
         const child = window.open(url, `exam_${examid}_${attemptId}`, features);
+        if (child) {
+            child.moveTo(0, 0);
+            child.resizeTo(w, h);
+        }
         if (!child) {
             // Popup was blocked — fall back to same-tab navigation
             navigate(`/exam/${examid}/user/${userId}?attemptid=${attemptId}`);
@@ -311,16 +360,15 @@ export default function ExamSummaryPage() {
         childWindowRef.current = child;
         setExamLive(true);
 
-        // Close child when parent unloads
-        const onUnload = () => child.close();
+        // Close child when parent browser tab/window is closed
+        const onUnload = () => closeChildIfOpen();
+        onUnloadRef.current = onUnload;
         window.addEventListener('beforeunload', onUnload);
 
-        // Poll until child is closed
+        // Poll until child is closed, then reload exam data
         pollRef.current = setInterval(() => {
             if (child.closed) {
-                clearInterval(pollRef.current);
-                setExamLive(false);
-                window.removeEventListener('beforeunload', onUnload);
+                reloadExamData();
             }
         }, 500);
     }

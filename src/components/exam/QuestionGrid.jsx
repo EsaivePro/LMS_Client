@@ -8,12 +8,6 @@ export default function QuestionGrid({
     markedSet,
     onJump
 }) {
-    const getColor = (number) => {
-        if (answeredSet.has(number)) return "#22c55e";
-        if (markedSet.has(number)) return "#a855f7";
-        return "#4b5563";
-    };
-
     return (
         <Box
             sx={{
@@ -23,22 +17,26 @@ export default function QuestionGrid({
             }}
         >
             {questions.map((q, idx) => {
-                const number = idx;
+                const isAnswered = answeredSet.has(q.id);
+                const isMarked = markedSet.has(q.id);
+                const isCurrent = current === q.id;
+                const bgColor = isCurrent ? "#fff" : isAnswered ? "#22c55e" : isMarked ? "#a855f7" : "#4b5563";
 
                 return (
                     <Button
-                        key={number}
+                        key={q.id}
                         onClick={() => onJump(q.id)}
-                        variant={current === q.id ? "outlined" : "contained"}
+                        variant={isCurrent ? "outlined" : "contained"}
                         sx={{
                             minWidth: 42,
                             height: 42,
-                            bgcolor: current === q.id ? "#fff" : getColor(number),
-                            color: current === q.id ? "primary.main" : "#fff",
-                            borderRadius: 2
+                            bgcolor: bgColor,
+                            color: isCurrent ? "primary.main" : "#fff",
+                            borderRadius: 2,
+                            '&:hover': { bgcolor: isCurrent ? '#f0f0f0' : bgColor, opacity: 0.9 }
                         }}
                     >
-                        {number}
+                        {idx + 1}
                     </Button>
                 );
             })}

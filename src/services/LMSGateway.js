@@ -231,3 +231,25 @@ export async function unassignUserFromGroup(dispatch, id) {
 export async function getGroupAssignments(dispatch, groupId) {
     return await apiHandler(dispatch, httpClient.getGroupAssignments, groupId);
 }
+
+// ── Exam attempt gateway functions (new REST endpoints) ───────────────────────
+
+export async function examAttemptStart(dispatch, data) {
+    return await apiHandler(dispatch, httpClient.examAttemptStart, data);
+}
+
+export async function examAttemptSubmit(dispatch, data) {
+    return await apiHandler(dispatch, httpClient.examAttemptSubmit, data);
+}
+
+export async function examAttemptAnswer(dispatch, data) {
+    return await apiHandlerWithoutLoader(dispatch, httpClient.examAttemptAnswer, data);
+}
+
+export async function getExamDetails(dispatch, examId, data) {
+    return await apiHandler(dispatch, httpClient.getExamDetails, examId, data);
+}
+
+export async function getUserExamDetailsDirect(dispatch, examId, data) {
+    return await apiHandler(dispatch, httpClient.getUserExamDetailsDirect, examId, data);
+}

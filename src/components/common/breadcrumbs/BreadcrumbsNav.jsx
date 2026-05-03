@@ -181,9 +181,11 @@ export default function BreadcrumbsNav({ breadCurmbs = true }) {
     }
 
     /* ── Normal breadcrumbs mode ── */
+    if (!rawPathnames.length) return null;
+
     return (
         <Fade in timeout={700}>
-            <Box sx={{ ...sharedBoxSx, borderRadius: 2 }}>
+            <Box>
 
             </Box>
         </Fade>

@@ -74,6 +74,13 @@ export const API_ENDPOINTS = {
     UNASSIGN_USER_GROUP: "/group-service",
     GET_GROUP_ASSIGNMENTS: "/group-service",
 
+    // Exam attempt APIs (new REST endpoints)
+    EXAM_ATTEMPT_START: "/enrollment-service/exam/attempt/start",
+    EXAM_ATTEMPT_SUBMIT: "/enrollment-service/exam/attempt/submit",
+    EXAM_ATTEMPT_ANSWER: "/enrollment-service/exam/attempt/answer",
+    EXAM_DETAILS: "/enrollment-service/exam",        // append /:examId/details
+    EXAM_USER_DETAILS: "/enrollment-service/exam",   // append /:examId/user-details
+
     // Exam-service APIs
     GET_EXAMS: "/exam-service/exams",
     GET_EXAM: "/exam-service/exams/", // append :id

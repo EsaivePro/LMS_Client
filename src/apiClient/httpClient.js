@@ -102,6 +102,13 @@ export const httpClient = {
     updateUserNotes: async (id, data) => axiosInstance.put(`${API_ENDPOINTS.UPDATE_USER_NOTES}/${id}`, data),
     deleteUserNotes: async (id) => axiosInstance.delete(`${API_ENDPOINTS.DELETE_USER_NOTES}/${id}`),
 
+    // Exam attempt APIs (new REST endpoints)
+    examAttemptStart: async (data) => axiosInstance.post(API_ENDPOINTS.EXAM_ATTEMPT_START, data),
+    examAttemptSubmit: async (data) => axiosInstance.post(API_ENDPOINTS.EXAM_ATTEMPT_SUBMIT, data),
+    examAttemptAnswer: async (data) => axiosInstance.post(API_ENDPOINTS.EXAM_ATTEMPT_ANSWER, data),
+    getExamDetails: async (examId, data) => axiosInstance.post(`${API_ENDPOINTS.EXAM_DETAILS}/${examId}/details`, data),
+    getUserExamDetailsDirect: async (examId, data) => axiosInstance.post(`${API_ENDPOINTS.EXAM_USER_DETAILS}/${examId}/user-details`, data),
+
     // Exam-service APIs
     fetchExams: async () => axiosInstance.get(API_ENDPOINTS.GET_EXAMS),
     fetchExamById: async (id) => axiosInstance.get(API_ENDPOINTS.GET_EXAM + id),

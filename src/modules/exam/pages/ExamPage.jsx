@@ -89,10 +89,38 @@ export default function ExamPage() {
     const countdownRef = useRef(null);
     const navigate = useNavigate();
 
+    function closeChildWindow() {
+        try {
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({ type: 'EXAM_COMPLETED' }, window.location.origin);
+            }
+        } catch (e) { /* ignore cross-origin errors */ }
+        window.close();
+        // Fallback: if window.close() was blocked (not a popup), navigate instead
+        setTimeout(() => {
+            navigate(`/exam-summary/${urlParams.examId}?userid=${urlParams.userId}`);
+        }, 300);
+    }
+
     useEffect(() => {
         if (isAuthenticated && urlParams.examId && urlParams.userId && urlParams.userId === user.id) {
             setAllowAccess(true);
         }
+    }, []);
+
+    // Request fullscreen when the exam page loads in a popup window
+    useEffect(() => {
+        const el = document.documentElement;
+        if (el.requestFullscreen) {
+            el.requestFullscreen().catch(() => { });
+        } else if (el.webkitRequestFullscreen) {
+            el.webkitRequestFullscreen();
+        }
+        return () => {
+            if (document.fullscreenElement && document.exitFullscreen) {
+                document.exitFullscreen().catch(() => { });
+            }
+        };
     }, []);
 
     // load exam details and sections on mount; questions are loaded when sectionIndex changes
@@ -122,7 +150,7 @@ export default function ExamPage() {
                     const attempt = data.user_attempts?.find(a => a.attempt_id === attemptId);
 
                     if (!attempt || !["not_started", "in_progress"].includes(attempt.status)) {
-                        navigate(`/exam-summary/${urlParams.examId}?userid=${urlParams.userId}`);
+                        closeChildWindow();
                         return;
                     } else {
                         setGetQuestions(true);
@@ -161,6 +189,7 @@ export default function ExamPage() {
             let startTime;
 
             if (currentAttempt.started_at) {
+                const { ms, iso: startedAt } = localNow();
                 startTime = new Date(currentAttempt.started_at).getTime();
                 setStartUpdated(true);
             } else {
@@ -385,7 +414,7 @@ export default function ExamPage() {
             return bySection;
         });
 
-        const isMarked = getSetFrom(marked[sectionIndex]).has(current + 1);
+        const isMarked = getSetFrom(marked[sectionIndex]).has(current);
 
         if (Array.isArray(normalized)) {
             // multiple_select: one queue entry per selected option (answer_id as int)
@@ -432,11 +461,11 @@ export default function ExamPage() {
             const bySection = { ...(prev || {}) };
             const curSet = getSetFrom(bySection[sectionIndex]);
 
-            if (curSet.has(current + 1)) {
-                curSet.delete(current + 1);
+            if (curSet.has(current)) {
+                curSet.delete(current);
                 newMarked = false;
             } else {
-                curSet.add(current + 1);
+                curSet.add(current);
                 newMarked = true;
             }
 
@@ -526,7 +555,7 @@ export default function ExamPage() {
             setCountdown((c) => {
                 if (c <= 1) {
                     clearInterval(countdownRef.current);
-                    navigate(`/exam-summary/${urlParams.examId}?userid=${urlParams.userId}`);
+                    closeChildWindow();
                     return 0;
                 }
                 return c - 1;
@@ -766,7 +795,7 @@ export default function ExamPage() {
                         onMark={handleMark}
                         onClear={handleClear}
                         onSaveNext={handleSaveNext}
-                        isMarked={getSetFrom(marked[sectionIndex]).has(current + 1)}
+                        isMarked={getSetFrom(marked[sectionIndex]).has(current)}
                         onSubmit={handleManualSubmit}
                     />
                 </Box>}
@@ -806,7 +835,7 @@ export default function ExamPage() {
                         Exam Submitted Successfully!
                     </Typography>
                     <Typography color="text.secondary" fontSize="1rem" mb={3}>
-                        Redirecting to summary in <strong>{countdown}</strong> second{countdown !== 1 ? 's' : ''}…
+                        This window will close in <strong>{countdown}</strong> second{countdown !== 1 ? 's' : ''}…
                     </Typography>
                     <LinearProgress
                         variant="determinate"
@@ -818,10 +847,10 @@ export default function ExamPage() {
                         sx={{ borderRadius: 2, bgcolor: '#16a34a', '&:hover': { bgcolor: '#15803d' } }}
                         onClick={() => {
                             clearInterval(countdownRef.current);
-                            navigate(`/exam-summary/${urlParams.examId}?userid=${urlParams.userId}`);
+                            closeChildWindow();
                         }}
                     >
-                        Go to Summary Now
+                        Close Now
                     </Button>
                 </DialogContent>
             </Dialog>

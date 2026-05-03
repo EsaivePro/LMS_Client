@@ -1,15 +1,19 @@
-import { httpClient } from '../../../apiClient/httpClient';
 import { store } from '../../../redux/store/store';
+import {
+    examAttemptStart,
+    examAttemptSubmit,
+    examAttemptAnswer,
+    getExamDetails,
+    getUserExamDetailsDirect,
+} from '../../../services/LMSGateway';
+import { httpClient } from '../../../apiClient/httpClient';
 import { showLoading, hideLoading, errorAlert } from '../../../redux/slices/commonSlice';
 
+// Kept for getExamQuestions which has no new REST endpoint yet
 async function callExecute(name, body, loader = true) {
-    // show global loader
     try {
-        if (loader) {
-            store.dispatch(showLoading('Loading...'));
-        }
+        if (loader) store.dispatch(showLoading('Loading...'));
         const res = await httpClient.execute(name, body);
-        // axios returns response with `data` payload
         const data = res?.data ?? res;
         store.dispatch(hideLoading());
         return data;
@@ -22,8 +26,9 @@ async function callExecute(name, body, loader = true) {
 }
 
 export async function getUserExamDetails({ exam_id, user_id }) {
-    const body = { params: { exam_id, user_id } };
-    return await callExecute('get_user_exam_details', body);
+    const dispatch = store.dispatch;
+    const res = await getUserExamDetailsDirect(dispatch, exam_id, { user_id });
+    return res?.data ?? res;
 }
 
 export async function getExamQuestions({ exam_id, user_id, attempt_id, section_id }) {
@@ -31,36 +36,22 @@ export async function getExamQuestions({ exam_id, user_id, attempt_id, section_i
     return await callExecute('get_exam_questions', body);
 }
 
-export async function upsertUserExamAnswer({
-    user_id,
-    answer_id,
-    marked,
-    question_id,
-    exam_id,
-    attempt_id
-}) {
-    const body = {
-        params: {
-            user_id,
-            answer_id,
-            marked,
-            question_id,
-            exam_id,
-            attempt_id
-        }
-    };
-
-    return await callExecute('upsert_user_exam_answer', body, false);
+export async function upsertUserExamAnswer({ user_id, answer_id, marked, question_id, exam_id, attempt_id }) {
+    const dispatch = store.dispatch;
+    const res = await examAttemptAnswer(dispatch, { user_id, answer_id, marked, question_id, exam_id, attempt_id });
+    return res?.data ?? res;
 }
 
 export async function startExamAttempt({ attempt_id, user_id, exam_id, started_at }) {
-    const body = { params: { attempt_id, user_id, exam_id, started_at } };
-    return await callExecute('start_exam_attempt', body, false);
+    const dispatch = store.dispatch;
+    const res = await examAttemptStart(dispatch, { attempt_id, user_id, exam_id, started_at });
+    return res?.data ?? res;
 }
 
 export async function submit_exam({ exam_id, user_id, attempt_id, submitted_at }) {
-    const body = { params: { attempt_id, user_id, exam_id, submitted_at } };
-    return await callExecute('submit_exam', body);
+    const dispatch = store.dispatch;
+    const res = await examAttemptSubmit(dispatch, { exam_id, user_id, attempt_id, submitted_at });
+    return res?.data ?? res;
 }
 
 export default {
@@ -68,5 +59,5 @@ export default {
     getExamQuestions,
     upsertUserExamAnswer,
     startExamAttempt,
-    submit_exam
+    submit_exam,
 };
