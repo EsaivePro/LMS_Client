@@ -5,18 +5,29 @@ import { API_ENDPOINTS } from "../constants/apiEndPoints";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
+const TENANT_ID = process.env.REACT_APP_TENANT_ID;
+const ENTERPRISE_ID = process.env.REACT_APP_ENTERPRISE_ID;
+
 const api = axios.create({
     baseURL: BASE_URL,
     timeout: 20000,
 });
 
-// Request Interceptor → Add Bearer token if available in session
+// Request Interceptor → Add Bearer token + tenant/enterprise IDs to every request
 api.interceptors.request.use(
     (config) => {
         const token = tokenStorage.getAccessToken();   // from sessionStorage
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
+        // Append tenant_id and enterprise_id as query params on every request
+        config.params = {
+            ...(config.params || {}),
+            ...(TENANT_ID ? { tenant_id: TENANT_ID } : {}),
+            ...(ENTERPRISE_ID ? { enterprise_id: ENTERPRISE_ID } : {}),
+        };
+
         try {
             const deviceId = deviceUtils.getDeviceId();
             const info = deviceUtils.getDeviceInfo();
