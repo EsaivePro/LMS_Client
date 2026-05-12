@@ -51,7 +51,8 @@ import AssignmentAddIcon from "@mui/icons-material/AssignmentAdd";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import LabelIcon from "@mui/icons-material/Label";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
-import SegmentIcon from "@mui/icons-material/Segment";
+import ArticleIcon from "@mui/icons-material/Article";
+import RuleIcon from "@mui/icons-material/Rule";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
@@ -375,7 +376,7 @@ export const protectedRoutes = [
         sidePath: "/content-section/manage/list",
         section: "Manage Courses",
         label: "Content Sections",
-        icon: <SegmentIcon />,
+        icon: <ArticleIcon />,
         type: "item",
         matchPath: "/content-section/manage",
     },
@@ -404,7 +405,7 @@ export const protectedRoutes = [
         sidePath: "/questions-section/manage/list",
         section: "Questions Bank",
         label: "Questions Section",
-        icon: <SegmentIcon />,
+        icon: <RuleIcon />,
         type: "item",
         matchPath: "/questions-section/manage",
     },

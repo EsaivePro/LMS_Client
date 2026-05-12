@@ -625,7 +625,7 @@ function CourseCarousel({ courses }) {
                             alignItems: "center",
                             justifyContent: "center",
                             minHeight: 180,
-                            bgcolor: colors.surface2,
+                            height: "100%",
                             borderRadius: radius.md,
                             gap: 1,
                             p: 3,

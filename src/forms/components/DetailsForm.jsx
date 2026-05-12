@@ -394,7 +394,7 @@ export default function DetailsForm({ definition = {}, initialValues = {}, id, o
     }, [definition.sections, values]);
 
     return (
-        <Box sx={{ mt: { xs: 0, lg: 0 } }}>
+        <Box data-details-form="true" sx={{ mt: { xs: 0, lg: 0 } }}>
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: { xs: 1, sm: 2 }, mt: { xs: 0.25, sm: 1.25 }, width: '100%', minWidth: 0 }}>
                 <Box sx={{ flex: 1, minWidth: 0, width: '100%' }} component="form" onSubmit={handleSubmit}>
                     {resolvedSections.map((sec) => (

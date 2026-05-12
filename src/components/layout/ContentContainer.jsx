@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import {
   Box,
   Typography,
-  Avatar,
   useTheme,
   useMediaQuery,
 } from "@mui/material";
@@ -12,13 +11,8 @@ import { keyframes, Stack } from "@mui/system";
 
 // ICONS
 import SchoolIcon from "@mui/icons-material/School";
-import TopicIcon from "@mui/icons-material/Topic";
-import PersonIcon from "@mui/icons-material/Person";
 import QuizIcon from "@mui/icons-material/Quiz";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import SettingsIcon from "@mui/icons-material/Settings";
-import PaymentIcon from "@mui/icons-material/Payment";
-import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import GroupsIcon from "@mui/icons-material/Groups";
 import StarIcon from "@mui/icons-material/Star";
 import { useLocation } from "react-router-dom";
@@ -26,11 +20,35 @@ import useCommon from "../../hooks/useCommon";
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import BreadcrumbsNav from "../common/breadcrumbs/BreadcrumbsNav";
-import { get } from "react-hook-form";
+import FeedIcon from "@mui/icons-material/Feed";
+import CategoryIcon from "@mui/icons-material/Category";
+import InsightsIcon from "@mui/icons-material/Insights";
+import LabelIcon from "@mui/icons-material/Label";
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import ArticleIcon from "@mui/icons-material/Article";
+import RuleIcon from "@mui/icons-material/Rule";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import ViewModuleIcon from "@mui/icons-material/ViewModule";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import LiveTvIcon from "@mui/icons-material/LiveTv";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
+import { useFormHeader } from "../../contexts/FormHeaderContext";
 
 export default function ContentContainer({ children }) {
   const { containerTitle, containerTitleDescription } = useCommon();
+  const { formHeader } = useFormHeader() || {};
+  const isDetailsForm = Boolean(formHeader);
+  const headerTitle = isDetailsForm ? "Settings" : containerTitle;
+  const headerDescription = isDetailsForm
+    ? "Create, update, and manage configuration details."
+    : containerTitleDescription || `Manage all aspects of ${containerTitle.toLowerCase()} here.`;
 
   const title = containerTitle.toLowerCase();
 
@@ -44,13 +62,45 @@ export default function ContentContainer({ children }) {
   // 🔥 AUTO-DETECT HEADER ICON
   // -----------------------------------------------
   const getHeaderIcon = () => {
-    if (title.includes("dashboard")) return <DashboardIcon sx={{ color: "var(--primary)" }} />;
-    if (title.includes("group")) return <GroupsIcon sx={{ color: "var(--primary)" }} />;
-    if (title.includes("course")) return <SchoolIcon sx={{ color: "var(--primary)" }} />;
-    if (title.includes("user management")) return <ManageAccountsIcon sx={{ color: "var(--primary)" }} />;
-    if (title.includes("enrollment")) return <FolderSharedIcon sx={{ color: "var(--primary)" }} />;
-    if (title.includes("profile")) return <AccountBoxIcon sx={{ color: "var(--primary)" }} />;
-    return <StarIcon sx={{ color: "var(--primary)" }} />; // ⭐ fallback icon
+    const iconSx = { color: "var(--primary)" };
+    if (isDetailsForm && title.includes("manage content section")) return <ArticleIcon sx={iconSx} />;
+    if (isDetailsForm && title.includes("manage questions section")) return <RuleIcon sx={iconSx} />;
+    if (isDetailsForm) return <SettingsApplicationsIcon sx={iconSx} />;
+
+    const iconMap = [
+      { match: "course details", icon: <SchoolIcon sx={iconSx} /> },
+      { match: "edit course", icon: <SchoolIcon sx={iconSx} /> },
+      { match: "user management", icon: <ManageAccountsIcon sx={iconSx} /> },
+      { match: "manage group", icon: <GroupsIcon sx={iconSx} /> },
+      { match: "user profile", icon: <AccountBoxIcon sx={iconSx} /> },
+      { match: "manage role", icon: <AdminPanelSettingsIcon sx={iconSx} /> },
+      { match: "enrollment manager", icon: <PersonAddIcon sx={iconSx} /> },
+      { match: "user learning insights", icon: <InsightsIcon sx={iconSx} /> },
+      { match: "audit logs", icon: <ReceiptLongIcon sx={iconSx} /> },
+      { match: "file upload manager", icon: <CloudUploadIcon sx={iconSx} /> },
+      { match: "manage module category", icon: <ViewModuleIcon sx={iconSx} /> },
+      { match: "manage enrollment jobs", icon: <WorkHistoryIcon sx={iconSx} /> },
+      { match: "my courses", icon: <SchoolIcon sx={iconSx} /> },
+      { match: "my exams", icon: <QuizIcon sx={iconSx} /> },
+      { match: "module category dashboard", icon: <BarChartIcon sx={iconSx} /> },
+      { match: "dashboard", icon: <DashboardIcon sx={iconSx} /> },
+      { match: "enrollment detail", icon: <FolderSharedIcon sx={iconSx} /> },
+      { match: "user enrollment profile", icon: <AssignmentIndIcon sx={iconSx} /> },
+      { match: "assign user to group", icon: <PersonAddIcon sx={iconSx} /> },
+      { match: "manage topic", icon: <LabelIcon sx={iconSx} /> },
+      { match: "manage course", icon: <FeedIcon sx={iconSx} /> },
+      { match: "manage content library", icon: <CategoryIcon sx={iconSx} /> },
+      { match: "manage content section", icon: <ArticleIcon sx={iconSx} /> },
+      { match: "manage questions section", icon: <RuleIcon sx={iconSx} /> },
+      { match: "manage question", icon: <QuestionAnswerIcon sx={iconSx} /> },
+      { match: "manage exam", icon: <AssignmentIcon sx={iconSx} /> },
+      { match: "manage user group assign", icon: <PlaylistAddCheckIcon sx={iconSx} /> },
+      { match: "question bank", icon: <QuestionAnswerIcon sx={iconSx} /> },
+      { match: "vimeo video demo", icon: <LiveTvIcon sx={iconSx} /> },
+      { match: "demo", icon: <LiveTvIcon sx={iconSx} /> },
+      { match: "exam", icon: <QuizIcon sx={iconSx} /> },
+    ];
+    return iconMap.find(({ match }) => title.includes(match))?.icon || <StarIcon sx={iconSx} />;
   };
 
   const loginAnim = keyframes`
@@ -81,7 +131,7 @@ export default function ContentContainer({ children }) {
   };
 
   return (
-    <Box>
+    <Box sx={{ mt: isDetailsForm ? 13 : 0 }}>
       <Box height={isMobile ? 27 : 30} />
       <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between"
         alignItems={{ md: "center" }} spacing={2} mb={2.5}>
@@ -89,11 +139,11 @@ export default function ContentContainer({ children }) {
           <Stack direction="row" spacing={1} alignItems="center" mb={0.75}>
             {getHeaderIcon()}
             <Typography variant="h5" sx={{ fontWeight: 700 }}>
-              {containerTitle}
+              {headerTitle}
             </Typography>
           </Stack>
           <Typography sx={{ color: "text.secondary" }}>
-            {containerTitleDescription || `Manage all aspects of ${containerTitle.toLowerCase()} here.`}
+            {headerDescription}
           </Typography>
         </Box>
 

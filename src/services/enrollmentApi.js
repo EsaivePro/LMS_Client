@@ -66,7 +66,7 @@ export const enrollmentApi = {
     // UC-DASH — single-round-trip analytics dashboard
     getDashboard: (userId, params) =>
         axiosInstance
-            .post("/enrollment-service/dashboard", { ...params })
+            .post("/enrollment-service/enrollment-details", { ...params })
             .then((res) => {
                 const r = res?.data?.response ?? res?.data ?? res;
                 return {

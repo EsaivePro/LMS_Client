@@ -429,7 +429,7 @@ export default function DataTable({
 
     /* ========================================================= */
     return (
-        <Paper sx={{ width: "100%", maxWidth: "100%" }}>
+        <Paper sx={{ width: "100%", maxWidth: "100%", boxShadow: 0 }}>
 
             {/* ── TOOLBAR ── */}
             <Box

@@ -86,7 +86,7 @@ export default function NormalContainer({ children }) {
       {/* PAGE CONTENT */}
       <Box
         sx={{
-          minHeight: "calc(100vh - 200px)"
+          minHeight: "100vh"
         }}
       >
         {children}

@@ -6,6 +6,7 @@ import {
     Stack,
     Drawer,
     IconButton,
+    Divider,
 } from "@mui/material";
 import {
     Tooltip,
@@ -17,7 +18,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import GroupsIcon from "@mui/icons-material/Groups";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 import { useNavigate } from "react-router-dom";
@@ -159,7 +160,7 @@ export default function UserList() {
             },
             {
                 field: "username",
-                headerName: "USERNAME",
+                headerName: "Username",
                 minWidth: 200,
                 type: "string",
                 filterable: true,
@@ -179,21 +180,21 @@ export default function UserList() {
             },
             {
                 field: "email",
-                headerName: "EMAIL",
+                headerName: "Email",
                 minWidth: 250,
                 filterable: true,
                 type: "string",
             },
             {
                 field: "phonenumber",
-                headerName: "PHONE",
+                headerName: "Phone",
                 minWidth: 160,
                 filterable: true,
                 type: "string",
             },
             {
                 field: "role_id",
-                headerName: "ROLE",
+                headerName: "Role",
                 minWidth: 150,
                 filterable: true,
                 type: "select",
@@ -202,7 +203,7 @@ export default function UserList() {
             },
             {
                 field: "status",
-                headerName: "STATUS",
+                headerName: "Status",
                 minWidth: 140,
                 filterable: true,
                 type: "select",
@@ -226,7 +227,7 @@ export default function UserList() {
             },
             {
                 field: "details",
-                headerName: "DEPARTMENT",
+                headerName: "Department",
                 minWidth: 180,
                 filterable: true,
                 type: "string",
@@ -234,7 +235,7 @@ export default function UserList() {
             },
             {
                 field: "actions",
-                headerName: "ACTIONS",
+                headerName: "",
                 pinned: "right",
                 minWidth: 60,
                 maxWidth: 60,
@@ -247,23 +248,23 @@ export default function UserList() {
                     />
                 ),
             },
-            {
-                field: "manage",
-                headerName: "MANAGE",
-                pinned: "left",
-                maxWidth: 90,
-                sortable: false,
-                align: "center",
-                renderCell: (params) => (
-                    <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => navigate(`/users/edit/${params.row.id}`)}
-                    >
-                        <ManageAccountsIcon fontSize="small" />
-                    </IconButton>
-                ),
-            },
+            // {
+            //     field: "manage",
+            //     headerName: "MANAGE",
+            //     pinned: "left",
+            //     maxWidth: 90,
+            //     sortable: false,
+            //     align: "center",
+            //     renderCell: (params) => (
+            //         <IconButton
+            //             size="small"
+            //             color="primary"
+            //             onClick={() => navigate(`/users/edit/${params.row.id}`)}
+            //         >
+            //             <ManageAccountsIcon fontSize="small" />
+            //         </IconButton>
+            //     ),
+            // },
         ],
         [roleMaps]
     );
@@ -271,12 +272,62 @@ export default function UserList() {
     /* ========================================================= */
 
     return (
-        <Box p={1} mt={1.5}>
+        <Box p={1}>
             {/* ---------- HEADER ---------- */}
-            <Stack direction="row" justifyContent="space-between" mb={3}>
-                <Typography variant="h5" fontWeight={500}>
-                    Manage Users ({total})
-                </Typography>
+            <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                flexWrap="wrap"
+                gap={2}
+                mb={3}
+            >
+                <Box
+                    sx={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 2,
+                        px: 3,
+                        py: 2,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        borderRadius: 2,
+                        bgcolor: "background.paper",
+                        boxShadow: "0 8px 24px rgba(15, 23, 42, 0.06)",
+                    }}
+                >
+                    <Box
+                        sx={{
+                            width: 36,
+                            height: 36,
+                            display: "grid",
+                            placeItems: "center",
+                            borderRadius: 1.5,
+                            color: "primary.main",
+                            bgcolor: "rgba(25, 118, 210, 0.08)",
+                        }}
+                    >
+                        <GroupsIcon fontSize="small" />
+                    </Box>
+                    <Box>
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                display: "block",
+                                color: "text.secondary",
+                                fontWeight: 600,
+                                lineHeight: 1,
+                                textTransform: "uppercase",
+                                my: 0.8
+                            }}
+                        >
+                            Total Users
+                        </Typography>
+                        <Typography variant="h5" fontWeight={700} lineHeight={1.2}>
+                            {total}
+                        </Typography>
+                    </Box>
+                </Box>
 
                 <Button
                     variant="contained"

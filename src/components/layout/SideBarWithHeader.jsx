@@ -638,7 +638,7 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                                 </ListItemButton>
                             </Link>
 
-                            <ListItemButton
+                            {/* <ListItemButton
                                 onClick={requestLogout}
                                 sx={{
                                     borderRadius: 1.5,
@@ -663,7 +663,7 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                                         color: "rgba(255,140,140,0.85)",
                                     }}
                                 />
-                            </ListItemButton>
+                            </ListItemButton> */}
                         </Box>
                     </Box>
                 </Box>
