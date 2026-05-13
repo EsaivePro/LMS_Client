@@ -250,12 +250,6 @@ export default function SideBarWithHeader({ children, fixed = true, footer = nul
                         flexDirection: "column",
                         boxShadow: "4px 0 20px rgba(0,0,0,0.4)",
                         overflowX: "hidden",
-                        "&::-webkit-scrollbar": { width: 3 },
-                        "&::-webkit-scrollbar-track": { background: "transparent" },
-                        "&::-webkit-scrollbar-thumb": {
-                            background: "rgba(255,255,255,0.1)",
-                            borderRadius: 2,
-                        },
                     }}
                 >
                     {/* ── SEARCH BAR ── */}

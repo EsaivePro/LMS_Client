@@ -193,7 +193,7 @@ export default function WelcomeWidget() {
                                 backgroundSize: "200% auto",
                                 WebkitBackgroundClip: "text",
                                 WebkitTextFillColor: "transparent",
-                                animation: `${shimmer} 4s linear infinite, ${fadeUp} 0.55s ease both`,
+                                // animation: `${shimmer} 4s linear infinite, ${fadeUp} 0.55s ease both`,
                             }}
                         >
                             {name}!
