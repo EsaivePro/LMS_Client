@@ -106,7 +106,7 @@ export default function ModuleCategorySummaryPage() {
                 <Typography color="text.primary">Category Summary</Typography>
             </Breadcrumbs>
 
-            <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>Module Category Enrollment Dashboard</Typography>
+            <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>Category Enrollment Dashboard</Typography>
 
             {/* Controls */}
             <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
@@ -118,7 +118,7 @@ export default function ModuleCategorySummaryPage() {
                     onChange={(_, v) => { setSelectedCategory(v); setSelectedRow(null); }}
                     sx={{ width: 300 }}
                     renderInput={(params) => (
-                        <TextField {...params} label="Select Module Category" size="small" />
+                        <TextField {...params} label="Select Category" size="small" />
                     )}
                 />
                 <IconButton onClick={() => { setRefreshKey((k) => k + 1); refetch(); }} disabled={!selectedCategory}>
@@ -127,7 +127,7 @@ export default function ModuleCategorySummaryPage() {
             </Stack>
 
             {!selectedCategory && (
-                <Alert severity="info">Select a module category to view the summary.</Alert>
+                <Alert severity="info">Select a category to view the summary.</Alert>
             )}
 
             {selectedCategory && isLoading && (

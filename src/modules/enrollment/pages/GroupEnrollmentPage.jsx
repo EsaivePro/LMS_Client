@@ -534,10 +534,10 @@ export default function GroupEnrollmentPage() {
                 </FormControl>
 
                 <FormControl size="small" sx={{ minWidth: 240 }}>
-                    <InputLabel>Select Module Category</InputLabel>
+                    <InputLabel>Select Category</InputLabel>
                     <Select
                         value={moduleCategoryId}
-                        label="Select Module Category"
+                        label="Select Category"
                         onChange={(e) => setModuleCategoryId(e.target.value)}
                         disabled={!groupId || groupModulesLoading}
                     >
@@ -560,7 +560,7 @@ export default function GroupEnrollmentPage() {
             </Stack>
 
             {!ready ? (
-                <Alert severity="info">Select a group and module category to continue.</Alert>
+                <Alert severity="info">Select a group and category to continue.</Alert>
             ) : (
                 <>
                     <Tabs

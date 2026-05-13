@@ -229,7 +229,7 @@ export const protectedRoutes = [
     },
     {
         path: "/module-category/manage/:id",
-        title: "Manage Module Category",
+        title: "Manage Category",
         description: "Create module categories and assign courses or exams with scheduling.",
         permission: "user.management",
         element: <ModuleCategoryManage />,
@@ -286,8 +286,8 @@ export const protectedRoutes = [
     },
     {
         path: "/enrollment/category-summary",
-        title: "Module Category Dashboard",
-        description: "View enrollment statistics and progress breakdown per module category.",
+        title: "Category Dashboard",
+        description: "View enrollment statistics and progress breakdown per category.",
         permission: "user.management",
         element: <ModuleCategorySummaryPage />,
         sideMenu: false,

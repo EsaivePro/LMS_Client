@@ -17,7 +17,7 @@
         "buttons": [
             {
                 "key": "create",
-                "label": "New Module Category",
+                "label": "New Category",
                 "variant": "contained"
             }
         ]

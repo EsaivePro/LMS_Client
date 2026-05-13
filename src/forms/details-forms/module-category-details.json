@@ -1,5 +1,5 @@
 {
-    "title": "Module Category Details",
+    "title": "Category Details",
     "module": "module_category",
     "fetchConfig": {
         "endpoint": "/form-service/get",
